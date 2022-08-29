@@ -1,26 +1,17 @@
 import {
-  Body,
   Controller,
-  Get,
   NotFoundException,
   Param,
-  Post,
-  Put,
-  UseGuards,
 } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { NotFoundError } from 'rxjs';
 import { AuthService } from './auth.service';
 import { GetUser } from './decorators/get-user-from-request.decorator';
-import { Roles } from './decorators/roles.decorator';
 import { LoginDTO } from './dto&params/login.dto';
 import { SignUpDTO } from './dto&params/signUp.dto';
 import { UserIdParam } from './dto&params/user-detail.param';
 import { UserUpdateDTO } from './dto&params/user-update.dto';
 import { VerifyUserDTO } from './dto&params/verifyUser.dto';
-import { Role } from './enums/roles.enum';
-import { JwtAuthGuard } from './jwt/jwt-auth.guard';
-import { RolesGuard } from './jwt/roles.guard';
+
 import { User } from './models/user.model';
 
 @Controller('auth')
@@ -30,7 +21,7 @@ export class AuthController {
   @MessagePattern({ cmd: "AUTH_check" })
   check() {
     return {
-      Check_Status: 'NestJS Auth Is Working',
+      Check_Status: 'NestJS Auth Is Working, Hello',
     };
   }
 

@@ -1,0 +1,22 @@
+FROM python:3.10.6-buster
+
+WORKDIR /opt/app
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# COPY Pipfile Pipfile.lock ./
+COPY Pipfile ./
+
+RUN apt install libpq-dev
+
+RUN pip install --upgrade pip
+RUN pip install -U pipenv 
+
+COPY . .
+
+RUN pipenv install --system
+
+EXPOSE 9991
+
+CMD python manage.py migrate && python manage.py runserver 0.0.0.0:9991

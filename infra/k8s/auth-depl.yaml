@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          image: skn1942/ftgo-auth:latest
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 9991
+          # env:
+          #   - name: MYSQL_HOST
+          #     value: mysql-auth
+          #   - name: MYSQL_USER
+          #     value: root
+          #   - name: MYSQL_PASSWORD
+          #     value: MyPassword
+          #   - name: MYSQL_DB
+          #     value: ftgo-auth
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-srv
+spec:
+  selector:
+    app: auth
+  ports:
+    - name: auth
+      protocol: TCP
+      port: 9991
+      targetPort: 9991

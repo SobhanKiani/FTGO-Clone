@@ -1,0 +1,86 @@
+version: "3.9"
+
+services:
+
+  
+
+  ftgo-auth:
+    build:
+      dockerfile: Dockerfile
+      context: ./../Auth
+      target: development
+    image: skn1942/ftgo-auth
+    ports:
+      - 9991:9991
+    expose:
+      - 9991
+    command: npm run start:dev
+    environment:
+      - MONGO_HOST=ftgo-auth-mongodb
+      - MONGO_PORT=27017
+      - MONGO_DB_NAME=auth
+      - NATS_URL="nats://nats-server:4222"
+    volumes:
+      - ./../Auth:/usr/src/app
+    depends_on:
+      - ftgo-auth-mongodb
+      - nats-server
+
+  ftgo-auth-mongodb:
+    image: mongo:latest
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: root
+    #   MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - 27017:27017
+    volumes:
+      - auth-data
+
+  nats-server:
+    image: nats:latest
+    container_name: nats-server
+    ports:
+      - 4222:4222
+      - 6222:6222
+      - 8222:8222
+    expose:
+      - 4222
+    command: -c nats-server.conf -DV
+  # pg-auth:
+  #   image: postgres
+  #   ports:
+  #     - 3306:3306
+  #   expose:
+  #     - 3306
+  #   environment:
+  #     - POSTGRES_DB=postgres
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+  #     # - POSTGRES_HOST_AUTH_METHOD=md5
+  #     # volumes:
+  #     # - ftgo-auth-data:/var/lib/postgresql/data/auth
+
+  # ftgo-auth:
+  #   build: ../Auth
+  #   image: skn1942/ftgo-auth
+  #   container_name: ftgo-auth
+  #   ports:
+  #     - 9991:9991
+  #   expose:
+  #     - 9991
+  #   environment:
+  #     - POSTGRES_DB=ftgo-auth
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRESS_HOST=pg-auth
+  #   # depends_on:
+  #   #   - pg-auth
+
+  # another:
+  #   image: python:3.5.2
+  #   container_name: another
+  #   entrypoint: /usr/bin/yes
+
+volumes:
+  auth-data:

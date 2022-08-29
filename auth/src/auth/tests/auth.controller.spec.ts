@@ -12,6 +12,8 @@ import { jwtConstants } from '../jwt/constants';
 import { JwtStrategy } from '../jwt/jwt-startegt.class';
 import { RolesGuard } from '../jwt/roles.guard';
 import { User } from '../models/user.model';
+import { NotAuthenticatedException } from '../utils/NotAuthenticatedException';
+import { NotAuthorizedException } from '../utils/NotAuthorizedException';
 
 jest.setTimeout(30000)
 describe('AuthController', () => {
@@ -162,12 +164,12 @@ describe('AuthController', () => {
     const newUser = await authController.signUp(userCreateData);
     await authController.makeUserAdmin({ id: newUser.user.id });
 
-    const result = await authController.verifyAdmin({ token: newUser.token });
+    const result = await authController.verifyRoles({ token: newUser.token, roles: ['Admin'] });
     expect(result.roles).toContain("Admin");
   });
 
   it('should not verify admin that does not exist', async () => {
     const newUser = await authController.signUp(userCreateData);
-    await expect(authController.verifyAdmin({ token: newUser.token })).rejects.toThrowError(NotFoundException);
+    await expect(authController.verifyRoles({ token: newUser.token, roles: ['Admin'] })).rejects.toThrowError(NotAuthorizedException);
   });
 });

@@ -82,7 +82,7 @@ describe('AuthController', () => {
     if (mongo) {
       await mongo.stop();
     }
-    // await app.close();
+    await app.close();
   });
 
   beforeEach(async () => {

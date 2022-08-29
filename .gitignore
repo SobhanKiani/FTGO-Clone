@@ -1,3 +1,4 @@
 node_modules
 .DS_Store
-./auth/dist
+auth/dist/
+gateway/dist/

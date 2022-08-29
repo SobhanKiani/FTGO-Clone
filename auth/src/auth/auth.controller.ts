@@ -11,8 +11,9 @@ import { SignUpDTO } from './dto&params/signUp.dto';
 import { UserIdParam } from './dto&params/user-detail.param';
 import { UserUpdateDTO } from './dto&params/user-update.dto';
 import { VerifyUserDTO } from './dto&params/verifyUser.dto';
-
+import { VerifyRoleDTO } from './dto&params/verifyRole.dto'
 import { User } from './models/user.model';
+import { NotAuthorizedException } from './utils/NotAuthorizedException';
 
 @Controller('auth')
 export class AuthController {
@@ -53,10 +54,11 @@ export class AuthController {
   }
 
   @MessagePattern({ cmd: "AUTH_verifyAdmin" })
-  async verifyAdmin(verifyUserDTO: VerifyUserDTO): Promise<User> {
-    const user = await this.authService.decodeToken(verifyUserDTO.token);
-    if (!user.roles.includes('Admin')) {
-      throw new NotFoundException("Admin Not Found");
+  async verifyRoles(verifyRoleDTO: VerifyRoleDTO): Promise<User> {
+    const user = await this.authService.decodeToken(verifyRoleDTO.token);
+    const meetAllRoles = verifyRoleDTO.roles.every((role) => user.roles.includes(role))
+    if (!meetAllRoles) {
+      throw new NotAuthorizedException('User Does Not Have All The Roles');
     }
     return user;
   }

@@ -1,3 +1,0 @@
-export declare const EMAIL_REGEX: RegExp;
-export declare const PASSWORD_REGEX: RegExp;
-export declare const PHONE_NUMBER_REGEX: RegExp;

@@ -13,11 +13,13 @@ import { JwtStrategy } from '../jwt/jwt-startegt.class';
 import { RolesGuard } from '../jwt/roles.guard';
 import { User } from '../models/user.model';
 
+jest.setTimeout(30000)
 describe('AuthController', () => {
   let authController: AuthController;
   let app: INestApplication;
   let mongo: MongoMemoryServer;
   let userModel: Model<User>;
+  let testModule: TestingModule
   process.env.JWT_KEY = jwtConstants.secret;
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
   const userCreateData = {
@@ -33,7 +35,7 @@ describe('AuthController', () => {
     const mongoUri = await mongo.getUri();
     await mongoose.connect(mongoUri);
 
-    const module: TestingModule = await Test.createTestingModule({
+    testModule = await Test.createTestingModule({
       imports: [
         JwtModule.register({
           secret: jwtConstants.secret,
@@ -60,9 +62,9 @@ describe('AuthController', () => {
       controllers: [AuthController]
     }).compile();
 
-    authController = module.get<AuthController>(AuthController)
+    authController = testModule.get<AuthController>(AuthController)
 
-    app = module.createNestApplication();
+    app = testModule.createNestApplication();
     // app.connectMicroservice({
     //   transport: Transport.NATS,
     // });
@@ -70,6 +72,10 @@ describe('AuthController', () => {
     await app.init();
   });
 
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
 
   afterAll(async () => {
     await mongoose.connection.close();

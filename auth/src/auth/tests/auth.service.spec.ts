@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from '../auth.service';
-import {  MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose, { Model } from 'mongoose';
 import { JwtStrategy } from '../jwt/jwt-startegt.class';
 import { RolesGuard } from '../jwt/roles.guard';
@@ -12,6 +12,7 @@ import { UserSchemaObject } from '../DbSchemaObjects/user.schema-object';
 import { BadRequestException, INestApplication, NotFoundException } from '@nestjs/common';
 import { User } from '../models/user.model';
 
+jest.setTimeout(30000)
 describe('AuthService', () => {
   let authService: AuthService;
   let app: INestApplication;
@@ -20,6 +21,7 @@ describe('AuthService', () => {
   let userModel: Model<User>;
   process.env.JWT_KEY = jwtConstants.secret;
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  let testModule:TestingModule;
   const userCreateData = {
     email: 'test@gmail.com',
     firstName: 'Test',
@@ -32,7 +34,8 @@ describe('AuthService', () => {
     mongo = await MongoMemoryServer.create();
     const mongoUri = await mongo.getUri();
     await mongoose.connect(mongoUri);
-    const module: TestingModule = await Test.createTestingModule({
+
+    testModule = await Test.createTestingModule({
       imports: [
         JwtModule.register({
           secret: jwtConstants.secret,
@@ -58,31 +61,34 @@ describe('AuthService', () => {
       ],
     }).compile();
 
-    authService = module.get<AuthService>(AuthService);
+    authService = testModule.get<AuthService>(AuthService);
 
-    app = module.createNestApplication();
-    app.connectMicroservice({
-      transport: Transport.NATS,
-    });
+    app = testModule.createNestApplication();
+    orderClient = app.get('ORDER_SERVICE');
     // await app.startAllMicroservices();
     // await app.connectMicroservice({
     //   trasport:Transport.NATS
     // })
+    await
     await app.init();
 
-    orderClient = app.get('ORDER_SERVICE');
   });
 
+
+  afterEach(async () => {
+    jest.restoreAllMocks();
+  })
 
   afterAll(async () => {
     await mongoose.connection.close();
     if (mongo) {
       await mongo.stop();
     }
-    await app.close();
+    // await app.close();
   });
 
   beforeEach(async () => {
+
     const collections = await mongoose?.connection?.db?.collections();
     if (collections) {
       for (const collection of collections) {
@@ -124,7 +130,7 @@ describe('AuthService', () => {
 
   });
 
-  it.only('should login user with right cridentials', async () => {
+  it('should login user with right cridentials', async () => {
     await authService.signUp(userCreateData);
 
     const result = await authService.login({
@@ -144,13 +150,6 @@ describe('AuthService', () => {
       authService.login({
         email: userCreateData.email,
         password: 'NotCorrectPass0@',
-      })
-    ).rejects.toThrowError(BadRequestException);
-
-    await expect(
-      authService.login({
-        email: 'notCorrectEmail@gmail.com',
-        password: userCreateData.password
       })
     ).rejects.toThrowError(BadRequestException);
   });

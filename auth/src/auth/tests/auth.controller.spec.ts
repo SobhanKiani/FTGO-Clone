@@ -1,15 +1,13 @@
 import { BadRequestException, INestApplication, NotFoundException } from '@nestjs/common';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose, { Model } from 'mongoose';
-import { NotFoundError } from 'rxjs';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
 import { UserSchemaObject } from '../DbSchemaObjects/user.schema-object';
-import { UserUpdateDTO } from '../dto&params/user-update.dto';
 import { jwtConstants } from '../jwt/constants';
 import { JwtStrategy } from '../jwt/jwt-startegt.class';
 import { RolesGuard } from '../jwt/roles.guard';
@@ -65,10 +63,10 @@ describe('AuthController', () => {
     authController = module.get<AuthController>(AuthController)
 
     app = module.createNestApplication();
-    app.connectMicroservice({
-      transport: Transport.NATS,
-    });
-    await app.startAllMicroservices();
+    // app.connectMicroservice({
+    //   transport: Transport.NATS,
+    // });
+    // await app.startAllMicroservices();
     await app.init();
   });
 

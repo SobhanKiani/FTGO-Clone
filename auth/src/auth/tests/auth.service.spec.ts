@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from '../auth.service';
-import { MongoMemoryReplSet, MongoMemoryServer } from 'mongodb-memory-server';
+import {  MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose, { Model } from 'mongoose';
 import { JwtStrategy } from '../jwt/jwt-startegt.class';
 import { RolesGuard } from '../jwt/roles.guard';
@@ -32,7 +32,6 @@ describe('AuthService', () => {
     mongo = await MongoMemoryServer.create();
     const mongoUri = await mongo.getUri();
     await mongoose.connect(mongoUri);
-
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         JwtModule.register({
@@ -65,11 +64,15 @@ describe('AuthService', () => {
     app.connectMicroservice({
       transport: Transport.NATS,
     });
-    await app.startAllMicroservices();
+    // await app.startAllMicroservices();
+    // await app.connectMicroservice({
+    //   trasport:Transport.NATS
+    // })
     await app.init();
 
     orderClient = app.get('ORDER_SERVICE');
   });
+
 
   afterAll(async () => {
     await mongoose.connection.close();
@@ -121,7 +124,7 @@ describe('AuthService', () => {
 
   });
 
-  it('should login user with right cridentials', async () => {
+  it.only('should login user with right cridentials', async () => {
     await authService.signUp(userCreateData);
 
     const result = await authService.login({

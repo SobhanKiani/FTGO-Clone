@@ -21,7 +21,7 @@ export class AuthController {
   @MessagePattern({ cmd: "AUTH_check" })
   check() {
     return {
-      Check_Status: 'NestJS Auth Is Working',
+      Check_Status: 'NestJS Auth Is Working, Hello',
     };
   }
 

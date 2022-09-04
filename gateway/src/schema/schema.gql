@@ -1,0 +1,54 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: String!
+  email: String!
+  firstName: String!
+  lastName: String!
+  phoneNumber: String!
+  address: String
+  roles: [String!]!
+}
+
+type AuthData {
+  user: User!
+  token: String!
+}
+
+type CheckStatus {
+  Check_Status: String!
+}
+
+type Query {
+  checkAuthClientStatus: CheckStatus!
+}
+
+type Mutation {
+  signUp(createUserData: CreateUserInput!): AuthData!
+  login(loginData: LoginInput!): AuthData!
+  makeUserAdmin(id: String!): User!
+  updateUser(updateUserData: UpdateUserInput!): User!
+}
+
+input CreateUserInput {
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+  phoneNumber: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  email: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  address: String
+}

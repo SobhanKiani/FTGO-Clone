@@ -1,0 +1,11 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type CheckStatus {
+  CheckStatus: String!
+}
+
+type Query {
+  checkAuthClientStatus: CheckStatus!
+}

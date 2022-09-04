@@ -16,24 +16,24 @@ import mongoose from 'mongoose';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @MessagePattern({ cmd: 'AUTH_check' })
+  @MessagePattern({ cmd: 'auth_check' })
   async check(data: {}): Promise<{ Check_Status: string }> {
     return {
       Check_Status: 'NestJS Auth Is Working, Hello',
     };
   }
 
-  @MessagePattern({ cmd: 'AUTH_signUp' })
+  @MessagePattern({ cmd: 'auth_sign_up' })
   async signUp(signUpDTO: SignUpDTO): Promise<{ user: User; token: string }> {
     return await this.authService.signUp(signUpDTO);
   }
 
-  @MessagePattern({ cmd: 'AUTH_login' })
+  @MessagePattern({ cmd: 'auth_login' })
   async login(loginDTO: LoginDTO): Promise<{ user: User; token: string }> {
     return await this.authService.login(loginDTO);
   }
 
-  @MessagePattern({ cmd: 'AUTH_updateUser' })
+  @MessagePattern({ cmd: 'auth_update_user' })
   async updateUser(userUpdateInfo: {
     userUpdateDTO: UserUpdateDTO;
     userId: mongoose.Types.ObjectId;
@@ -44,12 +44,12 @@ export class AuthController {
     );
   }
 
-  @MessagePattern({ cmd: 'AUTH_verifyUser' })
+  @MessagePattern({ cmd: 'auth_verify_user' })
   async verifyUser(verifyUserDTO: VerifyUserDTO): Promise<User> {
     return await this.authService.decodeToken(verifyUserDTO.token);
   }
 
-  @MessagePattern({ cmd: 'AUTH_verifyRoles' })
+  @MessagePattern({ cmd: 'auth_verify_roles' })
   async verifyRoles(verifyRoleDTO: VerifyRoleDTO): Promise<User> {
     const user = await this.authService.decodeToken(verifyRoleDTO.token);
     const meetAllRoles = verifyRoleDTO.roles.every((role) =>
@@ -61,7 +61,7 @@ export class AuthController {
     return user;
   }
 
-  @MessagePattern({ cmd: 'AUTH_makeUserAdmin' })
+  @MessagePattern({ cmd: 'auth_make_user_admin' })
   async makeUserAdmin(userId: mongoose.Types.ObjectId) {
     return await this.authService.makeUserAdmin(userId);
   }

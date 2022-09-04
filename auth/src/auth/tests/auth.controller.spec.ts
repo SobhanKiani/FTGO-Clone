@@ -104,7 +104,7 @@ describe('AuthController', () => {
   });
 
   it('should return check data', async () => {
-    const result = await authController.check();
+    const result = await authController.check({});
     expect(result.Check_Status).toBeDefined();
   });
 
@@ -141,8 +141,10 @@ describe('AuthController', () => {
     };
 
     const result = await authController.updateUser(
-      userUpdateData,
-      newUser.user,
+      {
+        userUpdateDTO: userUpdateData,
+        userId: newUser.user.id,
+      }
     );
     expect(result.address).toBe(userUpdateData.address);
     expect(result.firstName).toBe(userUpdateData.firstName);
@@ -157,7 +159,7 @@ describe('AuthController', () => {
 
   it('should make user admin', async () => {
     const newUser = await authController.signUp(userCreateData);
-    const result = await authController.makeUserAdmin({ id: newUser.user.id });
+    const result = await authController.makeUserAdmin(newUser.user.id);
     expect(result.roles).toContain('Admin');
   });
 
@@ -173,7 +175,7 @@ describe('AuthController', () => {
 
   it('should verify admin', async () => {
     const newUser = await authController.signUp(userCreateData);
-    await authController.makeUserAdmin({ id: newUser.user.id });
+    await authController.makeUserAdmin(newUser.user.id);
 
     const result = await authController.verifyRoles({
       token: newUser.token,

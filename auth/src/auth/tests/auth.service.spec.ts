@@ -9,7 +9,11 @@ import { jwtConstants } from '../jwt/constants';
 import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { UserSchemaObject } from '../DbSchemaObjects/user.schema-object';
-import { BadRequestException, INestApplication, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  INestApplication,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from '../models/user.model';
 
 describe('AuthService', () => {
@@ -69,13 +73,11 @@ describe('AuthService', () => {
     //   trasport:Transport.NATS
     // })
     await app.init();
-
   });
-
 
   afterEach(async () => {
     jest.restoreAllMocks();
-  })
+  });
 
   afterAll(async () => {
     await mongoose.connection.close();
@@ -86,7 +88,6 @@ describe('AuthService', () => {
   });
 
   beforeEach(async () => {
-
     const collections = await mongoose?.connection?.db?.collections();
     if (collections) {
       for (const collection of collections) {
@@ -118,104 +119,104 @@ describe('AuthService', () => {
       phoneNumber: '1212',
     };
 
-      const orderClientEmitSpy = jest.spyOn(orderClient, 'emit');
+    const orderClientEmitSpy = jest.spyOn(orderClient, 'emit');
 
-      await expect(authService.signUp(userData)).rejects.toThrowError(
-        BadRequestException,
-      );
+    await expect(authService.signUp(userData)).rejects.toThrowError(
+      BadRequestException,
+    );
 
-      expect(orderClientEmitSpy).not.toHaveBeenCalled();
-
-    });
-
-    it('should login user with right cridentials', async () => {
-      await authService.signUp(userCreateData);
-
-      const result = await authService.login({
-        email: userCreateData.email,
-        password: userCreateData.password,
-      });
-
-      expect(result.token).toBeDefined();
-      expect(result.user.email).toEqual(userCreateData.email);
-    });
-
-    it('should not login with not correct email or password', async () => {
-
-      await authService.signUp(userCreateData);
-
-      await expect(
-        authService.login({
-          email: userCreateData.email,
-          password: 'NotCorrectPass0@',
-        })
-      ).rejects.toThrowError(BadRequestException);
-    });
-
-    it('should update existing user', async () => {
-      const newUser = await authService.signUp(userCreateData);
-      const updateData = {
-        address: "User Address",
-        firstName: "NewFirstName"
-      }
-
-      const orderClientEmitSpy = jest.spyOn(orderClient, 'emit');
-
-      const result = await authService.updateUser(newUser.user.id, updateData)
-
-      expect(result.address).toEqual(updateData.address);
-      expect(result.firstName).toEqual(updateData.firstName);
-      expect(orderClientEmitSpy).toHaveBeenCalled
-
-    })
-
-    it('should not update user that does not exist', async () => {
-      const updateData = {
-        address: "User Address",
-        firstName: "NewFirstName"
-      }
-
-      const orderClientEmitSpy = jest.spyOn(orderClient, 'emit');
-
-
-      await expect(authService.updateUser(new mongoose.Types.ObjectId(), updateData)).rejects.toThrowError(NotFoundException);
-      expect(orderClientEmitSpy).not.toHaveBeenCalled
-    })
-
-    it('should create token for user', async () => {
-      const newUser = await authService.signUp(userCreateData);
-      const result = await authService.createToken(newUser.user);
-
-      expect(result).toBeDefined();
-      expect(typeof result).toBe("string")
-    })
-
-    it('should make user admin if user exists', async () => {
-      const newUser = await authService.signUp(userCreateData);
-
-      const result = await authService.makeUserAdmin(newUser.user.id);
-
-      expect(result.roles).toContain('Admin');
-    })
-
-    it('should not make a admin if the user does not exist', async () => {
-      await expect(authService.makeUserAdmin(new mongoose.Types.ObjectId())).rejects.toThrowError(NotFoundException);
-    })
-
-    it('should verify valid token', async () => {
-      const newUser = await authService.signUp(userCreateData);
-
-      const result = await authService.decodeToken(newUser.token);
-      expect(result.id).toBe(newUser.user.id);
-    })
-
-    it('should not verify invalid token', async () => {
-      await expect(
-        authService.decodeToken(
-          new JwtService({
-            secretOrPrivateKey: jwtConstants.secret
-          }).sign({ email: "testemail2", id: new mongoose.Types.ObjectId() })
-        )
-      ).rejects.toThrowError(NotFoundException);
-    })
+    expect(orderClientEmitSpy).not.toHaveBeenCalled();
   });
+
+  it('should login user with right cridentials', async () => {
+    await authService.signUp(userCreateData);
+
+    const result = await authService.login({
+      email: userCreateData.email,
+      password: userCreateData.password,
+    });
+
+    expect(result.token).toBeDefined();
+    expect(result.user.email).toEqual(userCreateData.email);
+  });
+
+  it('should not login with not correct email or password', async () => {
+    await authService.signUp(userCreateData);
+
+    await expect(
+      authService.login({
+        email: userCreateData.email,
+        password: 'NotCorrectPass0@',
+      }),
+    ).rejects.toThrowError(BadRequestException);
+  });
+
+  it('should update existing user', async () => {
+    const newUser = await authService.signUp(userCreateData);
+    const updateData = {
+      address: 'User Address',
+      firstName: 'NewFirstName',
+    };
+
+    const orderClientEmitSpy = jest.spyOn(orderClient, 'emit');
+
+    const result = await authService.updateUser(newUser.user.id, updateData);
+
+    expect(result.address).toEqual(updateData.address);
+    expect(result.firstName).toEqual(updateData.firstName);
+    expect(orderClientEmitSpy).toHaveBeenCalled;
+  });
+
+  it('should not update user that does not exist', async () => {
+    const updateData = {
+      address: 'User Address',
+      firstName: 'NewFirstName',
+    };
+
+    const orderClientEmitSpy = jest.spyOn(orderClient, 'emit');
+
+    await expect(
+      authService.updateUser(new mongoose.Types.ObjectId(), updateData),
+    ).rejects.toThrowError(NotFoundException);
+    expect(orderClientEmitSpy).not.toHaveBeenCalled;
+  });
+
+  it('should create token for user', async () => {
+    const newUser = await authService.signUp(userCreateData);
+    const result = await authService.createToken(newUser.user);
+
+    expect(result).toBeDefined();
+    expect(typeof result).toBe('string');
+  });
+
+  it('should make user admin if user exists', async () => {
+    const newUser = await authService.signUp(userCreateData);
+
+    const result = await authService.makeUserAdmin(newUser.user.id);
+
+    expect(result.roles).toContain('Admin');
+  });
+
+  it('should not make a admin if the user does not exist', async () => {
+    await expect(
+      authService.makeUserAdmin(new mongoose.Types.ObjectId()),
+    ).rejects.toThrowError(NotFoundException);
+  });
+
+  it('should verify valid token', async () => {
+    const newUser = await authService.signUp(userCreateData);
+
+    const result = await authService.decodeToken(newUser.token);
+    expect(result.id).toBe(newUser.user.id);
+  });
+
+  it('should not verify invalid token', async () => {
+    await expect(
+      authService.decodeToken(
+        new JwtService({
+          secretOrPrivateKey: jwtConstants.secret,
+        }).sign({ email: 'testemail2', id: new mongoose.Types.ObjectId() }),
+      ),
+    ).rejects.toThrowError(NotFoundException);
+  });
+});

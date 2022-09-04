@@ -8,9 +8,9 @@ import { JwtService } from '@nestjs/jwt';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import { LoginDTO } from './dto&params/login.dto';
-import { SignUpDTO } from './dto&params/signUp.dto';
-import { UserUpdateDTO } from './dto&params/user-update.dto';
+import { LoginDTO } from './dto/login.dto';
+import { SignUpDTO } from './dto/signUp.dto';
+import { UserUpdateDTO } from './dto/user-update.dto';
 import { JWTPayload } from './jwt/jwt-payload';
 import { User, UserDocument } from './models/user.model';
 

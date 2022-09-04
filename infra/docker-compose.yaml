@@ -21,7 +21,7 @@ services:
       - MONGO_DB_NAME=auth
       - NATS_URL="nats://nats-server:4222"
     volumes:
-      - ./../Auth:/usr/src/app
+      - ./../auth:/usr/src/app
     depends_on:
       - ftgo-auth-mongodb
       - nats-server
@@ -35,6 +35,22 @@ services:
       - 27017:27017
     volumes:
       - auth-data
+
+  ftgo-gateway:
+    build:
+      dockerfile: Dockerfile
+      context: ./../gateway
+      target: development
+    image: skn1942/ftgo-gateway
+    ports:
+      - 9992:9992
+    expose:
+      - 9992
+    command: npm run start:dev
+    volumes:
+      - ./../gateway:/usr/src/app
+    depends_on:
+      - ftgo-auth
 
   nats-server:
     image: nats:latest

@@ -39,7 +39,9 @@ export class AuthGuard implements CanActivate, OnApplicationBootstrap {
           { token: authToken },
         ),
       );
+
       const user = authResult.data
+
       if (user.email) {
         request.user = user;
         return true;

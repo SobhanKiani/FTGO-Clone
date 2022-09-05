@@ -9,13 +9,14 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { IS_PRIVATE } from '../decorators/isPrivate.decorator';
+import { IVerifyUserResponse } from '../interfaces/verify-user-response.interface';
 import { User } from '../models/user.model';
 
 export class AuthGuard implements CanActivate, OnApplicationBootstrap {
   constructor(
     private readonly reflector: Reflector,
     @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy,
-  ) {}
+  ) { }
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx = GqlExecutionContext.create(context);
@@ -32,13 +33,13 @@ export class AuthGuard implements CanActivate, OnApplicationBootstrap {
     const authToken = request.headers?.authorization?.split(" ")[1];
 
     if (authToken) {
-      const user = await firstValueFrom(
-        this.authClient.send<User>(
+      const authResult = await firstValueFrom(
+        this.authClient.send<IVerifyUserResponse>(
           { cmd: 'auth_verify_user' },
           { token: authToken },
         ),
       );
-
+      const user = authResult.data
       if (user.email) {
         request.user = user;
         return true;

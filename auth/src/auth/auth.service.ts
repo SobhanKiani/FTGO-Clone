@@ -17,116 +17,49 @@ export class AuthService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private jwtService: JwtService,
-    @Inject('ORDER_SERVICE') private orderClient: ClientProxy,
   ) { }
 
-  async signUp(signUpDTO: SignUpDTO): Promise<{ token: string; user: User } | { errors: any }> {
-    try {
-      const foundUser = await this.userModel.find({ email: signUpDTO.email });
-
-      if (foundUser.length > 0) {
-        return {
-          errors: {
-            path: "user",
-            message: "Email Already Existsasdasd"
-          }
-        }
-      }
-      const newUser = new this.userModel(signUpDTO);
-      await newUser.save();
-      const token = await this.createToken(newUser);
-
-      this.orderClient.emit('NEW_USER_CREATED', newUser);
-
-      return {
-        user: newUser,
-        token,
-      };
-    } catch (e) {
-      return { errors: e.errros() }
-    }
+  async getUserByEmail(email: string): Promise<User> {
+    return await this.userModel.findOne({ email });
   }
 
-  async login(loginDTO: LoginDTO): Promise<{ token: string; user: User } | { errors: any }> {
-    const user = await this.userModel.findOne({ email: loginDTO.email });
-
-    if (!user || !(await user.isPasswordValid(loginDTO.password))) {
-      return {
-        errors: {
-          credentials: {
-            message: "Could Not Login With These Credentials"
-          }
-        }
-      }
-    }
-
-    const token = await this.createToken(user);
-    return {
-      user,
-      token,
-    };
+  async getUserById(id: mongoose.Types.ObjectId) {
+    return await this.userModel.findById(id);
   }
 
-  async updateUser(id: mongoose.Types.ObjectId, userUpdateDTO: UserUpdateDTO): Promise<User | { errors: any }> {
-    const user = await this.userModel.findById(id);
-    if (!user) {
-      return {
-        errors: {
-          user: {
-            message: "User Not Found"
-          }
-        }
-      }
-    }
-    user.set(userUpdateDTO);
-    await user.save();
-    this.orderClient.emit('USER_UPDATE', user);
-    return user;
+  async createUser(signUpDTO: SignUpDTO) {
+    const newUser = new this.userModel(signUpDTO);
+    return await newUser.save();
+  }
+
+  async comparePassword(user: User, password: string) {
+    return user.isPasswordValid(password);
+  }
+
+
+  async updateUser(id: mongoose.Types.ObjectId, userUpdateDTO: UserUpdateDTO): Promise<User> {
+    return await this.userModel.findByIdAndUpdate(id, userUpdateDTO, { new: true });
   }
 
   async createToken(user: User): Promise<string> {
     return await this.jwtService.sign({ id: user.id, email: user.email });
   }
 
-  async makeUserAdmin(id: mongoose.Types.ObjectId): Promise<User | { errors: any }> {
-    const user = await this.userModel.findById(id);
-    if (!user) {
-      return {
-        errors: {
-          user: {
-            message: 'User Not Found'
-          }
-        }
-      }
-    }
-    if (!user.roles.includes('Admin')) {
-      user.roles.push('Admin');
-      await user.save();
-    }
-    return user;
+  async makeUserAdmin(id: mongoose.Types.ObjectId): Promise<User> {
+    return await this.userModel.findByIdAndUpdate(id, { $addToSet: { roles: 'Admin' }, }, { new: true });
   }
 
-  async decodeToken(token: string): Promise<User | { errors: any }> {
+  async decodeToken(token: string): Promise<User> {
     const decodedToken = this.jwtService.decode(token) as JWTPayload;
-    if (!decodedToken.id) {
-      return {
-        errors: {
-          token: {
-            message: "could not authenticated user"
-          }
-        }
-      }
+
+    if (!decodedToken && !decodedToken.id) {
+      return null
     }
 
     const user = await this.userModel.findById(decodedToken.id);
+
     if (!user) {
-      return {
-        errors: {
-          user: {
-            message: "User Not Found"
-          }
-        }
-      }
+      return null;
     }
 
     return user;

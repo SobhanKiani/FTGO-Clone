@@ -1,5 +1,5 @@
 import { Controller, HttpStatus, Inject, NotFoundException, Param } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { ClientProxy, MessagePattern } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import { LoginDTO } from './dto/login.dto';
 import { SignUpDTO } from './dto/signUp.dto';
@@ -17,6 +17,8 @@ import { IVerifyUserResponse } from './interfaces/verify-user-response.interface
 export class AuthController {
   constructor(
     private authService: AuthService,
+    @Inject('ORDER_SERVICE') private orderClient: ClientProxy,
+
   ) { }
 
   @MessagePattern({ cmd: 'auth_check' })
@@ -28,47 +30,82 @@ export class AuthController {
 
   @MessagePattern({ cmd: 'auth_sign_up' })
   async signUp(signUpDTO: SignUpDTO): Promise<ISignUpResponse> {
-    const result = await this.authService.signUp(signUpDTO);
-    if ('errors' in result) {
-      return {
-        status: HttpStatus.BAD_REQUEST,
-        message: "User Could Not Be Created",
-        data: null,
-        errors: result.errors
+
+    try {
+      const foundUser = await this.authService.getUserByEmail(signUpDTO.email);
+      if (foundUser) {
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          message: "Email Address Already Exists",
+          data: null,
+          errors: {
+            email: { path: "user", message: "Email Address Already Exists" }
+          }
+        }
       }
-    }
-    if ('token' in result) {
+
+      const newUser = await this.authService.createUser(signUpDTO);
+      this.orderClient.emit('NEW_USER_CREATED', newUser);
+      const token = await this.authService.createToken(newUser);
+      const result = {
+        token,
+        user: newUser
+      };
+
       return {
         status: HttpStatus.CREATED,
         message: 'User Created',
         data: result,
         errors: null
-
+      };
+    } catch (e) {
+      return {
+        status: HttpStatus.BAD_REQUEST,
+        message: "Could Complete SignUp Request",
+        data: null,
+        errors: e.errors
       }
     }
+
   }
 
   @MessagePattern({ cmd: 'auth_login' })
   async login(loginDTO: LoginDTO): Promise<ILoginResponse> {
-    const result = await this.authService.login(loginDTO);
 
-    if ('errors' in result) {
+    const user = await this.authService.getUserByEmail(loginDTO.email);
+    if (!user) {
       return {
         status: HttpStatus.BAD_REQUEST,
-        message: 'Could Not Login',
+        message: 'Could Not Login With These Credentials',
         data: null,
-        errors: result.errors
+        errors: { user: { path: "user", message: "Email Or Password Is Not Correct" } }
       }
     }
 
-    if ('token' in result) {
+    const isPasswordValid = await user.isPasswordValid(loginDTO.password);
+
+    if (!isPasswordValid) {
       return {
-        status: HttpStatus.OK,
-        message: 'User Logged In',
-        data: result,
-        errors: null
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Could Not Login With These Credentials',
+        data: null,
+        errors: { user: { path: "user", message: "Email Or Password Is Not Correct" } }
       }
     }
+
+    const token = await this.authService.createToken(user);
+    const result = {
+      user,
+      token
+    }
+
+    return {
+      status: HttpStatus.OK,
+      message: 'User Logged In',
+      data: result,
+      errors: null
+    }
+
   }
 
   @MessagePattern({ cmd: 'auth_update_user' })
@@ -76,111 +113,109 @@ export class AuthController {
     userUpdateDTO: UserUpdateDTO;
     userId: mongoose.Types.ObjectId;
   }): Promise<IUpdateUserResponse> {
-    const result = await this.authService.updateUser(
+
+    const updatedUser = await this.authService.updateUser(
       userUpdateInfo.userId,
       userUpdateInfo.userUpdateDTO,
     );
 
-    console.log("Update Result", result)
-
-
-    if ('email' in result) {
+    if (!updatedUser) {
       return {
-        status: HttpStatus.OK,
-        message: "User Updated",
-        data: result,
-        errors: null
-      }
-    }
-
-
-    if ('errors' in result) {
-      return {
-        status: HttpStatus.BAD_REQUEST,
-        message: "Could Not Update User",
+        status: HttpStatus.NOT_FOUND,
+        message: "User Not Found",
         data: null,
-        errors: result.errors
+        errors: { user: { path: "user", message: "User Not Found" } }
       }
     }
+
+    this.orderClient.emit('USER_UPDATE', updatedUser);
+
+    return {
+      status: HttpStatus.OK,
+      message: "User Updated",
+      data: updatedUser,
+      errors: null
+    }
+
   }
 
   @MessagePattern({ cmd: 'auth_verify_user' })
   async verifyUser(verifyUserDTO: VerifyUserDTO): Promise<IVerifyUserResponse> {
-    const result = await this.authService.decodeToken(verifyUserDTO.token);
 
-    if (result == null) {
+    const user = await this.authService.decodeToken(verifyUserDTO.token);
+
+    if (user == null) {
       return {
         status: HttpStatus.UNAUTHORIZED,
         message: "Not Authentcated",
         data: null,
-        errors: result.errors
-      }
-    }
-
-    if ('email' in result) {
-      return {
-        status: HttpStatus.OK,
-        message: "User Verified",
-        data: result,
-        errors: null
-      }
-    }
-
-  }
-
-  @MessagePattern({ cmd: 'auth_verify_roles' })
-  async verifyRoles(verifyRoleDTO: VerifyRoleDTO): Promise<IVerifyUserResponse> {
-    const result = await this.authService.decodeToken(verifyRoleDTO.token);
-    if ('errors' in result) {
-      return {
-        status: HttpStatus.UNAUTHORIZED,
-        message: "Not Authenticated",
-        data: null,
-        errors: result.errors
-      }
-    }
-
-    const meetAllRoles = verifyRoleDTO.roles.every((role) =>
-      result.roles.includes(role),
-    );
-
-    if (!meetAllRoles) {
-      return {
-        status: HttpStatus.FORBIDDEN,
-        message: "User Is Forbidden",
-        data: result,
-        errors: null
+        errors: { user: { path: "auth", message: "Not Authenticated" } }
       }
     }
 
     return {
       status: HttpStatus.OK,
       message: "User Verified",
-      data: result,
+      data: user,
+      errors: null
+    }
+
+  }
+
+  @MessagePattern({ cmd: 'auth_verify_roles' })
+  async verifyRoles(verifyRoleDTO: VerifyRoleDTO): Promise<IVerifyUserResponse> {
+    const user = await this.authService.decodeToken(verifyRoleDTO.token);
+
+    if (!user) {
+      return {
+        status: HttpStatus.UNAUTHORIZED,
+        message: "Not Authentcated",
+        data: null,
+        errors: { auth: { path: "auth", message: "Not Authenticated" } }
+      }
+    }
+
+    const meetAllRoles = verifyRoleDTO.roles.every((role) =>
+      user.roles.includes(role),
+    );
+
+    if (!meetAllRoles) {
+      return {
+        status: HttpStatus.FORBIDDEN,
+        message: "User Is Forbidden",
+        data: null,
+        errors: { auth: { path: "auth", message: "Forbidden" } }
+      }
+    }
+
+    return {
+      status: HttpStatus.OK,
+      message: "User Verified",
+      data: user,
       errors: null
     }
   }
 
   @MessagePattern({ cmd: 'auth_make_user_admin' })
   async makeUserAdmin(userId: mongoose.Types.ObjectId): Promise<IMakeUserAdmin> {
-    const result = await this.authService.makeUserAdmin(userId);
+    const updatedUser = await this.authService.makeUserAdmin(userId);
 
-    if ('email' in result) {
+    if (!updatedUser) {
       return {
-        status: HttpStatus.OK,
-        message: "User Updated",
-        data: result,
-        errors: null
+        status: HttpStatus.NOT_FOUND,
+        message: "User Not Found",
+        data: null,
+        errors: {
+          user: { path: "user", message: "User Not Found" }
+        }
       }
     }
 
-    if ('errors' in result) {
-      return {
-        status: HttpStatus.BAD_REQUEST,
-        message: "Could Not Make User Admin",
-        data: null,
-        errors: result.errors
-      }
+    return {
+      status: HttpStatus.OK,
+      message: "User Updated",
+      data: updatedUser,
+      errors: null
     }
 
   }

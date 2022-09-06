@@ -1,10 +1,11 @@
 import {
   BadRequestException,
+  HttpStatus,
   INestApplication,
   NotFoundException,
 } from '@nestjs/common';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -16,14 +17,14 @@ import { jwtConstants } from '../jwt/constants';
 import { JwtStrategy } from '../jwt/jwt-startegt.class';
 import { RolesGuard } from '../jwt/roles.guard';
 import { User } from '../models/user.model';
-import { NotAuthenticatedException } from '../utils/NotAuthenticatedException';
-import { NotAuthorizedException } from '../utils/NotAuthorizedException';
+
 
 jest.setTimeout(30000);
 describe('AuthController', () => {
   let authController: AuthController;
   let app: INestApplication;
   let mongo: MongoMemoryServer;
+  let orderClient: ClientProxy;
   let userModel: Model<User>;
   let testModule: TestingModule;
   process.env.JWT_KEY = jwtConstants.secret;
@@ -71,6 +72,8 @@ describe('AuthController', () => {
     authController = testModule.get<AuthController>(AuthController);
 
     app = testModule.createNestApplication();
+    orderClient = app.get('ORDER_SERVICE');
+
     // app.connectMicroservice({
     //   transport: Transport.NATS,
     // });
@@ -109,16 +112,22 @@ describe('AuthController', () => {
   });
 
   it('should create user with correct data', async () => {
+    const orderClientEmitSpy = jest.spyOn(orderClient, 'emit');
+
+
     const result = await authController.signUp(userCreateData);
-    expect(result.token).toBeDefined();
-    expect(result.user.email).toBe(userCreateData.email);
+    expect(result.status).toEqual(HttpStatus.CREATED);
+    expect(result.data.token).toBeDefined()
+    expect(result.data.user.email).toBe(userCreateData.email);
+    expect(orderClientEmitSpy).toHaveBeenCalled();
   });
 
   it('should not create user with inappropriate data', async () => {
     const userData = { ...userCreateData, email: 'errorTest' };
-    await expect(authController.signUp(userData)).rejects.toThrowError(
-      BadRequestException,
-    );
+    const result = await authController.signUp(userData);
+
+    expect(result.status).toEqual(HttpStatus.BAD_REQUEST);
+    expect(result.data).toBeNull();
   });
 
   it('should login existing user with correct credentials', async () => {
@@ -128,66 +137,86 @@ describe('AuthController', () => {
       email: userCreateData.email,
       password: userCreateData.password,
     });
-    expect(result.token).toBeDefined();
-    expect(result.user.email).toEqual(userCreateData.email);
+
+    expect(result.status).toEqual(HttpStatus.OK);
+    expect(result.data.token).toBeDefined();
+    expect(result.data.user.email).toEqual(userCreateData.email);
   });
 
   it('should update existing user with correct data', async () => {
-    const newUser = await authController.signUp(userCreateData);
+    const orderClientEmitSpy = jest.spyOn(orderClient, 'emit');
+
+    const { data: newUser } = await authController.signUp(userCreateData);
 
     const userUpdateData = {
       address: 'new address',
       firstName: 'NewFirstName',
     };
 
-    const result = await authController.updateUser(
+    const { data: resultData, status } = await authController.updateUser(
       {
         userUpdateDTO: userUpdateData,
         userId: newUser.user.id,
       }
     );
-    expect(result.address).toBe(userUpdateData.address);
-    expect(result.firstName).toBe(userUpdateData.firstName);
+    expect(status).toEqual(HttpStatus.OK);
+    expect(resultData.address).toBe(userUpdateData.address);
+    expect(resultData.firstName).toBe(userUpdateData.firstName);
+    expect(orderClientEmitSpy).toHaveBeenCalled();
   });
 
   it('should verify existing user', async () => {
-    const newUser = await authController.signUp(userCreateData);
-    const result = await authController.verifyUser({ token: newUser.token });
+    const { data: authData } = await authController.signUp(userCreateData);
+    const { data: resultData, status } = await authController.verifyUser({ token: authData.token });
 
-    expect(result.id).toEqual(newUser.user.id);
+    expect(resultData.id).toEqual(authData.user.id);
+    expect(status).toEqual(HttpStatus.OK);
   });
 
   it('should make user admin', async () => {
-    const newUser = await authController.signUp(userCreateData);
-    const result = await authController.makeUserAdmin(newUser.user.id);
-    expect(result.roles).toContain('Admin');
+    const { data: authData } = await authController.signUp(userCreateData);
+    const { data: resultData, status } = await authController.makeUserAdmin(authData.user.id);
+    expect(resultData.roles).toContain('Admin');
+    expect(status).toEqual(HttpStatus.OK);
   });
 
   it('should not verify a user that does not exist', async () => {
-    await expect(
-      authController.verifyUser({
-        token: new JwtService({
-          secretOrPrivateKey: jwtConstants.secret,
-        }).sign({ email: 'testemail2', id: new mongoose.Types.ObjectId() }),
-      }),
-    ).rejects.toThrowError(NotFoundException);
+    const { data: resultData, status } = await authController.verifyUser({
+      token: new JwtService({
+        secretOrPrivateKey: jwtConstants.secret,
+      }).sign({ email: 'testemail2', id: new mongoose.Types.ObjectId() }),
+    });
+
+    expect(resultData).toBeNull();
+    expect(status).toBe(HttpStatus.UNAUTHORIZED);
   });
 
   it('should verify admin', async () => {
-    const newUser = await authController.signUp(userCreateData);
-    await authController.makeUserAdmin(newUser.user.id);
+    const { data: authData } = await authController.signUp(userCreateData);
+    await authController.makeUserAdmin(authData.user.id);
 
-    const result = await authController.verifyRoles({
-      token: newUser.token,
+    const { data: updatedUser, status } = await authController.verifyRoles({
+      token: authData.token,
       roles: ['Admin'],
     });
-    expect(result.roles).toContain('Admin');
+    expect(status).toEqual(HttpStatus.OK);
+    expect(updatedUser.roles).toContain('Admin');
   });
 
-  it('should not verify admin that does not exist', async () => {
-    const newUser = await authController.signUp(userCreateData);
-    await expect(
-      authController.verifyRoles({ token: newUser.token, roles: ['Admin'] }),
-    ).rejects.toThrowError(NotAuthorizedException);
+  it('should not verify admin that does not have the admin role', async () => {
+    const { data: authData } = await authController.signUp(userCreateData);
+    const { data: resultData, status } = await authController.verifyRoles({ token: authData.token, roles: ['Admin'] });
+    expect(status).toEqual(HttpStatus.FORBIDDEN);
+    expect(resultData).toBeNull();
   });
+
+  it('should not verify admin that does not exists', async () => {
+    const fakeToken = new JwtService({
+      secretOrPrivateKey: jwtConstants.secret,
+    }).sign({ email: 'testemail2', id: new mongoose.Types.ObjectId() });
+
+    const { data: resultData, status } = await authController.verifyRoles({ token: fakeToken, roles: ['Admin'] });
+    expect(status).toEqual(HttpStatus.UNAUTHORIZED);
+    expect(resultData).toBeNull();
+  })
 });

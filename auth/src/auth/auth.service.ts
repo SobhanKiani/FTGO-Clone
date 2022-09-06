@@ -1,7 +1,6 @@
 import {
   Inject,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ClientProxy } from '@nestjs/microservices';
@@ -23,6 +22,16 @@ export class AuthService {
 
   async signUp(signUpDTO: SignUpDTO): Promise<{ token: string; user: User } | { errors: any }> {
     try {
+      const foundUser = await this.userModel.find({ email: signUpDTO.email });
+
+      if (foundUser.length > 0) {
+        return {
+          errors: {
+            path: "user",
+            message: "Email Already Existsasdasd"
+          }
+        }
+      }
       const newUser = new this.userModel(signUpDTO);
       await newUser.save();
       const token = await this.createToken(newUser);
@@ -34,7 +43,7 @@ export class AuthService {
         token,
       };
     } catch (e) {
-      return { errors: e.errors }
+      return { errors: e.errros() }
     }
   }
 
@@ -110,7 +119,6 @@ export class AuthService {
     }
 
     const user = await this.userModel.findById(decodedToken.id);
-
     if (!user) {
       return {
         errors: {

@@ -6,8 +6,6 @@ import { SignUpDTO } from './dto/signUp.dto';
 import { UserUpdateDTO } from './dto/user-update.dto';
 import { VerifyUserDTO } from './dto/verifyUser.dto';
 import { VerifyRoleDTO } from './dto/verifyRole.dto';
-import { User } from './models/user.model';
-import { NotAuthorizedException } from './utils/NotAuthorizedException';
 import mongoose from 'mongoose';
 import { ISignUpResponse } from './interfaces/sign-up-response.interface';
 import { ILoginResponse } from './interfaces/login-response.interface';
@@ -38,7 +36,8 @@ export class AuthController {
         data: null,
         errors: result.errors
       }
-    } else if ('token' in result) {
+    }
+    if ('token' in result) {
       return {
         status: HttpStatus.CREATED,
         message: 'User Created',
@@ -52,10 +51,11 @@ export class AuthController {
   @MessagePattern({ cmd: 'auth_login' })
   async login(loginDTO: LoginDTO): Promise<ILoginResponse> {
     const result = await this.authService.login(loginDTO);
+
     if ('errors' in result) {
       return {
         status: HttpStatus.BAD_REQUEST,
-        message: "User Could Not Be Created",
+        message: 'Could Not Login',
         data: null,
         errors: result.errors
       }
@@ -81,14 +81,8 @@ export class AuthController {
       userUpdateInfo.userUpdateDTO,
     );
 
-    if ('errors' in result) {
-      return {
-        status: HttpStatus.BAD_REQUEST,
-        message: "Could Not Update User",
-        data: null,
-        errors: result.errors
-      }
-    }
+    console.log("Update Result", result)
+
 
     if ('email' in result) {
       return {
@@ -98,12 +92,23 @@ export class AuthController {
         errors: null
       }
     }
+
+
+    if ('errors' in result) {
+      return {
+        status: HttpStatus.BAD_REQUEST,
+        message: "Could Not Update User",
+        data: null,
+        errors: result.errors
+      }
+    }
   }
 
   @MessagePattern({ cmd: 'auth_verify_user' })
   async verifyUser(verifyUserDTO: VerifyUserDTO): Promise<IVerifyUserResponse> {
     const result = await this.authService.decodeToken(verifyUserDTO.token);
-    if ('errors' in result) {
+
+    if (result == null) {
       return {
         status: HttpStatus.UNAUTHORIZED,
         message: "Not Authentcated",
@@ -111,12 +116,16 @@ export class AuthController {
         errors: result.errors
       }
     }
-    return {
-      status: HttpStatus.OK,
-      message: "User Verified",
-      data: result,
-      errors: null
+
+    if ('email' in result) {
+      return {
+        status: HttpStatus.OK,
+        message: "User Verified",
+        data: result,
+        errors: null
+      }
     }
+
   }
 
   @MessagePattern({ cmd: 'auth_verify_roles' })
@@ -156,6 +165,15 @@ export class AuthController {
   async makeUserAdmin(userId: mongoose.Types.ObjectId): Promise<IMakeUserAdmin> {
     const result = await this.authService.makeUserAdmin(userId);
 
+    if ('email' in result) {
+      return {
+        status: HttpStatus.OK,
+        message: "User Updated",
+        data: result,
+        errors: null
+      }
+    }
+
     if ('errors' in result) {
       return {
         status: HttpStatus.BAD_REQUEST,
@@ -165,13 +183,5 @@ export class AuthController {
       }
     }
 
-    if ('email' in result) {
-      return {
-        status: HttpStatus.OK,
-        message: "User Updated",
-        data: result,
-        errors: null
-      }
-    }
   }
 }

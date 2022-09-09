@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { UserSchemaObject } from './DbSchemaObjects/user.schema-object';
-import { AuthController } from './auth.controller';
+import { AuthController } from './controllers/auth.controller';
 import { jwtConstants } from './jwt/constants';
 import { JwtStrategy } from './jwt/jwt-startegt.class';
 import { RolesGuard } from './jwt/roles.guard';

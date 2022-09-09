@@ -1,17 +1,17 @@
 import { Controller, HttpStatus, Inject, NotFoundException, Param } from '@nestjs/common';
 import { ClientProxy, MessagePattern } from '@nestjs/microservices';
-import { AuthService } from './auth.service';
-import { LoginDTO } from './dto/login.dto';
-import { SignUpDTO } from './dto/signUp.dto';
-import { UserUpdateDTO } from './dto/user-update.dto';
-import { VerifyUserDTO } from './dto/verifyUser.dto';
-import { VerifyRoleDTO } from './dto/verifyRole.dto';
+import { AuthService } from '../auth.service';
+import { LoginDTO } from '../dto/login.dto';
+import { SignUpDTO } from '../dto/signUp.dto';
+import { UserUpdateDTO } from '../dto/user-update.dto';
+import { VerifyUserDTO } from '../dto/verifyUser.dto';
+import { VerifyRoleDTO } from '../dto/verifyRole.dto';
 import mongoose from 'mongoose';
-import { ISignUpResponse } from './interfaces/sign-up-response.interface';
-import { ILoginResponse } from './interfaces/login-response.interface';
-import { IUpdateUserResponse } from './interfaces/user-update-response.interface';
-import { IMakeUserAdmin } from './interfaces/make-user-admin-response.interface';
-import { IVerifyUserResponse } from './interfaces/verify-user-response.interface';
+import { ISignUpResponse } from '../interfaces/sign-up-response.interface';
+import { ILoginResponse } from '../interfaces/login-response.interface';
+import { IUpdateUserResponse } from '../interfaces/user-update-response.interface';
+import { IMakeUserAdmin } from '../interfaces/make-user-admin-response.interface';
+import { IVerifyUserResponse } from '../interfaces/verify-user-response.interface';
 
 @Controller('auth')
 export class AuthController {

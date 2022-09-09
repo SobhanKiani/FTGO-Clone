@@ -10,7 +10,7 @@ import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose, { Model } from 'mongoose';
-import { AuthController } from '../auth.controller';
+import { AuthController } from './auth.controller';
 import { AuthService } from '../auth.service';
 import { UserSchemaObject } from '../DbSchemaObjects/user.schema-object';
 import { jwtConstants } from '../jwt/constants';

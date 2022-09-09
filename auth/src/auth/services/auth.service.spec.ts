@@ -13,7 +13,7 @@ import {
   INestApplication,
 } from '@nestjs/common';
 import { User } from '../models/user.model';
-import { AuthController } from '../auth.controller';
+import { AuthController } from '../controllers/auth.controller';
 import { async } from 'rxjs';
 
 describe('AuthService', () => {

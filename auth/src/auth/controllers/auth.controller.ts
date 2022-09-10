@@ -1,6 +1,6 @@
 import { Controller, HttpStatus, Inject, NotFoundException, Param } from '@nestjs/common';
 import { ClientProxy, MessagePattern } from '@nestjs/microservices';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../services/auth.service';
 import { LoginDTO } from '../dto/login.dto';
 import { SignUpDTO } from '../dto/signUp.dto';
 import { UserUpdateDTO } from '../dto/user-update.dto';

@@ -17,6 +17,7 @@ import { jwtConstants } from '../jwt/constants';
 import { JwtStrategy } from '../jwt/jwt-startegt.class';
 import { RolesGuard } from '../jwt/roles.guard';
 import { User } from '../models/user.model';
+import { Role } from '../enums/roles.enum';
 
 
 jest.setTimeout(30000);
@@ -218,5 +219,12 @@ describe('AuthController', () => {
     const { data: resultData, status } = await authController.verifyRoles({ token: fakeToken, roles: ['Admin'] });
     expect(status).toEqual(HttpStatus.UNAUTHORIZED);
     expect(resultData).toBeNull();
+  });
+
+  it.only('should return user with restaurant role when restaurant is created', async () => {
+    const { data: authData } = await authController.signUp(userCreateData);
+    const { status, data } = await authController.restaurantCreatedHandler({ id: authData.user.id });
+    expect(status).toEqual(HttpStatus.OK);
+    expect(data.roles).toContain(Role.RestaurantOwner)
   })
 });

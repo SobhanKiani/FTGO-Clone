@@ -9,6 +9,7 @@ import mongoose, { Model } from 'mongoose';
 import { LoginDTO } from '../dto/login.dto';
 import { SignUpDTO } from '../dto/signUp.dto';
 import { UserUpdateDTO } from '../dto/user-update.dto';
+import { Role } from '../enums/roles.enum';
 import { JWTPayload } from '../jwt/jwt-payload';
 import { User, UserDocument } from '../models/user.model';
 
@@ -47,6 +48,10 @@ export class AuthService {
 
   async makeUserAdmin(id: mongoose.Types.ObjectId): Promise<User> {
     return await this.userModel.findByIdAndUpdate(id, { $addToSet: { roles: 'Admin' }, }, { new: true });
+  }
+
+  async giveRoleToUser(id: mongoose.Types.ObjectId, role: Role) {
+    return await this.userModel.findByIdAndUpdate(id, { $addToSet: { roles: role } }, { new: true });
   }
 
   async decodeToken(token: string): Promise<User> {

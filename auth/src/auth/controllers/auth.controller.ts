@@ -1,5 +1,5 @@
 import { Controller, HttpStatus, Inject, NotFoundException, Param } from '@nestjs/common';
-import { ClientProxy, MessagePattern } from '@nestjs/microservices';
+import { ClientProxy, EventPattern, MessagePattern } from '@nestjs/microservices';
 import { AuthService } from '../services/auth.service';
 import { LoginDTO } from '../dto/login.dto';
 import { SignUpDTO } from '../dto/signUp.dto';
@@ -12,6 +12,8 @@ import { ILoginResponse } from '../interfaces/login-response.interface';
 import { IUpdateUserResponse } from '../interfaces/user-update-response.interface';
 import { IMakeUserAdmin } from '../interfaces/make-user-admin-response.interface';
 import { IVerifyUserResponse } from '../interfaces/verify-user-response.interface';
+import { UserIdDTO } from '../dto/userId.dto';
+import { Role } from '../enums/roles.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -217,6 +219,17 @@ export class AuthController {
       data: updatedUser,
       errors: null
     }
+  }
 
+  @EventPattern({ cmd: "restaurant_created" })
+  async restaurantCreatedHandler(userIdDTO: UserIdDTO): Promise<IUpdateUserResponse> {
+    const { id } = userIdDTO;
+    const updatedRestaurant = await this.authService.giveRoleToUser(id, Role.RestaurantOwner);
+    return {
+      status: HttpStatus.OK,
+      message: "Restaurant Role Has Given To User",
+      data: updatedRestaurant,
+      errors: null
+    }
   }
 }

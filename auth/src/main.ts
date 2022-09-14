@@ -5,11 +5,11 @@ import { AppModule } from './app.module';
 import { QUEUE_GROUP_NAME } from './utils/queueGroupName';
 
 async function bootstrap() {
+  // const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,);
+  // await app.listen();
   const app = await NestFactory.create(AppModule, { cors: true });
 
-  console.log(process.env.NATS_URL);
-
-  app.connectMicroservice({
+  app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.NATS,
     options: {
       servers: ['nats://nats-server:4222'],
@@ -18,11 +18,18 @@ async function bootstrap() {
     },
   });
 
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.TCP,
+    options: {
+      host: '0.0.0.0',
+      port: 9991,
+    },
+  });
+
   app.useGlobalPipes(new ValidationPipe());
 
   app.startAllMicroservices();
-
-  await app.listen(9991);
+  // await app.listen(9991);
 }
 
 bootstrap();

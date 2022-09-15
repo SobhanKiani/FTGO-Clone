@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RestaurantController } from '../../restaurant/controllers/restaurant.controller';
 import { CreateRestaurantDTO } from 'src/restaurant/dtos/createRestaurant.dto';
 import { Restaurant } from '../../restaurant/models/restaurant.model';
-import { RestaurantModule } from '../../restaurant/restaurant.module';
+import { RestaurantModule } from '../../../test/mocks/restaurant.module';
 import { RestaurantService } from '../../restaurant/services/restaurant.service';
 import { CreateFoodDTO } from '../dtos/create-food.dto';
 import { Food } from '../models/food.model';

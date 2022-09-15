@@ -7,8 +7,7 @@ import { Food } from '../../food/models/food.model';
 import { CreateRestaurantDTO } from '../dtos/createRestaurant.dto';
 import { Restaurant } from '../models/restaurant.model';
 import { RestaurantService } from '../services/restaurant.service';
-import { clientProxyMock } from '../tests/mocks/client-proxy.mock';
-import { restaurantMockRepo } from '../tests/mocks/restaurantMockRepo';
+import { clientProxyMock } from '../../../test/mocks/client-proxy.mock'; 
 import { RestaurantController } from './restaurant.controller';
 
 describe('RestaurantController', () => {

@@ -8,7 +8,7 @@ import { Food } from '../../food/models/food.model';
 import { CreateRestaurantDTO } from '../dtos/createRestaurant.dto';
 import { RateDTO } from '../dtos/rate.dto';
 import { Restaurant } from '../models/restaurant.model';
-import { clientProxyMock } from '../tests/mocks/client-proxy.mock';
+import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
 import { RestaurantService } from './restaurant.service';
 
 describe('RestaurantService', () => {

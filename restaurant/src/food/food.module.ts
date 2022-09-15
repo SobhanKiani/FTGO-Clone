@@ -1,6 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RestaurantModule } from '../restaurant/restaurant.module';
+import { RestaurantModule } from '../../test/mocks/restaurant.module';
 import { FoodController } from './controllers/food.controller';
 import { Food } from './models/food.model';
 import { FoodService } from './services/food.service';

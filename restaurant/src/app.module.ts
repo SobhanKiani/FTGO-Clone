@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { RestaurantController } from './restaurant/controllers/restaurant.controller';
-import { RestaurantModule } from './restaurant/restaurant.module';
+import { RestaurantModule } from '../test/mocks/restaurant.module';
 import { FoodModule } from './food/food.module';
 import { FoodController } from './food/controllers/food.controller';
 import { join } from 'path';

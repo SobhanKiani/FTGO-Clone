@@ -1,16 +1,15 @@
 import { forwardRef } from '@nestjs/common';
-import { ClientsModule, Transport, Client, ClientProxy } from '@nestjs/microservices';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreateRestaurantDTO } from 'src/restaurant/dtos/createRestaurant.dto';
-import { clientProxyMock } from 'src/restaurant/tests/mocks/client-proxy.mock';
 import { Restaurant } from '../../restaurant/models/restaurant.model';
-import { RestaurantModule } from '../../restaurant/restaurant.module';
+import { RestaurantModule } from '../../../test/mocks/restaurant.module';
 import { RestaurantService } from '../../restaurant/services/restaurant.service';
 import { CreateFoodDTO } from '../dtos/create-food.dto';
 import { RateDTO } from '../dtos/rate.dto';
 import { Food } from '../models/food.model';
 import { FoodService } from './food.service';
+import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
 
 describe('FoodService', () => {
     let foodService: FoodService;

@@ -1,10 +1,10 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FoodModule } from '../food/food.module';
-import { RestaurantController } from './controllers/restaurant.controller';
-import { Restaurant } from './models/restaurant.model';
-import { RestaurantService } from './services/restaurant.service';
+import { FoodModule } from '../../src/food/food.module';
+import { RestaurantController } from '../../src/restaurant/controllers/restaurant.controller';
+import { Restaurant } from '../../src/restaurant/models/restaurant.model';
+import { RestaurantService } from '../../src/restaurant/services/restaurant.service';
 
 @Module({
   imports: [

@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AuthGuard } from './guards/auth.guard';
 import { RolesGuard } from './guards/roles.guard';
+import { User } from './models/user.model';
 import { AuthResolver } from './resolvers/auth.resolvers';
 
 @Module({
@@ -21,11 +22,12 @@ import { AuthResolver } from './resolvers/auth.resolvers';
   providers: [
     RolesGuard,
     AuthResolver,
+    User,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
   ],
-  exports: [],
+  exports: [RolesGuard, User],
 })
-export class AuthenticationModule {}
+export class AuthenticationModule { }

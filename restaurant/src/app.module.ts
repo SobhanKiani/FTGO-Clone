@@ -5,9 +5,12 @@ import { RestaurantController } from './restaurant/controllers/restaurant.contro
 import { RestaurantModule } from './restaurant/restaurant.module';
 import { FoodModule } from './food/food.module';
 import { FoodController } from './food/controllers/food.controller';
+import { join } from 'path';
 
 @Module({
   imports: [
+    RestaurantModule,
+    FoodModule,
     TypeOrmModule.forRoot({
       type: "postgres",
       host: process.env.POSTGRES_HOST,
@@ -15,11 +18,9 @@ import { FoodController } from './food/controllers/food.controller';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [],
+      entities: [join(__dirname, '**', '*.model.{ts,js}')],
       synchronize: true,
     }),
-    RestaurantModule,
-    FoodModule,
   ],
   controllers: [RestaurantController, FoodController],
   providers: [],

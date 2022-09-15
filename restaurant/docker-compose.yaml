@@ -36,7 +36,7 @@ services:
 
   ftgo-restaurant:
     build:
-      context: ./../restaurant
+      context: .
       dockerfile: Dockerfile
       target: development
     image: skn1942/ftgo-restaurant
@@ -52,7 +52,7 @@ services:
       - POSTGRES_HOST=restaurant-pg
       - POSTGRES_PORT=5432
     volumes:
-      - ./../restaurant:/usr/src/app
+      - ./:/usr/src/app
     depends_on:
       - restaurant-pg
       - nats-server

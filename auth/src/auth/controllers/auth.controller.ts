@@ -223,6 +223,7 @@ export class AuthController {
 
   @EventPattern({ cmd: "restaurant_created" })
   async restaurantCreatedHandler(userIdDTO: UserIdDTO): Promise<IUpdateUserResponse> {
+    console.log("RESTAURANT_CREATE IS BEING HANDLED");
     const { id } = userIdDTO;
     const updatedRestaurant = await this.authService.giveRoleToUser(id, Role.RestaurantOwner);
     return {

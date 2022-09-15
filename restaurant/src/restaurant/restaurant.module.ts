@@ -9,13 +9,19 @@ import { RestaurantService } from './services/restaurant.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Restaurant]),
+    forwardRef(() => FoodModule),
     ClientsModule.register([
-      { name: 'AUTH_SERVICE', transport: Transport.NATS },
+      {
+        name: "AUTHENTICATION_SERVICE",
+        transport: Transport.NATS,
+        options: {
+          servers: ['nats://nats-server:4222']
+        }
+      }
     ]),
-    forwardRef(() => FoodModule)
   ],
   controllers: [RestaurantController],
-  providers: [RestaurantService,],
+  providers: [RestaurantService],
   exports: [TypeOrmModule, RestaurantService,]
 })
 export class RestaurantModule { }

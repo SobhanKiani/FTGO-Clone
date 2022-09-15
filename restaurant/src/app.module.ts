@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { RestaurantController } from './restaurant/controllers/restaurant.controller';
-import { RestaurantModule } from './restaurant/restaurant.module';
+import { RestaurantModule } from '../test/mocks/restaurant.module';
 import { FoodModule } from './food/food.module';
 import { FoodController } from './food/controllers/food.controller';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { FoodController } from './food/controllers/food.controller';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [],
+      entities: [join(__dirname, '**', '*.model.{ts,js}')],
+      autoLoadEntities: true,
       synchronize: true,
     }),
     RestaurantModule,

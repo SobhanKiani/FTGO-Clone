@@ -1,15 +1,15 @@
-import { forwardRef, INestApplication } from '@nestjs/common';
+import { forwardRef } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { async } from 'rxjs';
 import { CreateRestaurantDTO } from 'src/restaurant/dtos/createRestaurant.dto';
 import { Restaurant } from '../../restaurant/models/restaurant.model';
-import { RestaurantModule } from '../../restaurant/restaurant.module';
+import { RestaurantModule } from '../../../test/mocks/restaurant.module';
 import { RestaurantService } from '../../restaurant/services/restaurant.service';
 import { CreateFoodDTO } from '../dtos/create-food.dto';
 import { RateDTO } from '../dtos/rate.dto';
 import { Food } from '../models/food.model';
 import { FoodService } from './food.service';
+import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
 
 describe('FoodService', () => {
     let foodService: FoodService;
@@ -31,21 +31,29 @@ describe('FoodService', () => {
             imports: [
                 TypeOrmModule.forRoot({
                     type: 'better-sqlite3',
-                    database: ':memory-food:',
+                    database: ':memory-food-service:',
                     dropSchema: true,
                     entities: [Restaurant, Food],
                     synchronize: true,
                     autoLoadEntities: true
                 }),
                 TypeOrmModule.forFeature([Food, Restaurant]),
-                forwardRef(() => RestaurantModule)
+                forwardRef(() => RestaurantModule),
             ],
-            providers: [FoodService, RestaurantService],
+            providers: [
+                FoodService,
+                RestaurantService,
+                {
+                    provide: "AUTH_SERVICE",
+                    useValue: clientProxyMock
+                }
+            ],
         }).compile();
 
         foodService = module.get<FoodService>(FoodService);
         restaurantService = module.get<RestaurantService>(RestaurantService);
     });
+
 
     it('should be defined', () => {
         expect(foodService).toBeDefined();

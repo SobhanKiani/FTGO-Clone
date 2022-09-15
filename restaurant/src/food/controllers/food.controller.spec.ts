@@ -1,20 +1,21 @@
-import { forwardRef, HttpStatus } from '@nestjs/common';
+import { forwardRef, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RestaurantController } from '../../restaurant/controllers/restaurant.controller';
 import { CreateRestaurantDTO } from 'src/restaurant/dtos/createRestaurant.dto';
 import { Restaurant } from '../../restaurant/models/restaurant.model';
-import { RestaurantModule } from '../../restaurant/restaurant.module';
+import { RestaurantModule } from '../../../test/mocks/restaurant.module';
 import { RestaurantService } from '../../restaurant/services/restaurant.service';
 import { CreateFoodDTO } from '../dtos/create-food.dto';
 import { Food } from '../models/food.model';
 import { FoodService } from '../services/food.service';
 import { FoodController } from './food.controller';
 import { stat } from 'fs';
- 
+import { ClientsModule, Transport } from '@nestjs/microservices';
+
 describe('FoodController', () => {
   let foodController: FoodController;
-  let restaurantController: RestaurantController
+  let restaurantController: RestaurantController;
   const createRestaurantData: CreateRestaurantDTO = {
     name: "rest1",
     address: "add1",
@@ -32,14 +33,17 @@ describe('FoodController', () => {
       imports: [
         TypeOrmModule.forRoot({
           type: 'better-sqlite3',
-          database: ':memory-food:',
+          database: ':memory-food-controller:',
           dropSchema: true,
           entities: [Restaurant, Food],
           synchronize: true,
           autoLoadEntities: true
         }),
         TypeOrmModule.forFeature([Food, Restaurant]),
-        forwardRef(() => RestaurantModule)
+        forwardRef(() => RestaurantModule),
+        ClientsModule.register([
+          { name: 'AUTH_SERVICE', transport: Transport.NATS },
+        ]),
       ],
       providers: [FoodService, RestaurantService],
     }).compile();

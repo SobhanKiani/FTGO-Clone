@@ -1,4 +1,5 @@
-; import { Injectable } from '@nestjs/common';
+; import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateRestaurantDTO } from '../dtos/createRestaurant.dto';
@@ -10,13 +11,16 @@ import { FilterRestaurantQuery } from '../queries/filter-restaurant.query';
 @Injectable()
 export class RestaurantService {
     constructor(
-        @InjectRepository(Restaurant) private restaurantRepository: Repository<Restaurant>
+        @InjectRepository(Restaurant) private restaurantRepository: Repository<Restaurant>,
+        @Inject('AUTH_SERVICE') private authClient: ClientProxy,
     ) { }
 
 
     async createRestaurant(createRestaurantDTO: CreateRestaurantDTO) {
         const restaurant = this.restaurantRepository.create(createRestaurantDTO);
-        return await this.restaurantRepository.save(restaurant);
+        const savedRestaurant = await this.restaurantRepository.save(restaurant);
+        this.authClient.emit({ cmd: "restaurant_created" }, { id: savedRestaurant.ownerId })
+        return savedRestaurant
     }
 
     async updateRestaurant(id: number, updateRestaurantDTO: UpdateRestaurantDTO) {
@@ -28,7 +32,6 @@ export class RestaurantService {
             where: {
                 id
             },
-
         });
     }
 

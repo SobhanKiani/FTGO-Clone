@@ -1,11 +1,10 @@
 version: "3.9"
 
 services:
-
-  ftgo-auth:
+  auth:
     build:
       dockerfile: Dockerfile
-      context: ./../Auth
+      context: ./../auth
       target: development
     image: skn1942/ftgo-auth
     ports:
@@ -17,11 +16,11 @@ services:
       - MONGO_HOST=auth-mongodb
       - MONGO_PORT=27017
       - MONGO_DB_NAME=auth
-      - NATS_URL="nats://nats-server:4222"
+      - NATS_URL=nats://nats-server:4222
     volumes:
       - ./../auth:/usr/src/app
     depends_on:
-      - ftgo-auth-mongodb
+      - auth-mongodb
       - nats-server
 
   auth-mongodb:
@@ -34,51 +33,29 @@ services:
     volumes:
       - auth-data
 
-  ftgo-gateway:
-    build:
-      dockerfile: Dockerfile
-      context: ./../gateway
-      target: development
-    image: skn1942/ftgo-gateway
-    ports:
-      - 9992:9992
-    expose:
-      - 9992
-    command: npm run start:dev
-    volumes:
-      - ./../gateway:/usr/src/app
-    depends_on:
-      - ftgo-auth
-
-  nats-server:
-    image: nats:latest
-    container_name: nats-server
-    ports:
-      - 4222:4222
-      - 6222:6222
-      - 8222:8222
-    expose:
-      - 4222
-    command: -c nats-server.conf -DV
   restaurant:
     build:
       context: ./../restaurant
       dockerfile: Dockerfile
+      target: development
     image: skn1942/ftgo-restaurant
     ports:
       - 9993:9993
     expose:
       - 9993
+    command: npm run start:dev
     environment:
       - POSTGRES_DB=ftgo-restaurant-db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=restaurant-pg
       - POSTGRES_PORT=5432
+      - NATS_URL=nats://nats-server:4222
     volumes:
       - ./../restaurant:/usr/src/app
     depends_on:
       - restaurant-pg
+      - nats-server
 
   restaurant-pg:
     image: postgres
@@ -93,6 +70,39 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
       - restaurant-data:/var/lib/postgresql/data/
+
+  ftgo-gateway:
+    build:
+      dockerfile: Dockerfile
+      context: ./../gateway
+      target: development
+    image: skn1942/ftgo-gateway
+    ports:
+      - 9992:9992
+    expose:
+      - 9992
+    command: npm run start:dev
+    volumes:
+      - ./../gateway:/usr/src/app
+    environment:
+      - AUTH_HOST=auth
+      - AUTH_PORT=9991
+      - RESTAURANT_HOST=restaurant
+      - RESTAURANT_PORT=9333
+    depends_on:
+      - auth
+      - restaurant
+
+  nats-server:
+    image: nats:latest
+    container_name: nats-server
+    ports:
+      - 4222:4222
+      - 6222:6222
+      - 8222:8222
+    expose:
+      - 4222
+    command: -c nats-server.conf -DV
   # another:
   #   image: python:3.5.2
   #   container_name: another

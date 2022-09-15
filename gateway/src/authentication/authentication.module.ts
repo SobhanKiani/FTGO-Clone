@@ -12,8 +12,8 @@ import { AuthResolver } from './resolvers/auth.resolvers';
         name: 'AUTH_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: 'ftgo-auth',
-          port: 9991,
+          host: process.env.AUTH_HOST,
+          port: Number(process.env.AUTH_PORT),
         },
       },
     ]),
@@ -28,4 +28,4 @@ import { AuthResolver } from './resolvers/auth.resolvers';
   ],
   exports: [],
 })
-export class AuthenticationModule {}
+export class AuthenticationModule { }

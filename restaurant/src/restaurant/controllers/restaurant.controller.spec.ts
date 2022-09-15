@@ -7,12 +7,11 @@ import { Food } from '../../food/models/food.model';
 import { CreateRestaurantDTO } from '../dtos/createRestaurant.dto';
 import { Restaurant } from '../models/restaurant.model';
 import { RestaurantService } from '../services/restaurant.service';
-import { restaurantMockRepo } from '../tests/mocks/restaurantMockRepo';
+import { clientProxyMock } from '../../../test/mocks/client-proxy.mock'; 
 import { RestaurantController } from './restaurant.controller';
 
 describe('RestaurantController', () => {
   let restaurantController: RestaurantController;
-  let restaurantService: RestaurantService
   let authClient: ClientProxy;
   let app: INestApplication
   const createRestaurantData: CreateRestaurantDTO = {
@@ -25,12 +24,10 @@ describe('RestaurantController', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ClientsModule.register([
-          { name: 'AUTH_SERVICE', transport: Transport.NATS },
-        ]),
+
         TypeOrmModule.forRoot({
           type: 'better-sqlite3',
-          database: ':memory-food:',
+          database: ':memory-rest-controller:',
           dropSchema: true,
           entities: [Restaurant, Food],
           synchronize: true,
@@ -42,15 +39,15 @@ describe('RestaurantController', () => {
       controllers: [RestaurantController],
       providers: [
         RestaurantService,
-        // {
-        //   provide: getRepositoryToken(Restaurant),
-        //   useValue: restaurantMockRepo
-        // }
+        {
+          provide: "AUTH_SERVICE",
+          useValue: clientProxyMock
+        }
+
       ]
     }).compile();
 
     restaurantController = module.get<RestaurantController>(RestaurantController);
-    restaurantService = module.get<RestaurantService>(RestaurantService);
     app = module.createNestApplication();
     authClient = app.get('AUTH_SERVICE');
 
@@ -59,6 +56,10 @@ describe('RestaurantController', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
+
+  afterAll(async () => {
+    await app.close();
+  })
 
   it('should be defined', () => {
     expect(restaurantController).toBeDefined();

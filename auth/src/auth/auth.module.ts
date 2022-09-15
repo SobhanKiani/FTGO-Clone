@@ -21,7 +21,14 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       },
     }),
     ClientsModule.register([
-      { name: 'ORDER_SERVICE', transport: Transport.NATS },
+      {
+        name: 'ORDER_SERVICE',
+        transport: Transport.NATS,
+        options: {
+          // servers: ['nats://nats-server:4222']
+          servers: [process.env.NATS_URL]
+        }
+      },
     ]),
   ],
   providers: [
@@ -35,4 +42,4 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
   ],
   controllers: [AuthController],
 })
-export class AuthModule {}
+export class AuthModule { }

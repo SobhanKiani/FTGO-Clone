@@ -10,7 +10,15 @@ import { RestaurantService } from './services/restaurant.service';
   imports: [
     TypeOrmModule.forFeature([Restaurant]),
     ClientsModule.register([
-      { name: 'AUTH_SERVICE', transport: Transport.NATS },
+      {
+        name: 'AUTH_SERVICE',
+        transport: Transport.NATS,
+        options: {
+          // servers: ['nats://nats-server:4222']
+          servers: [process.env.NATS_URL]
+        }
+
+      },
     ]),
     forwardRef(() => FoodModule)
   ],

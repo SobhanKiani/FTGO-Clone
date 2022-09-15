@@ -1,8 +1,9 @@
-import { forwardRef, INestApplication } from '@nestjs/common';
+import { forwardRef } from '@nestjs/common';
+import { ClientsModule, Transport, Client, ClientProxy } from '@nestjs/microservices';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { async } from 'rxjs';
 import { CreateRestaurantDTO } from 'src/restaurant/dtos/createRestaurant.dto';
+import { clientProxyMock } from 'src/restaurant/tests/mocks/client-proxy.mock';
 import { Restaurant } from '../../restaurant/models/restaurant.model';
 import { RestaurantModule } from '../../restaurant/restaurant.module';
 import { RestaurantService } from '../../restaurant/services/restaurant.service';
@@ -31,21 +32,29 @@ describe('FoodService', () => {
             imports: [
                 TypeOrmModule.forRoot({
                     type: 'better-sqlite3',
-                    database: ':memory-food:',
+                    database: ':memory-food-service:',
                     dropSchema: true,
                     entities: [Restaurant, Food],
                     synchronize: true,
                     autoLoadEntities: true
                 }),
                 TypeOrmModule.forFeature([Food, Restaurant]),
-                forwardRef(() => RestaurantModule)
+                forwardRef(() => RestaurantModule),
             ],
-            providers: [FoodService, RestaurantService],
+            providers: [
+                FoodService,
+                RestaurantService,
+                {
+                    provide: "AUTH_SERVICE",
+                    useValue: clientProxyMock
+                }
+            ],
         }).compile();
 
         foodService = module.get<FoodService>(FoodService);
         restaurantService = module.get<RestaurantService>(RestaurantService);
     });
+
 
     it('should be defined', () => {
         expect(foodService).toBeDefined();

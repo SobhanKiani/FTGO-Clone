@@ -1,4 +1,5 @@
-import { forwardRef } from '@nestjs/common';
+import { forwardRef, INestApplication } from '@nestjs/common';
+import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { async } from 'rxjs';
@@ -7,11 +8,11 @@ import { Food } from '../../food/models/food.model';
 import { CreateRestaurantDTO } from '../dtos/createRestaurant.dto';
 import { RateDTO } from '../dtos/rate.dto';
 import { Restaurant } from '../models/restaurant.model';
+import { clientProxyMock } from '../tests/mocks/client-proxy.mock';
 import { RestaurantService } from './restaurant.service';
 
 describe('RestaurantService', () => {
   let restaurantService: RestaurantService;
-
   // let restaurantRepo: Repository<Restaurant>
   const createRestaurantData: CreateRestaurantDTO = {
     name: "rest1",
@@ -21,36 +22,36 @@ describe('RestaurantService', () => {
   }
 
   beforeEach(async () => {
+    let authClient: ClientProxy;
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
           type: 'better-sqlite3',
-          database: ':memory-rest:',
+          database: ':memory-rest-service:',
           dropSchema: true,
           entities: [Restaurant, Food],
           synchronize: true,
           autoLoadEntities: true
         }),
         TypeOrmModule.forFeature([Restaurant, Food]),
-        forwardRef(() => FoodModule)
+        forwardRef(() => FoodModule),
       ],
       providers: [
         RestaurantService,
-        // {
-        //   provide: getRepositoryToken(Restaurant),
-        //   useValue: getRepositoryToken(Restaurant),
-        // }
+        {
+          provide: "AUTH_SERVICE",
+          useValue: clientProxyMock
+        }
       ],
     }).compile();
 
     restaurantService = module.get<RestaurantService>(RestaurantService);
-    // restaurantRepo = module.get<Repository<Restaurant>>(getRepositoryToken(Restaurant))
+    authClient = module.get("AUTH_SERVICE");
   });
-
 
   it('should be defined', () => {
     expect(restaurantService).toBeDefined();
-    // expect(restaurantRepo).toBeDefined();
   });
 
   it('should create restaurant', async () => {

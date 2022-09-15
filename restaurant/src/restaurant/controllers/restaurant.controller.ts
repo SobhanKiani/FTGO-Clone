@@ -1,11 +1,9 @@
 import { Controller, HttpStatus, Inject } from '@nestjs/common';
 import { ClientProxy, MessagePattern } from '@nestjs/microservices';
-import { of } from 'rxjs';
-import { IGetFoodList } from 'src/food/interfaces/get-food-list-response.interface';
 import { CreateRestaurantDTO } from '../dtos/createRestaurant.dto';
 import { RateDTO } from '../dtos/rate.dto';
 import { UpdateRestaurantDTO } from '../dtos/updateRestaurant.dto';
-import { ICreateRestaurantResponse } from '../interfaces/create-restaurant-Response.interface';
+import { ICreateRestaurantResponse } from '../interfaces/create-restaurant-response.interface';
 import { IGetRestaurantByIdResult } from '../interfaces/get-restaurant-by-id.interface';
 import { IRate } from '../interfaces/rate-response.interface';
 import { IRestaurantListResponse } from '../interfaces/restaurant-list-response.interface';
@@ -17,17 +15,16 @@ import { RestaurantService } from '../services/restaurant.service';
 export class RestaurantController {
     constructor(
         private readonly restaurantService: RestaurantService,
-        @Inject('AUTH_SERVICE') private authClient: ClientProxy,
-
+        // @Inject('AUTH_SERVICE') private authClient: ClientProxy,
     ) { }
 
     @MessagePattern({ cmd: "create_restaurant" })
     async createRestaurant(createRestaurantDto: CreateRestaurantDTO): Promise<ICreateRestaurantResponse> {
         try {
             const restaurant = await this.restaurantService.createRestaurant(createRestaurantDto);
-            if (restaurant.id) {
-                this.authClient.emit({ cmd: "restaurant_created" }, { id: createRestaurantDto.ownerId })
-            }
+            // if (restaurant.id) {
+            // this.authClient.emit({ cmd: "restaurant_created" }, { id: createRestaurantDto.ownerId })
+            // }
             return {
                 status: HttpStatus.CREATED,
                 message: "Restaurant Created",

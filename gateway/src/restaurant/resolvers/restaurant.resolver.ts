@@ -3,7 +3,7 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from "@nestjs/graphql"
 import { ClientProxy } from "@nestjs/microservices";
 import { firstValueFrom } from "rxjs";
 import { GetUser } from "src/authentication/decorators/get-user-from-request.decorator";
-import { IsPrivate } from "src/authentication/decorators/isPrivate.decorator";
+import { IsPrivate } from "src/authentication/decorators/is-private.decorator";
 import { User } from "src/authentication/models/user.model";
 import { CreateRestaurantInput } from "../inputs/createRestaurant.input";
 import { ICreateRestaurantResponse } from "../interfaces/create-restaurant-response.interface";

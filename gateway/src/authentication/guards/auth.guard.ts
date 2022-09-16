@@ -8,7 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { IS_PRIVATE } from '../decorators/isPrivate.decorator';
+import { IS_PRIVATE } from '../decorators/is-private.decorator';
 import { IVerifyUserResponse } from '../interfaces/verify-user-response.interface';
 import { User } from '../models/user.model';
 
@@ -42,7 +42,7 @@ export class AuthGuard implements CanActivate, OnApplicationBootstrap {
 
       const user = authResult.data
 
-      if (user.email) {
+      if (user?.email) {
         request.user = user;
         return true;
       } else {

@@ -88,7 +88,7 @@ services:
       - AUTH_HOST=auth
       - AUTH_PORT=9991
       - RESTAURANT_HOST=restaurant
-      - RESTAURANT_PORT=9333
+      - RESTAURANT_PORT=9993
     depends_on:
       - auth
       - restaurant

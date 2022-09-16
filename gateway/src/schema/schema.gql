@@ -21,6 +21,27 @@ type CheckStatus {
   Check_Status: String!
 }
 
+type Food {
+  id: Float!
+  name: String!
+  category: String!
+  price: Float!
+  isAvailable: Boolean!
+  rate: Float!
+  rateCount: Float!
+}
+
+type Restaurant {
+  id: Float!
+  name: String!
+  address: String!
+  category: String!
+  ownerId: String!
+  foods: [Food]!
+  rate: Float!
+  rateCount: Float!
+}
+
 type Query {
   checkAuthClientStatus: CheckStatus!
 }
@@ -30,6 +51,7 @@ type Mutation {
   login(loginData: LoginInput!): AuthData!
   makeUserAdmin(id: String!): User!
   updateUser(updateUserData: UpdateUserInput!): User!
+  createRestaurant(createRestaurantData: CreateRestaurantInput!): Restaurant!
 }
 
 input CreateUserInput {
@@ -51,4 +73,10 @@ input UpdateUserInput {
   lastName: String
   phoneNumber: String
   address: String
+}
+
+input CreateRestaurantInput {
+  name: String!
+  address: String!
+  category: String!
 }

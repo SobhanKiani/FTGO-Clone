@@ -57,7 +57,7 @@ export class AuthService {
   async decodeToken(token: string): Promise<User> {
     const decodedToken = this.jwtService.decode(token) as JWTPayload;
 
-    if (!decodedToken && !decodedToken.id) {
+    if (!decodedToken || !decodedToken.id) {
       return null
     }
 

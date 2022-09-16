@@ -5,7 +5,7 @@ import { first, firstValueFrom } from 'rxjs';
 import { NotAuthenticatedException } from 'src/utils/NotAuthenticatedException';
 import { UserIdArg } from '../args/userId.args';
 import { GetUser } from '../decorators/get-user-from-request.decorator';
-import { IsPrivate } from '../decorators/isPrivate.decorator';
+import { IsPrivate } from '../decorators/is-private.decorator';
 import { Roles } from '../decorators/roles.decorator';
 import { Role } from '../enums/roles.enum';
 import { RolesGuard } from '../guards/roles.guard';

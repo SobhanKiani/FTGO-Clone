@@ -51,7 +51,7 @@ export class RestaurantService {
             query.where('restaurant.category like :category', { category: `%${category}%` });
         }
 
-        return await query.execute();
+        return await query.getMany();
     }
 
     async rateRestaurant(rateDto: RateDTO) {

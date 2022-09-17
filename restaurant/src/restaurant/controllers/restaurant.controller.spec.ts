@@ -7,7 +7,7 @@ import { Food } from '../../food/models/food.model';
 import { CreateRestaurantDTO } from '../dtos/createRestaurant.dto';
 import { Restaurant } from '../models/restaurant.model';
 import { RestaurantService } from '../services/restaurant.service';
-import { clientProxyMock } from '../../../test/mocks/client-proxy.mock'; 
+import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
 import { RestaurantController } from './restaurant.controller';
 
 describe('RestaurantController', () => {
@@ -21,7 +21,7 @@ describe('RestaurantController', () => {
     ownerId: "507f1f77bcf86cd799439011"
   }
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
 
@@ -118,9 +118,16 @@ describe('RestaurantController', () => {
     expect(deleteRestaurantData).toBeNull();
   });
 
+  it('should return restaurant list', async () => {
+    await restaurantController.createRestaurant(createRestaurantData);
+
+    const { data: restaurantList, status } = await restaurantController.getRestaurantList({});
+    expect(status).toEqual(HttpStatus.OK);
+    expect(restaurantList.length).toEqual(1);
+  })
+
   it('should rate the restaurant', async () => {
     const { data: newRestaurant } = await restaurantController.createRestaurant(createRestaurantData);
-
 
     const { status, data: rateResult } = await restaurantController.rateRestauarant({ requestorId: newRestaurant.ownerId, rateDto: { rateNumber: 5, restaurantId: newRestaurant.id } });
     expect(status).toEqual(HttpStatus.OK);

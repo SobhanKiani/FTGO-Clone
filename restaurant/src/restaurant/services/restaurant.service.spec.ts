@@ -115,6 +115,7 @@ describe('RestaurantService', () => {
 
     const all = await restaurantService.getRestaurants({});
     expect(all.length).toBe(3);
+    expect(all[0].name).toEqual(createRestaurantData.name);
 
     const filterByName = await restaurantService.getRestaurants({ name: 'rest1' });
     expect(filterByName.length).toBe(1);

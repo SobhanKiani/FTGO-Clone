@@ -8,6 +8,7 @@ import { User } from "src/authentication/models/user.model";
 import { CreateRestaurantInput } from "../inputs/createRestaurant.input";
 import { UpdateRestaurantInput } from "../inputs/update-restaurant.input";
 import { ICreateRestaurantResponse } from "../interfaces/create-restaurant-response.interface";
+import { IDeleteRestaurantResponse } from "../interfaces/delete-restaurant-response.interface";
 import { IUpdateRestaurantResponse } from "../interfaces/update-restaurant-response.interface";
 import { Restaurant } from "../models/restaurant.model";
 import { UpdateResult } from "../models/update-result.model";
@@ -49,6 +50,23 @@ export class RestaurantResolver {
             throw new HttpException({ message: result.message, errors: result.errors }, result.status);
         }
         return result.data;
+    }
+
+    @Mutation((returns) => Restaurant)
+    @IsPrivate(true)
+    async deleteRestaurant(
+        @Args('id', { type: () => Int }) id: number,
+        @GetUser() user: User,
+    ) {
+        const data = {
+            requestorId: user.id,
+            restaurantId: id
+        }
+        const result = await firstValueFrom(this.restaurantClient.send<IDeleteRestaurantResponse>({ cmd: "delete_restaurant" }, data));
+        if (result.status !== HttpStatus.OK) {
+            throw new HttpException({ message: result.message, errors: result.errors }, result.status);
+        }
+        return result.data
     }
 
     @ResolveField()

@@ -1,9 +1,12 @@
-import { HttpException, HttpStatus, Inject } from "@nestjs/common";
+import { HttpException, HttpStatus, Inject, UseGuards } from "@nestjs/common";
 import { Args, Int, Mutation, Parent, ResolveField, Resolver, Query } from "@nestjs/graphql";
 import { ClientProxy } from "@nestjs/microservices";
 import { firstValueFrom } from "rxjs";
 import { GetUser } from "src/authentication/decorators/get-user-from-request.decorator";
 import { IsPrivate } from "src/authentication/decorators/is-private.decorator";
+import { Roles } from "src/authentication/decorators/roles.decorator";
+import { Role } from "src/authentication/enums/roles.enum";
+import { RolesGuard } from "src/authentication/guards/roles.guard";
 import { User } from "src/authentication/models/user.model";
 import { RestaurantFilterArgs } from "../args/restaurant-filter.args";
 import { CreateRestaurantInput } from "../inputs/create-restaurant.input";
@@ -40,6 +43,8 @@ export class RestaurantResolver {
 
     @Mutation((returns) => UpdateResult)
     @IsPrivate(true)
+    @Roles(Role.RestaurantOwner)
+    @UseGuards(RolesGuard)
     async updateResaurant(
         @Args('updateRestaurantData') updateRestaurantData: UpdateRestaurantInput,
         @Args('id', { type: () => Int }) id: number,
@@ -59,6 +64,8 @@ export class RestaurantResolver {
 
     @Mutation((returns) => Restaurant)
     @IsPrivate(true)
+    @Roles(Role.RestaurantOwner)
+    @UseGuards(RolesGuard)
     async deleteRestaurant(
         @Args('id', { type: () => Int }) id: number,
         @GetUser() user: User,

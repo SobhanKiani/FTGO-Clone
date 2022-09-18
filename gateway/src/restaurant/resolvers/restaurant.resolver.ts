@@ -5,6 +5,7 @@ import { firstValueFrom } from "rxjs";
 import { GetUser } from "src/authentication/decorators/get-user-from-request.decorator";
 import { IsPrivate } from "src/authentication/decorators/is-private.decorator";
 import { User } from "src/authentication/models/user.model";
+import { RestaurantFilterArgs } from "../args/restaurant-filter.args";
 import { CreateRestaurantInput } from "../inputs/createRestaurant.input";
 import { UpdateRestaurantInput } from "../inputs/update-restaurant.input";
 import { ICreateRestaurantResponse } from "../interfaces/create-restaurant-response.interface";
@@ -72,9 +73,9 @@ export class RestaurantResolver {
 
     @Query((returns) => [Restaurant])
     async getRestaurantList(
-
+        @Args({ type: () => RestaurantFilterArgs }) filter: RestaurantFilterArgs
     ) {
-        const result = await firstValueFrom(this.restaurantClient.send<IRestaurantListResponse>({ cmd: "get_restaurant_list" }, {}));
+        const result = await firstValueFrom(this.restaurantClient.send<IRestaurantListResponse>({ cmd: "get_restaurant_list" }, filter));
         if (result.status !== HttpStatus.OK) {
             throw new HttpException({ message: result.message, errors: result.errors }, result.status);
         }

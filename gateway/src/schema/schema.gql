@@ -49,6 +49,7 @@ type UpdateResult {
 
 type Query {
   checkAuthClientStatus: CheckStatus!
+  getRestaurantList(name: String, category: String): [Restaurant!]!
 }
 
 type Mutation {

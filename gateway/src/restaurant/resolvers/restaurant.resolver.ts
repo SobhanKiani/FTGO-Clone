@@ -6,11 +6,13 @@ import { GetUser } from "src/authentication/decorators/get-user-from-request.dec
 import { IsPrivate } from "src/authentication/decorators/is-private.decorator";
 import { User } from "src/authentication/models/user.model";
 import { RestaurantFilterArgs } from "../args/restaurant-filter.args";
-import { CreateRestaurantInput } from "../inputs/createRestaurant.input";
+import { CreateRestaurantInput } from "../inputs/create-restaurant.input";
+import { RateInput } from "../inputs/rate.input";
 import { UpdateRestaurantInput } from "../inputs/update-restaurant.input";
 import { ICreateRestaurantResponse } from "../interfaces/create-restaurant-response.interface";
 import { IDeleteRestaurantResponse } from "../interfaces/delete-restaurant-response.interface";
 import { IGetRestaurantByIdResult } from "../interfaces/get-restaurant-by-id.interface";
+import { IRate } from "../interfaces/rate-response.interface";
 import { IRestaurantListResponse } from "../interfaces/restaurant-list-response.interface";
 import { IUpdateRestaurantResponse } from "../interfaces/update-restaurant-response.interface";
 import { Restaurant } from "../models/restaurant.model";
@@ -88,6 +90,24 @@ export class RestaurantResolver {
         @Args('id', { type: () => Int }) id: number,
     ) {
         const result = await firstValueFrom(this.restaurantClient.send<IGetRestaurantByIdResult>({ cmd: "get_restaurant_by_id" }, id));
+        if (result.status !== HttpStatus.OK) {
+            throw new HttpException({ message: result.message, errors: result.errors }, result.status);
+        }
+        return result.data;
+    }
+
+
+    @Mutation((restaurant) => UpdateResult)
+    @IsPrivate(true)
+    async rateRestaurant(
+        @Args('rateData') rateData: RateInput,
+        @GetUser() user: User
+    ) {
+        const data = {
+            rateDto: rateData,
+            requestorId: user.id
+        }
+        const result = await firstValueFrom(this.restaurantClient.send<IRate>({ cmd: "rate_restaurant" }, data));
         if (result.status !== HttpStatus.OK) {
             throw new HttpException({ message: result.message, errors: result.errors }, result.status);
         }

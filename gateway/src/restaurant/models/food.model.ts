@@ -15,9 +15,6 @@ export class Food {
     @Field()
     price: number;
 
-    // @ManyToOne(() => Restaurant, (restaurant) => restaurant.foods)
-    // restaurant: Restaurant;
-
     @Field()
     isAvailable: boolean;
 

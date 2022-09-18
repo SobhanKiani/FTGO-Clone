@@ -62,6 +62,7 @@ type Mutation {
   updateResaurant(updateRestaurantData: UpdateRestaurantInput!, id: Int!): UpdateResult!
   deleteRestaurant(id: Int!): Restaurant!
   rateRestaurant(rateData: RateInput!): UpdateResult!
+  createFood(createFoodData: CreateFoodInput!): Food!
 }
 
 input CreateUserInput {
@@ -99,5 +100,12 @@ input UpdateRestaurantInput {
 
 input RateInput {
   rateNumber: Int!
+  restaurantId: Int!
+}
+
+input CreateFoodInput {
+  name: String!
+  category: String!
+  price: Int!
   restaurantId: Int!
 }

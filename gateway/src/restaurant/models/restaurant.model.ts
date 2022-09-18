@@ -18,7 +18,7 @@ export class Restaurant {
     @Field()
     ownerId: string
 
-    @Field(type => [Food], {nullable:'items'})
+    @Field(type => [Food], { nullable: 'items' })
     foods: Food[]
 
     @Field()

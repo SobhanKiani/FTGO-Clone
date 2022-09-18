@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { FoodResovler } from './resolvers/food.resovler';
 import { RestaurantResolver } from './resolvers/restaurant.resolver';
 
 @Module({
@@ -16,7 +17,8 @@ import { RestaurantResolver } from './resolvers/restaurant.resolver';
         ]),
     ],
     providers: [
-        RestaurantResolver
+        RestaurantResolver,
+        FoodResovler
     ]
 })
 export class RestaurantModule { }

@@ -42,7 +42,7 @@ export class FoodService {
     }
 
     async getFoodList(filters: FilterFoodQuery) {
-        const { name, category, restaurantId, isAvailable } = filters
+        const { name = '', category = '', restaurantId, isAvailable } = filters
         const query = this.foodRepository.createQueryBuilder('food');
         if (name) {
             query.where('food.name LIKE :name', { name: `%${name}%` });
@@ -51,13 +51,13 @@ export class FoodService {
             query.where('food.category LIKE :category', { category: `%${category}%` });
         }
         if (restaurantId) {
-            query.where('food.restaurant.id = :restaurantId', { restaurantId: `%${category}%` });
+            query.where('food.restaurant.id = :restaurantId', { restaurantId: `${restaurantId}` });
         }
         if (isAvailable) {
             query.where('food.isAvailable LIKE :isAvailable', { isAvailable: `%${isAvailable}%` });
         }
 
-        return await query.execute();
+        return await query.getMany();
     }
 
 

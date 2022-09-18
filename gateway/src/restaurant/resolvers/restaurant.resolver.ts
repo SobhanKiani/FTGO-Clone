@@ -14,6 +14,7 @@ import { RateInput } from "../inputs/rate.input";
 import { UpdateRestaurantInput } from "../inputs/update-restaurant.input";
 import { ICreateRestaurantResponse } from "../interfaces/create-restaurant-response.interface";
 import { IDeleteRestaurantResponse } from "../interfaces/delete-restaurant-response.interface";
+import { IGetFoodList } from "../interfaces/get-food-list-response.interface";
 import { IGetRestaurantByIdResult } from "../interfaces/get-restaurant-by-id.interface";
 import { IRate } from "../interfaces/rate-response.interface";
 import { IRestaurantListResponse } from "../interfaces/restaurant-list-response.interface";
@@ -123,7 +124,12 @@ export class RestaurantResolver {
 
     @ResolveField()
     async foods(@Parent() restaurant: Restaurant) {
-        const { id } = restaurant;
-        return []
+        const { id: parentId } = restaurant;
+        const filter = { restaurantId: parentId }
+        const result = await firstValueFrom(this.restaurantClient.send<IGetFoodList>({ cmd: "get_food_list" }, filter));
+        if (result.status !== HttpStatus.OK) {
+            throw new HttpException({ message: result.message, errors: result.errors }, result.status);
+        }
+        return result.data;
     }
 }

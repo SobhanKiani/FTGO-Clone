@@ -61,10 +61,11 @@ type Mutation {
   createRestaurant(createRestaurantData: CreateRestaurantInput!): Restaurant!
   updateResaurant(updateRestaurantData: UpdateRestaurantInput!, id: Int!): UpdateResult!
   deleteRestaurant(id: Int!): Restaurant!
-  rateRestaurant(rateData: RateInput!): UpdateResult!
+  rateRestaurant(rateData: RateRestaurantInput!): UpdateResult!
   createFood(createFoodData: CreateFoodInput!): Food!
   updateFood(updateFoodData: UpdateFoodInput!, id: Int!): UpdateResult!
   deleteFood(id: Int!): UpdateResult!
+  rateFood(rateData: RateFoodInput!): UpdateResult!
 }
 
 input CreateUserInput {
@@ -100,7 +101,7 @@ input UpdateRestaurantInput {
   category: String
 }
 
-input RateInput {
+input RateRestaurantInput {
   rateNumber: Int!
   restaurantId: Int!
 }
@@ -116,4 +117,9 @@ input UpdateFoodInput {
   name: String
   category: String
   price: Int
+}
+
+input RateFoodInput {
+  rateNumber: Int!
+  foodId: Int!
 }

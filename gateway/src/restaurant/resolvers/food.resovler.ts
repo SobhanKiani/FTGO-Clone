@@ -9,9 +9,11 @@ import { Role } from "src/authentication/enums/roles.enum";
 import { RolesGuard } from "src/authentication/guards/roles.guard";
 import { User } from "src/authentication/models/user.model";
 import { CreateFoodInput } from "../inputs/create-food.input";
+import { RateFoodInput } from "../inputs/rate-food.input";
 import { UpdateFoodInput } from "../inputs/update-food.input";
 import { ICreateFoodResponse } from "../interfaces/create-food.interface";
 import { IDeleteFoodResponse } from "../interfaces/delete-food-response.interface";
+import { IRate } from "../interfaces/rate-response.interface";
 import { IUpdateFoodResponse } from "../interfaces/update-food-response.interface";
 import { Food } from "../models/food.model";
 import { UpdateResult } from "../models/update-result.model";
@@ -81,7 +83,23 @@ export class FoodResovler {
             throw new HttpException({ message: result.message, errors: result.errors }, result.status);
         }
         return result.data;
+    }
 
+    @Mutation((returns) => UpdateResult)
+    @IsPrivate(true)
+    async rateFood(
+        @Args("rateData") rateData: RateFoodInput,
+        @GetUser() user: User
+    ) {
+        const data = {
+            rateDto: rateData,
+            requestorId: user.id
+        }
+        const result = await firstValueFrom(this.restaurantClient.send<IRate>({ cmd: "rate_food" }, data));
+        if (result.status !== HttpStatus.OK) {
+            throw new HttpException({ message: result.message, errors: result.errors }, result.status);
+        }
+        return result.data;
     }
 
 }

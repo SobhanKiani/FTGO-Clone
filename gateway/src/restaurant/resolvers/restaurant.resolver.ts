@@ -10,7 +10,7 @@ import { RolesGuard } from "src/authentication/guards/roles.guard";
 import { User } from "src/authentication/models/user.model";
 import { RestaurantFilterArgs } from "../args/restaurant-filter.args";
 import { CreateRestaurantInput } from "../inputs/create-restaurant.input";
-import { RateInput } from "../inputs/rate.input";
+import { RateRestaurantInput } from "../inputs/rate-restaurant.input";
 import { UpdateRestaurantInput } from "../inputs/update-restaurant.input";
 import { ICreateRestaurantResponse } from "../interfaces/create-restaurant-response.interface";
 import { IDeleteRestaurantResponse } from "../interfaces/delete-restaurant-response.interface";
@@ -108,7 +108,7 @@ export class RestaurantResolver {
     @Mutation((restaurant) => UpdateResult)
     @IsPrivate(true)
     async rateRestaurant(
-        @Args('rateData') rateData: RateInput,
+        @Args('rateData') rateData: RateRestaurantInput,
         @GetUser() user: User
     ) {
         const data = {

@@ -15,4 +15,7 @@ export class UpdateFoodInput {
     @IsNumber()
     price?: number;
 
+    @Field((type) => Boolean, { nullable: true })
+    isAvailable?: boolean
+
 }

@@ -31,6 +31,11 @@ type Food {
   rateCount: Float!
 }
 
+type UpdateResult {
+  affected: Int!
+  raw: String!
+}
+
 type Restaurant {
   id: Float!
   name: String!
@@ -40,11 +45,6 @@ type Restaurant {
   foods: [Food]!
   rate: Float!
   rateCount: Float!
-}
-
-type UpdateResult {
-  affected: Int!
-  raw: String!
 }
 
 type Query {
@@ -63,6 +63,7 @@ type Mutation {
   deleteRestaurant(id: Int!): Restaurant!
   rateRestaurant(rateData: RateInput!): UpdateResult!
   createFood(createFoodData: CreateFoodInput!): Food!
+  updateFood(updateFoodData: UpdateFoodInput!, id: Int!): UpdateResult!
 }
 
 input CreateUserInput {
@@ -108,4 +109,10 @@ input CreateFoodInput {
   category: String!
   price: Int!
   restaurantId: Int!
+}
+
+input UpdateFoodInput {
+  name: String
+  category: String
+  price: Int
 }

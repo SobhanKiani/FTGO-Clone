@@ -119,6 +119,7 @@ input UpdateFoodInput {
   name: String
   category: String
   price: Int
+  isAvailable: Boolean
 }
 
 input RateFoodInput {

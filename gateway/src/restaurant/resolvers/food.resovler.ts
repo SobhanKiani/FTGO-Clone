@@ -11,6 +11,7 @@ import { User } from "src/authentication/models/user.model";
 import { CreateFoodInput } from "../inputs/create-food.input";
 import { UpdateFoodInput } from "../inputs/update-food.input";
 import { ICreateFoodResponse } from "../interfaces/create-food.interface";
+import { IDeleteFoodResponse } from "../interfaces/delete-food-response.interface";
 import { IUpdateFoodResponse } from "../interfaces/update-food-response.interface";
 import { Food } from "../models/food.model";
 import { UpdateResult } from "../models/update-result.model";
@@ -56,6 +57,26 @@ export class FoodResovler {
             updateFoodDto: updateFoodData
         }
         const result = await firstValueFrom(this.restaurantClient.send<IUpdateFoodResponse>({ cmd: "update_food" }, data));
+        if (result.status !== HttpStatus.OK) {
+            throw new HttpException({ message: result.message, errors: result.errors }, result.status);
+        }
+        return result.data;
+
+    }
+
+    @Mutation((returns) => UpdateResult)
+    @IsPrivate(true)
+    @Roles(Role.RestaurantOwner)
+    @UseGuards(RolesGuard)
+    async deleteFood(
+        @Args('id', { type: () => Int }) id: number,
+        @GetUser() user: User
+    ) {
+        const data = {
+            foodId: id,
+            requestorId: user.id,
+        }
+        const result = await firstValueFrom(this.restaurantClient.send<IDeleteFoodResponse>({ cmd: "delete_food" }, data));
         if (result.status !== HttpStatus.OK) {
             throw new HttpException({ message: result.message, errors: result.errors }, result.status);
         }

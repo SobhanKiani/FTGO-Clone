@@ -18,7 +18,7 @@ export class Food extends BaseEntity {
     })
     price: number;
 
-    @ManyToOne(() => Restaurant, (restaurant) => restaurant.foods)
+    @ManyToOne(() => Restaurant, (restaurant) => restaurant.foods, { onDelete: 'CASCADE' })
     restaurant: Restaurant;
 
     @Column({ default: true })

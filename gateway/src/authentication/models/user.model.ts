@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
 import { Role } from '../enums/roles.enum';
 
 @ObjectType()
@@ -23,4 +23,10 @@ export class User {
 
   @Field((type) => [String], { nullable: false, defaultValue: [Role.User] })
   roles?: string[];
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
 }

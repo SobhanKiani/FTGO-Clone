@@ -4,6 +4,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AuthGuard } from './guards/auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { AuthResolver } from './resolvers/auth.resolvers';
+import { DateScalar } from './utils/custom-date';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AuthResolver } from './resolvers/auth.resolvers';
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
+    DateScalar
   ],
   exports: [],
 })

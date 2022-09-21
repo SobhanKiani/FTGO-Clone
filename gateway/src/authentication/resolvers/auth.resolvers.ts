@@ -53,7 +53,6 @@ export class AuthResolver {
     if (result.status !== HttpStatus.OK) {
       throw new HttpException({ message: result.message, errors: result.errors }, result.status);
     }
-    console.log(result.data);
     return result.data;
   }
 

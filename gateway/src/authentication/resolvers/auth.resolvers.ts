@@ -15,7 +15,7 @@ import { UpdateUserInput } from '../inputs/updateUser.input';
 import { ILoginResponse } from '../interfaces/login-response.interface';
 import { IMakeUserAdmin } from '../interfaces/make-user-admin-response.interface';
 import { ISignUpResponse } from '../interfaces/sign-up-response.interface';
-import { AuthData } from '../models/authData.model';
+import { AuthData } from '../models/AuthData.model';
 import { CheckStatus } from '../models/checkStatus.model';
 import { User } from '../models/user.model';
 

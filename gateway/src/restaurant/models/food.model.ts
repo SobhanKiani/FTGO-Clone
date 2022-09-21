@@ -24,4 +24,10 @@ export class Food {
     @Field()
     rateCount: number;
 
+    @Field()
+    createdAt: Date;
+
+    @Field()
+    updatedAt: Date;
+
 }

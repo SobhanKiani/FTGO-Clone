@@ -10,7 +10,12 @@ type User {
   phoneNumber: String!
   address: String
   roles: [String!]!
+  createdAt: Date!
+  updatedAt: Date!
 }
+
+"""Date custom scalar type"""
+scalar Date
 
 type AuthData {
   user: User!
@@ -29,6 +34,8 @@ type Food {
   isAvailable: Boolean!
   rate: Float!
   rateCount: Float!
+  createdAt: Date!
+  updatedAt: Date!
 }
 
 type UpdateResult {
@@ -45,6 +52,8 @@ type Restaurant {
   foods: [Food]!
   rate: Float!
   rateCount: Float!
+  createdAt: Date!
+  updatedAt: Date!
 }
 
 type Query {

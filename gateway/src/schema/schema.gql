@@ -34,6 +34,8 @@ type Food {
   isAvailable: Boolean!
   rate: Float!
   rateCount: Float!
+  createdAt: Date!
+  updatedAt: Date!
 }
 
 type UpdateResult {

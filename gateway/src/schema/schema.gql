@@ -50,6 +50,8 @@ type Restaurant {
   foods: [Food]!
   rate: Float!
   rateCount: Float!
+  createdAt: Date!
+  updatedAt: Date!
 }
 
 type Query {

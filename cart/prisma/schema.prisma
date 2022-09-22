@@ -11,12 +11,12 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id
   firstName String
   lastName  String
   cart      Cart?
-  createdAt DateTime
-  updatedAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model Cart {
@@ -24,8 +24,8 @@ model Cart {
   user      User       @relation(references: [id], fields: [userId])
   userId    Int        @unique
   CartItem  CartItem[]
-  createdAt DateTime
-  updatedAt DateTime
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now())
 }
 
 model CartItem {
@@ -34,6 +34,6 @@ model CartItem {
   count     Int      @default(1)
   cart      Cart     @relation(references: [id], fields: [cartId])
   cartId    Int      @unique
-  createdAt DateTime
-  updatedAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }

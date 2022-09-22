@@ -71,6 +71,43 @@ services:
     volumes:
       - restaurant-data:/var/lib/postgresql/data/
 
+  cart:
+    build:
+      context: ./../cart
+      dockerfile: Dockerfile
+      target: development
+    image: skn1942/ftgo-cart
+    ports:
+      - 9994:9994
+    expose:
+      - 9994
+    command: npm run start:dev
+    environment:
+      - POSTGRES_DB=ftgo-cart-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=cart-pg
+      - POSTGRES_PORT=5432
+      - NATS_URL=nats://nats-server:4222
+    volumes:
+      - ./../cart:/usr/src/app
+    depends_on:
+      - cart-pg
+      - nats-server
+  cart-pg:
+    image: postgres
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_DB=ftgo-cart-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - restaurant-data:/var/lib/postgresql/data/
+
   ftgo-gateway:
     build:
       dockerfile: Dockerfile
@@ -111,3 +148,4 @@ services:
 volumes:
   auth-data:
   restaurant-data:
+  cart-data:

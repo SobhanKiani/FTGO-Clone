@@ -28,7 +28,7 @@ describe('UserService', () => {
   });
 
   it('should get user by id', async () => {
-    const query = { id: 1 };
+    const query = { id: '1' };
     const user = await userService.getUserByUniqueInfo(query);
     expect(user.firstName).toEqual(fakeUsers[0].firstName);
     expect(prisma.user.findUnique).toBeCalled();
@@ -36,7 +36,7 @@ describe('UserService', () => {
   });
 
   it('should retur null if user does not exists ', async () => {
-    const query = { id: -1 }
+    const query = { id: '-1' }
     const user = await userService.getUserByUniqueInfo(query);
     expect(user).toBeNull();
     expect(prisma.user.findUnique).toBeCalled()
@@ -47,7 +47,7 @@ describe('UserService', () => {
     const data: Prisma.UserCreateInput = {
       firstName: "Skn",
       lastName: "1942",
-      id: 4
+      id: '4'
     }
     const newUser = await userService.createUser(data);
     expect(newUser.firstName).toBe(data.firstName);
@@ -56,9 +56,9 @@ describe('UserService', () => {
   });
 
   it('should update user', async () => {
-    const user = await userService.updateUser({ id: 1 }, { firstName: "new name" });
+    const user = await userService.updateUser({ id: '1' }, { firstName: "new name" });
     expect(user.firstName).toEqual('new name');
     expect(prisma.user.update).toHaveBeenCalled()
-    expect(prisma.user.update).toHaveBeenCalledWith({ where: { id: 1 }, data: { firstName: "new name" } });
+    expect(prisma.user.update).toHaveBeenCalledWith({ where: { id: '1' }, data: { firstName: "new name" } });
   })
 });

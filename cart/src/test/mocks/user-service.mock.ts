@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client"
 
 export const fakeUsers = [
     {
-        id: 1,
+        id: '1',
         firstName: "Sobhan",
         lastName: "Kiani",
         cart: null,
@@ -10,7 +10,7 @@ export const fakeUsers = [
         updatedAt: new Date()
     },
     {
-        id: 2,
+        id: '2',
         firstName: "Erfan",
         lastName: "Kiani",
         cart: null,
@@ -18,7 +18,7 @@ export const fakeUsers = [
         updatedAt: new Date()
     },
     {
-        id: 3,
+        id: '3',
         firstName: "Ali",
         lastName: "Aliyan",
         cart: null,
@@ -40,7 +40,18 @@ export const userServiceMock = {
             return Promise.resolve(user);
         }),
 
-        create: jest.fn().mockResolvedValue({ id: 4, firstName: "Skn", lastName: "1942" }),
-        update: jest.fn().mockResolvedValue({ ...fakeUsers[0], firstName: "new name" })
+        create: jest.fn().mockResolvedValue({ id: '4', firstName: "Skn", lastName: "1942" }),
+        update: jest.fn().mockImplementation((params: { where: Prisma.UserWhereUniqueInput, data: Prisma.UserUpdateInput }) => {
+            const { where, data } = params
+            const foundUser = fakeUsers.find((user) => user.id === where.id);
+            if (!foundUser) {
+                return null;
+            }
+            return {
+                ...foundUser,
+                ...data
+            }
+        })
+        // update: jest.fn().mockResolvedValue({ ...fakeUsers[0], firstName: "new name" })
     }
 }

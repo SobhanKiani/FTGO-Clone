@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreateRestaurantDTO } from 'src/restaurant/dtos/createRestaurant.dto';
 import { Restaurant } from '../../restaurant/models/restaurant.model';
-import { RestaurantModule } from '../../../test/mocks/restaurant.module';
+import { RestaurantModule } from '../../restaurant/restaurant.module';
 import { RestaurantService } from '../../restaurant/services/restaurant.service';
 import { CreateFoodDTO } from '../dtos/create-food.dto';
 import { RateDTO } from '../dtos/rate.dto';

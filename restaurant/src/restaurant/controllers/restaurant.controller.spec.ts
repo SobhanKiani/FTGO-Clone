@@ -12,7 +12,7 @@ import { RestaurantController } from './restaurant.controller';
 
 describe('RestaurantController', () => {
   let restaurantController: RestaurantController;
-  let authClient: ClientProxy;
+  let natsClient: ClientProxy;
   let app: INestApplication
   const createRestaurantData: CreateRestaurantDTO = {
     name: "rest1",
@@ -40,7 +40,7 @@ describe('RestaurantController', () => {
       providers: [
         RestaurantService,
         {
-          provide: "AUTH_SERVICE",
+          provide: "NATS_SERVICE",
           useValue: clientProxyMock
         }
 
@@ -49,7 +49,7 @@ describe('RestaurantController', () => {
 
     restaurantController = module.get<RestaurantController>(RestaurantController);
     app = module.createNestApplication();
-    authClient = app.get('AUTH_SERVICE');
+    natsClient = app.get('NATS_SERVICE');
 
   });
 
@@ -66,7 +66,7 @@ describe('RestaurantController', () => {
   });
 
   it('should create new restaurant with correct data', async () => {
-    const authClientEmitSpy = jest.spyOn(authClient, 'emit');
+    const authClientEmitSpy = jest.spyOn(natsClient, 'emit');
 
     const newRestaurant = await restaurantController.createRestaurant(createRestaurantData);
     expect(newRestaurant.status).toEqual(HttpStatus.CREATED);

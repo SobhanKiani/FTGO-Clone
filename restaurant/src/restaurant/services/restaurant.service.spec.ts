@@ -22,7 +22,6 @@ describe('RestaurantService', () => {
   }
 
   beforeEach(async () => {
-    let authClient: ClientProxy;
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -40,14 +39,13 @@ describe('RestaurantService', () => {
       providers: [
         RestaurantService,
         {
-          provide: "AUTH_SERVICE",
+          provide: "NATS_SERVICE",
           useValue: clientProxyMock
         }
       ],
     }).compile();
 
     restaurantService = module.get<RestaurantService>(RestaurantService);
-    authClient = module.get("AUTH_SERVICE");
   });
 
   it('should be defined', () => {

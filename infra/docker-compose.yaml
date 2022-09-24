@@ -81,7 +81,8 @@ services:
       - 9994:9994
     expose:
       - 9994
-    command: npm run start:dev
+    command: >
+      sh -c "npx prisma migrate dev --skip-generate --name init && npm run start:dev"
     environment:
       - POSTGRES_DB=ftgo-cart-db
       - POSTGRES_USER=postgres
@@ -97,7 +98,7 @@ services:
   cart-pg:
     image: postgres
     ports:
-      - 5433:5433
+      - 5433:5432
     expose:
       - 5433
     environment:
@@ -106,7 +107,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
-      - restaurant-data:/var/lib/postgresql/data/
+      - cart-data:/var/lib/postgresql/data/
 
   ftgo-gateway:
     build:

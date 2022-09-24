@@ -12,14 +12,14 @@ import { FilterRestaurantQuery } from '../queries/filter-restaurant.query';
 export class RestaurantService {
     constructor(
         @InjectRepository(Restaurant) private restaurantRepository: Repository<Restaurant>,
-        @Inject('AUTH_SERVICE') private authClient: ClientProxy,
+        @Inject('NATS_SERVICE') private natsClient: ClientProxy,
     ) { }
 
 
     async createRestaurant(createRestaurantDTO: CreateRestaurantDTO) {
         const restaurant = this.restaurantRepository.create(createRestaurantDTO);
         const savedRestaurant = await this.restaurantRepository.save(restaurant);
-        this.authClient.emit({ cmd: "restaurant_created" }, { id: savedRestaurant.ownerId })
+        this.natsClient.emit({ cmd: "restaurant_created" }, { id: savedRestaurant.ownerId })
         return savedRestaurant
     }
 

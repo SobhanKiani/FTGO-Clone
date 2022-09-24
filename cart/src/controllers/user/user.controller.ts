@@ -1,4 +1,4 @@
-import { Controller, HttpStatus } from '@nestjs/common';
+import { Controller, HttpStatus, UsePipes, ValidationPipe } from '@nestjs/common';
 import { EventPattern } from '@nestjs/microservices';
 import { Prisma } from '@prisma/client';
 import { ICreateUserCart } from 'src/interfaces/create-user-cart-response.interface';
@@ -11,11 +11,13 @@ export class UserController {
         private userService: UserService
     ) { }
 
-    @EventPattern({ cmd: "create_user_cart" })
+    // @UsePipes(new ValidationPipe())
+    @EventPattern({ cmd: "user_created" })
     async createUserForCart(
         data: Prisma.UserCreateInput
     ): Promise<ICreateUserCart> {
         try {
+
             const foundUser = await this.userService.getUserByUniqueInfo({ id: data.id });
             if (foundUser) {
                 return {
@@ -26,7 +28,12 @@ export class UserController {
                 }
             }
 
-            const user = await this.userService.createUser(data);
+            const createData: Prisma.UserCreateInput = {
+                firstName: data.firstName,
+                lastName: data.lastName,
+                id: data.id
+            }
+            const user = await this.userService.createUser(createData);
             if (!user) {
                 return {
                     status: HttpStatus.BAD_REQUEST,
@@ -54,13 +61,18 @@ export class UserController {
     }
 
 
-    @EventPattern({ cmd: "update_user_cart" })
+    @EventPattern({ cmd: "user_updated" })
     async updateUserForCart(
         params: { id: string, data: Prisma.UserUpdateInput }
     ): Promise<IUpdateUserCart> {
         try {
             const { id, data } = params;
-            const user = await this.userService.updateUser({ id }, data);
+            const updateData: Prisma.UserUpdateInput = {
+                firstName: data.firstName,
+                lastName: data.lastName,
+            }
+            
+            const user = await this.userService.updateUser({ id }, updateData);
             if (!user) {
                 return {
                     status: HttpStatus.NOT_FOUND,
@@ -69,6 +81,7 @@ export class UserController {
                     errors: { user_cart: { path: "user", message: "could not create user" } }
                 }
             }
+
             return {
                 status: HttpStatus.OK,
                 message: "User Updated",

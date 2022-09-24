@@ -2,7 +2,7 @@
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 
-FROM node:alpine As development
+FROM --platform=linux/amd64 node:alpine As development
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -18,6 +18,7 @@ RUN npm install --legacy-peer-deps
 # Bundle app source
 COPY --chown=node:node . .
 
+RUN npx prisma generate
 # Use the node user from the image (instead of the root user)
 USER node
 

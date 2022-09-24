@@ -11,7 +11,7 @@ import { RestaurantService } from './services/restaurant.service';
     TypeOrmModule.forFeature([Restaurant]),
     ClientsModule.register([
       {
-        name: 'AUTH_SERVICE',
+        name: 'NATS_SERVICE',
         transport: Transport.NATS,
         options: {
           // servers: ['nats://nats-server:4222']

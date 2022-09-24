@@ -6,22 +6,20 @@ import { JwtStrategy } from '../jwt/jwt-startegt.class';
 import { RolesGuard } from '../jwt/roles.guard';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { jwtConstants } from '../jwt/constants';
-import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { UserSchemaObject } from '../DbSchemaObjects/user.schema-object';
-import {
-  INestApplication,
-} from '@nestjs/common';
+import { INestApplication, } from '@nestjs/common';
 import { User } from '../models/user.model';
 import { AuthController } from '../controllers/auth.controller';
-import { async } from 'rxjs';
+import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
 
 describe('AuthService', () => {
   let authService: AuthService;
   let authController: AuthController;
   let app: INestApplication;
   let mongo: MongoMemoryServer;
-  let orderClient: ClientProxy;
+  let natsClient: ClientProxy;
   let userModel: Model<User>;
   process.env.JWT_KEY = jwtConstants.secret;
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -47,9 +45,6 @@ describe('AuthService', () => {
             expiresIn: '30d',
           },
         }),
-        ClientsModule.register([
-          { name: 'ORDER_SERVICE', transport: Transport.NATS },
-        ]),
         MongooseModule.forRootAsync({
           useFactory: async () => ({
             uri: await mongo.getUri(),
@@ -62,6 +57,7 @@ describe('AuthService', () => {
         JwtStrategy,
         RolesGuard,
         { provide: getModelToken(User.name), useValue: userModel },
+        { provide: "NATS_SERVICE", useValue: clientProxyMock }
       ],
       controllers: [AuthController]
     }).compile();
@@ -71,7 +67,7 @@ describe('AuthService', () => {
 
     app = testModule.createNestApplication();
 
-    orderClient = app.get('ORDER_SERVICE');
+    natsClient = app.get('NATS_SERVICE');
     // await app.startAllMicroservices();
     // await app.connectMicroservice({
     //   trasport:Transport.NATS
@@ -199,7 +195,7 @@ describe('AuthService', () => {
       secretOrPrivateKey: jwtConstants.secret,
     }).sign({ email: 'testemail2', id: new mongoose.Types.ObjectId() });
     const foundUser = await authService.decodeToken(fakeToken);
-    
+
     expect(foundUser).toBeNull();
   })
 

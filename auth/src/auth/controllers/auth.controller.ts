@@ -19,7 +19,7 @@ import { Role } from '../enums/roles.enum';
 export class AuthController {
   constructor(
     private authService: AuthService,
-    @Inject('ORDER_SERVICE') private orderClient: ClientProxy,
+    @Inject('NATS_SERVICE') private natsClient: ClientProxy,
 
   ) { }
 
@@ -47,7 +47,7 @@ export class AuthController {
       }
 
       const newUser = await this.authService.createUser(signUpDTO);
-      this.orderClient.emit('NEW_USER_CREATED', newUser);
+      this.natsClient.emit({ cmd: "user_created" }, newUser);
       const token = await this.authService.createToken(newUser);
       const result = {
         token,
@@ -130,7 +130,7 @@ export class AuthController {
       }
     }
 
-    this.orderClient.emit('USER_UPDATE', updatedUser);
+    this.natsClient.emit({ cmd: "user_updated" }, { id: updatedUser.id, data: updatedUser });
 
     return {
       status: HttpStatus.OK,

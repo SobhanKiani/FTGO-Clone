@@ -25,9 +25,13 @@ export class UserService {
         where: Prisma.UserWhereUniqueInput,
         data: Prisma.UserUpdateInput
     ) {
-        return await this.prisma.user.update({
-            where,
-            data
-        });
+        try{
+            return await this.prisma.user.update({
+                where,
+                data
+            });
+        }catch(e){
+            console.log(e)
+        }
     }
 }

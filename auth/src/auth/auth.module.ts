@@ -22,10 +22,9 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     }),
     ClientsModule.register([
       {
-        name: 'ORDER_SERVICE',
+        name: 'NATS_SERVICE',
         transport: Transport.NATS,
         options: {
-          // servers: ['nats://nats-server:4222']
           servers: [process.env.NATS_URL]
         }
       },

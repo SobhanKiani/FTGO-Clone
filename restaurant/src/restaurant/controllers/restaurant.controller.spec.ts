@@ -74,7 +74,7 @@ describe('RestaurantController', () => {
     expect(newRestaurant.data.ownerId).toEqual(createRestaurantData.ownerId);
     expect(newRestaurant.errors).toBeNull();
     expect(authClientEmitSpy).toHaveBeenCalled()
-    expect(authClientEmitSpy).toHaveBeenCalledWith({ cmd: "restaurant_created" }, { id: newRestaurant.data.ownerId });
+    expect(authClientEmitSpy).toHaveBeenCalledWith({ cmd: "restaurant_created" }, { ownerId: newRestaurant.data.ownerId });
   });
 
   it('should update existing restaurant', async () => {

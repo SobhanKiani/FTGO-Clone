@@ -1,11 +1,9 @@
 import {
-  BadRequestException,
   HttpStatus,
   INestApplication,
-  NotFoundException,
 } from '@nestjs/common';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
+import { ClientProxy, } from '@nestjs/microservices';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -18,14 +16,14 @@ import { JwtStrategy } from '../jwt/jwt-startegt.class';
 import { RolesGuard } from '../jwt/roles.guard';
 import { User } from '../models/user.model';
 import { Role } from '../enums/roles.enum';
+import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
 
 
-jest.setTimeout(30000);
 describe('AuthController', () => {
   let authController: AuthController;
   let app: INestApplication;
   let mongo: MongoMemoryServer;
-  let orderClient: ClientProxy;
+  let natsClient: ClientProxy;
   let userModel: Model<User>;
   let testModule: TestingModule;
   process.env.JWT_KEY = jwtConstants.secret;
@@ -51,9 +49,6 @@ describe('AuthController', () => {
             expiresIn: '30d',
           },
         }),
-        ClientsModule.register([
-          { name: 'ORDER_SERVICE', transport: Transport.NATS },
-        ]),
         MongooseModule.forRootAsync({
           useFactory: async () => ({
             uri: await mongo.getUri(),
@@ -66,6 +61,7 @@ describe('AuthController', () => {
         JwtStrategy,
         RolesGuard,
         { provide: getModelToken(User.name), useValue: userModel },
+        { provide: "NATS_SERVICE", useValue: clientProxyMock }
       ],
       controllers: [AuthController],
     }).compile();
@@ -73,7 +69,7 @@ describe('AuthController', () => {
     authController = testModule.get<AuthController>(AuthController);
 
     app = testModule.createNestApplication();
-    orderClient = app.get('ORDER_SERVICE');
+    natsClient = app.get('NATS_SERVICE');
 
     // app.connectMicroservice({
     //   transport: Transport.NATS,
@@ -113,7 +109,7 @@ describe('AuthController', () => {
   });
 
   it('should create user with correct data', async () => {
-    const orderClientEmitSpy = jest.spyOn(orderClient, 'emit');
+    const orderClientEmitSpy = jest.spyOn(natsClient, 'emit');
 
 
     const result = await authController.signUp(userCreateData);
@@ -145,7 +141,7 @@ describe('AuthController', () => {
   });
 
   it('should update existing user with correct data', async () => {
-    const orderClientEmitSpy = jest.spyOn(orderClient, 'emit');
+    const orderClientEmitSpy = jest.spyOn(natsClient, 'emit');
 
     const { data: newUser } = await authController.signUp(userCreateData);
 

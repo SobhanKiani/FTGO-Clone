@@ -219,7 +219,7 @@ describe('AuthController', () => {
 
   it('should return user with restaurant role when restaurant is created', async () => {
     const { data: authData } = await authController.signUp(userCreateData);
-    const { status, data } = await authController.restaurantCreatedHandler({ id: authData.user.id });
+    const { status, data } = await authController.restaurantCreatedHandler({ ownerId: authData.user.id });
     expect(status).toEqual(HttpStatus.OK);
     expect(data.roles).toContain(Role.RestaurantOwner)
   })

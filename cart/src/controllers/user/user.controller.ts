@@ -2,6 +2,8 @@ import { Controller, HttpStatus, UsePipes, ValidationPipe } from '@nestjs/common
 import { EventPattern } from '@nestjs/microservices';
 import { Prisma } from '@prisma/client';
 import { ICreateUserCart } from 'src/interfaces/create-user-cart-response.interface';
+import { IUserCreatedEvent } from 'src/interfaces/events/user-created.event';
+import { IUpdateUserEvent } from 'src/interfaces/events/user-updated.event';
 import { IUpdateUserCart } from 'src/interfaces/update-user-cart-response.interface';
 import { UserService } from '../../services/user/user.service';
 
@@ -14,10 +16,9 @@ export class UserController {
     // @UsePipes(new ValidationPipe())
     @EventPattern({ cmd: "user_created" })
     async createUserForCart(
-        data: Prisma.UserCreateInput
+        data: IUserCreatedEvent
     ): Promise<ICreateUserCart> {
         try {
-
             const foundUser = await this.userService.getUserByUniqueInfo({ id: data.id });
             if (foundUser) {
                 return {
@@ -63,7 +64,7 @@ export class UserController {
 
     @EventPattern({ cmd: "user_updated" })
     async updateUserForCart(
-        params: { id: string, data: Prisma.UserUpdateInput }
+        params: IUpdateUserEvent
     ): Promise<IUpdateUserCart> {
         try {
             const { id, data } = params;
@@ -71,7 +72,7 @@ export class UserController {
                 firstName: data.firstName,
                 lastName: data.lastName,
             }
-            
+
             const user = await this.userService.updateUser({ id }, updateData);
             if (!user) {
                 return {

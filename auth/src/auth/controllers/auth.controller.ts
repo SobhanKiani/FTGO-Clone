@@ -12,8 +12,11 @@ import { ILoginResponse } from '../interfaces/login-response.interface';
 import { IUpdateUserResponse } from '../interfaces/user-update-response.interface';
 import { IMakeUserAdmin } from '../interfaces/make-user-admin-response.interface';
 import { IVerifyUserResponse } from '../interfaces/verify-user-response.interface';
-import { UserIdDTO } from '../dto/userId.dto';
 import { Role } from '../enums/roles.enum';
+import { User } from '../models/user.model';
+import { IUserCreatedEvent } from '../interfaces/events/user-created.event';
+import { IUpdateUserEvent } from '../interfaces/events/user-updated.event';
+import { ICreateRestaurantEvent } from '../interfaces/events/restaurant-created.event';
 
 @Controller('auth')
 export class AuthController {
@@ -47,7 +50,18 @@ export class AuthController {
       }
 
       const newUser = await this.authService.createUser(signUpDTO);
-      this.natsClient.emit({ cmd: "user_created" }, newUser);
+
+      const eventData: IUserCreatedEvent = {
+        id: newUser.id,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        phoneNumber: newUser.phoneNumber,
+        roles: newUser.roles,
+        address: newUser.address
+      }
+
+      this.natsClient.emit<any, IUserCreatedEvent>({ cmd: "user_created" }, eventData);
       const token = await this.authService.createToken(newUser);
       const result = {
         token,
@@ -130,7 +144,18 @@ export class AuthController {
       }
     }
 
-    this.natsClient.emit({ cmd: "user_updated" }, { id: updatedUser.id, data: updatedUser });
+    const eventData: IUpdateUserEvent = {
+      id: updatedUser.id,
+      data: {
+        email: updatedUser.email,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        phoneNumber: updatedUser.phoneNumber,
+        roles: updatedUser.roles,
+        address: updatedUser.address
+      }
+    }
+    this.natsClient.emit<any, { id: string, data: IUpdateUserEvent }>({ cmd: "user_updated" }, { id: updatedUser.id, data: eventData });
 
     return {
       status: HttpStatus.OK,
@@ -222,14 +247,25 @@ export class AuthController {
   }
 
   @EventPattern({ cmd: "restaurant_created" })
-  async restaurantCreatedHandler(userIdDTO: UserIdDTO): Promise<IUpdateUserResponse> {
-    const { id } = userIdDTO;
-    const updatedRestaurant = await this.authService.giveRoleToUser(id, Role.RestaurantOwner);
-    return {
-      status: HttpStatus.OK,
-      message: "Restaurant Role Has Given To User",
-      data: updatedRestaurant,
-      errors: null
+  async restaurantCreatedHandler(data: ICreateRestaurantEvent): Promise<IUpdateUserResponse> {
+    try {
+      const { ownerId: id } = data;
+      const userId = new mongoose.Types.ObjectId(id);
+      const updatedRestaurant = await this.authService.giveRoleToUser(userId, Role.RestaurantOwner);
+      return {
+        status: HttpStatus.OK,
+        message: "Restaurant Role Has Given To User",
+        data: updatedRestaurant,
+        errors: null
+      }
+    } catch (e) {
+      return {
+        status: HttpStatus.BAD_REQUEST,
+        message: "Error Happend",
+        data: null,
+        errors: e
+      }
     }
+
   }
 }

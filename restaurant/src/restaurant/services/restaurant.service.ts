@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateRestaurantDTO } from '../dtos/createRestaurant.dto';
 import { RateDTO } from '../dtos/rate.dto';
 import { UpdateRestaurantDTO } from '../dtos/updateRestaurant.dto';
+import { ICreateRestaurantEvent } from '../interfaces/events/restaurant-created.event';
 import { Restaurant } from '../models/restaurant.model';
 import { FilterRestaurantQuery } from '../queries/filter-restaurant.query';
 
@@ -19,7 +20,7 @@ export class RestaurantService {
     async createRestaurant(createRestaurantDTO: CreateRestaurantDTO) {
         const restaurant = this.restaurantRepository.create(createRestaurantDTO);
         const savedRestaurant = await this.restaurantRepository.save(restaurant);
-        this.natsClient.emit({ cmd: "restaurant_created" }, { id: savedRestaurant.ownerId })
+        this.natsClient.emit<any, ICreateRestaurantEvent>({ cmd: "restaurant_created" }, { ownerId: savedRestaurant.ownerId })
         return savedRestaurant
     }
 

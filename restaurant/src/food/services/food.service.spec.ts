@@ -44,7 +44,7 @@ describe('FoodService', () => {
                 FoodService,
                 RestaurantService,
                 {
-                    provide: "AUTH_SERVICE",
+                    provide: "NATS_SERVICE",
                     useValue: clientProxyMock
                 }
             ],

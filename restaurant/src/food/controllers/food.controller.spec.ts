@@ -10,8 +10,7 @@ import { CreateFoodDTO } from '../dtos/create-food.dto';
 import { Food } from '../models/food.model';
 import { FoodService } from '../services/food.service';
 import { FoodController } from './food.controller';
-import { stat } from 'fs';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
 
 describe('FoodController', () => {
   let foodController: FoodController;
@@ -41,11 +40,16 @@ describe('FoodController', () => {
         }),
         TypeOrmModule.forFeature([Food, Restaurant]),
         forwardRef(() => RestaurantModule),
-        ClientsModule.register([
-          { name: 'AUTH_SERVICE', transport: Transport.NATS },
-        ]),
+
       ],
-      providers: [FoodService, RestaurantService],
+      providers: [
+        FoodService,
+        RestaurantService,
+        {
+          provide: "NATS_SERVICE",
+          useValue: clientProxyMock
+        }
+      ],
     }).compile();
 
     foodController = module.get<FoodController>(FoodController);

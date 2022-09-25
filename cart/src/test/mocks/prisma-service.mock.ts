@@ -1,11 +1,11 @@
-import { Prisma } from "@prisma/client"
+import { Cart, Prisma, User } from "@prisma/client"
+import { CartService } from "src/services/cart/cart.service";
 
-export const fakeUsers = [
+export const fakeUsers: User[] = [
     {
         id: '1',
         firstName: "Sobhan",
         lastName: "Kiani",
-        cart: null,
         createdAt: new Date(),
         updatedAt: new Date()
     },
@@ -13,7 +13,6 @@ export const fakeUsers = [
         id: '2',
         firstName: "Erfan",
         lastName: "Kiani",
-        cart: null,
         createdAt: new Date(),
         updatedAt: new Date()
     },
@@ -21,15 +20,27 @@ export const fakeUsers = [
         id: '3',
         firstName: "Ali",
         lastName: "Aliyan",
-        cart: null,
         createdAt: new Date(),
         updatedAt: new Date()
     },
-
-
 ]
 
-export const userServiceMock = {
+export const fakeCarts: Cart[] = [
+    {
+        id: 10,
+        userId: '1',
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+    {
+        id: 20,
+        userId: '2',
+        createdAt: new Date(),
+        updatedAt: new Date()
+    }
+]
+
+export const prismaServiceMock = {
     user: {
         findUnique: jest.fn().mockImplementation((params: { where: Prisma.UserWhereUniqueInput }) => {
             const { where } = params;
@@ -53,5 +64,25 @@ export const userServiceMock = {
             }
         })
         // update: jest.fn().mockResolvedValue({ ...fakeUsers[0], firstName: "new name" })
+    },
+
+    cart: {
+        upsert: jest.fn().mockImplementation((args: Prisma.CartUpsertArgs) => {
+            const { where } = args;
+            const foundCart = fakeCarts.find((cart) => cart.userId == where.userId);
+            if (foundCart) {
+                return Promise.resolve(foundCart);
+            }
+            const newCart: Cart = {
+                id: 30,
+                userId: where.userId,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            }
+            fakeCarts.push(newCart);
+            return Promise.resolve(newCart);
+        }),
+
+        delete: jest.fn().mockResolvedValue(fakeCarts[0]),
     }
 }

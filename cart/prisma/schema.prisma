@@ -25,7 +25,7 @@ model Cart {
   userId    String     @unique
   CartItem  CartItem[]
   createdAt DateTime   @default(now())
-  updatedAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model CartItem {
@@ -35,5 +35,5 @@ model CartItem {
   cart      Cart     @relation(references: [id], fields: [cartId])
   cartId    Int      @unique
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

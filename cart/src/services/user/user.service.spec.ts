@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Prisma } from '@prisma/client';
-import { async } from 'rxjs';
-import { fakeUsers, userServiceMock } from '../../test/mocks/user-service.mock';
+import { fakeUsers, prismaServiceMock } from '../../test/mocks/prisma-service.mock';
 import { PrismaService } from '../prisma-service/prisma-service.service';
 import { UserService } from './user.service';
 
@@ -13,7 +12,7 @@ describe('UserService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService, {
-          provide: PrismaService, useValue: userServiceMock
+          provide: PrismaService, useValue: prismaServiceMock
         }
       ],
     }).compile();
@@ -28,22 +27,28 @@ describe('UserService', () => {
   });
 
   it('should get user by id', async () => {
+    const findUniqueFunc = jest.spyOn(prisma.user, 'findUnique')
+
     const query = { id: '1' };
     const user = await userService.getUserByUniqueInfo(query);
     expect(user.firstName).toEqual(fakeUsers[0].firstName);
-    expect(prisma.user.findUnique).toBeCalled();
-    expect(prisma.user.findUnique).toBeCalledWith({ where: query });
+    expect(findUniqueFunc).toHaveBeenCalled()
+    expect(findUniqueFunc).toHaveBeenCalledWith({ where: query });
   });
 
   it('should retur null if user does not exists ', async () => {
+    const findUniqueFunc = jest.spyOn(prisma.user, 'findUnique')
+
     const query = { id: '-1' }
     const user = await userService.getUserByUniqueInfo(query);
     expect(user).toBeNull();
-    expect(prisma.user.findUnique).toBeCalled()
-    expect(prisma.user.findUnique).toBeCalledWith({ where: query });
+    expect(findUniqueFunc).toHaveBeenCalled()
+    expect(findUniqueFunc).toHaveBeenCalledWith({ where: query });
   });
 
   it('should create user with correct data', async () => {
+    const createFunc = jest.spyOn(prisma.user, 'create');
+
     const data: Prisma.UserCreateInput = {
       firstName: "Skn",
       lastName: "1942",
@@ -51,14 +56,16 @@ describe('UserService', () => {
     }
     const newUser = await userService.createUser(data);
     expect(newUser.firstName).toBe(data.firstName);
-    expect(prisma.user.create).toHaveBeenCalled();
-    expect(prisma.user.create).toHaveBeenCalledWith({ data });
+    expect(createFunc).toHaveBeenCalled();
+    expect(createFunc).toHaveBeenCalledWith({ data });
   });
 
   it('should update user', async () => {
+    const updateFunc = jest.spyOn(prisma.user, 'update');
+
     const user = await userService.updateUser({ id: '1' }, { firstName: "new name" });
     expect(user.firstName).toEqual('new name');
-    expect(prisma.user.update).toHaveBeenCalled()
-    expect(prisma.user.update).toHaveBeenCalledWith({ where: { id: '1' }, data: { firstName: "new name" } });
+    expect(updateFunc).toHaveBeenCalled()
+    expect(updateFunc).toHaveBeenCalledWith({ where: { id: '1' }, data: { firstName: "new name" } });
   })
 });

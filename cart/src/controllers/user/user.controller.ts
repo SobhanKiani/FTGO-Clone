@@ -1,10 +1,10 @@
 import { Controller, HttpStatus, UsePipes, ValidationPipe } from '@nestjs/common';
 import { EventPattern } from '@nestjs/microservices';
 import { Prisma } from '@prisma/client';
-import { ICreateUserCart } from 'src/interfaces/create-user-cart-response.interface';
 import { IUserCreatedEvent } from 'src/interfaces/events/user-created.event';
 import { IUpdateUserEvent } from 'src/interfaces/events/user-updated.event';
-import { IUpdateUserCart } from 'src/interfaces/update-user-cart-response.interface';
+import { ICreateUserCart } from 'src/interfaces/user/create-user-cart-response.interface';
+import { IUpdateUserCart } from 'src/interfaces/user/update-user-cart-response.interface';
 import { UserService } from '../../services/user/user.service';
 
 @Controller('user')

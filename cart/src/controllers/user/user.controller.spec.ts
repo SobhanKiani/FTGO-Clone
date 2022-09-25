@@ -7,7 +7,7 @@ import { IUserCreatedEvent } from 'src/interfaces/events/user-created.event';
 import { IUpdateUserEvent } from 'src/interfaces/events/user-updated.event';
 import { PrismaService } from '../../services/prisma-service/prisma-service.service';
 import { UserService } from '../../services/user/user.service';
-import { userServiceMock } from '../../test/mocks/user-service.mock';
+import { prismaServiceMock } from '../../test/mocks/prisma-service.mock';
 import { UserController } from './user.controller';
 
 describe('UserController', () => {
@@ -30,7 +30,7 @@ describe('UserController', () => {
         UserService,
         {
           provide: PrismaService,
-          useValue: userServiceMock
+          useValue: prismaServiceMock
         }
       ]
     }).compile();

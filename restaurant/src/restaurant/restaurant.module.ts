@@ -14,10 +14,8 @@ import { RestaurantService } from './services/restaurant.service';
         name: 'NATS_SERVICE',
         transport: Transport.NATS,
         options: {
-          // servers: ['nats://nats-server:4222']
           servers: [process.env.NATS_URL]
         }
-
       },
     ]),
     forwardRef(() => FoodModule)

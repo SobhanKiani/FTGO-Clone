@@ -1,5 +1,5 @@
-import { Controller, HttpStatus } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { Controller, HttpStatus, Inject } from '@nestjs/common';
+import { ClientProxy, MessagePattern } from '@nestjs/microservices';
 
 import { RestaurantService } from '../../restaurant/services/restaurant.service';
 import { CreateFoodDTO } from '../../food/dtos/create-food.dto';
@@ -13,12 +13,14 @@ import { FoodService } from '../services/food.service';
 import { IGetFoodList } from '../interfaces/get-food-list-response.interface';
 import { RateDTO } from '../dtos/rate.dto';
 import { IRate } from '../interfaces/rate-response.interface';
+import { ICreateFoodEvent } from '../interfaces/events/create-food.event';
 
 @Controller('food')
 export class FoodController {
     constructor(
         private foodService: FoodService,
-        private restaurantService: RestaurantService
+        private restaurantService: RestaurantService,
+        @Inject("NATS_SERVICE") private natsClient: ClientProxy,
     ) { }
 
     //create 
@@ -47,6 +49,16 @@ export class FoodController {
             }
 
             const newFood = await this.foodService.createFood(createFoodDto, restaurant);
+
+            const eventData: ICreateFoodEvent = {
+                id: newFood.id,
+                name: newFood.name,
+                category: newFood.category,
+                price: newFood.price,
+                isAvailable: newFood.isAvailable
+            }
+            this.natsClient.emit<any, ICreateFoodEvent>({ cmd: "create_food" }, eventData)
+
             return {
                 status: HttpStatus.CREATED,
                 message: "Food Created",

@@ -157,12 +157,17 @@ describe('FoodController', () => {
     const requestorId = createRestaurantData.ownerId;
     const { data: newFood } = await foodController.createFood({ requestorId, createFoodDto });
 
+    const deleteFunc = jest.spyOn(natsClient, 'emit');
+
     const { status, data: deleteResult } = await foodController.deleteFood({ requestorId, foodId: newFood.id });
     expect(status).toEqual(HttpStatus.OK);
     expect(deleteResult.affected).toEqual(1);
 
     const { data: deletedFood } = await foodController.getFoodById({ foodId: newFood.id });
     expect(deletedFood).toBeNull();
+
+    expect(deleteFunc).toHaveBeenCalled()
+    expect(deleteFunc).toHaveBeenCalledWith({ cmd: "delete_food" }, { id: newFood.id });
   });
 
   it('should not delete food that does not exist', async () => {

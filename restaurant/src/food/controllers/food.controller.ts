@@ -15,6 +15,7 @@ import { RateDTO } from '../dtos/rate.dto';
 import { IRate } from '../interfaces/rate-response.interface';
 import { ICreateFoodEvent } from '../interfaces/events/create-food.event';
 import { IUpdateFoodEvent } from '../interfaces/events/update-food.event';
+import { IDeleteFoodEvent } from '../interfaces/events/delete-food.event';
 
 @Controller('food')
 export class FoodController {
@@ -156,6 +157,12 @@ export class FoodController {
             }
 
             const deleteResult = await this.foodService.deleteFood(foodId);
+
+            const eventData: IDeleteFoodEvent = {
+                id: foodId
+            }
+            this.natsClient.emit<any, IDeleteFoodEvent>({ cmd: "delete_food" }, eventData);
+
             return {
                 status: HttpStatus.OK,
                 message: "Food Deleted",

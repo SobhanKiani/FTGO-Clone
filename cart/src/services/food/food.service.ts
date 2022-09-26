@@ -11,4 +11,11 @@ export class FoodService {
     async createFood(data: Prisma.FoodCreateInput) {
         return await this.prisma.food.create({ data });
     }
+
+    async updateFood(where: Prisma.FoodWhereUniqueInput, data: Prisma.FoodUpdateInput) {
+        return await this.prisma.food.update({
+            where,
+            data
+        });
+    }
 }

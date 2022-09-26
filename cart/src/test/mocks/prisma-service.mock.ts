@@ -46,7 +46,7 @@ export const fakeFoods: Food[] = [
         name: "food1",
         category: "cat1",
         isAvailable: true,
-        price:10,
+        price: 10,
         createdAt: new Date(),
         updatedAt: new Date()
     },
@@ -54,7 +54,7 @@ export const fakeFoods: Food[] = [
         id: 10,
         name: "food2",
         category: "cat1",
-        price:20,
+        price: 20,
         isAvailable: true,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -63,7 +63,7 @@ export const fakeFoods: Food[] = [
         id: 15,
         name: "food3",
         category: "cat2",
-        price:15,
+        price: 15,
         isAvailable: true,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -124,6 +124,18 @@ export const prismaServiceMock = {
             isAvailable: true,
             createdAt: new Date(),
             updatedAt: new Date()
+        }),
+        update: jest.fn().mockImplementation(async (params: { where: Prisma.FoodWhereUniqueInput, data: Prisma.FoodUpdateInput }) => {
+            const { where, data } = params
+
+            const foundFood = fakeFoods.find((food) => food.id === where.id);
+            if (!foundFood) {
+                return null;
+            }
+            return {
+                ...foundFood,
+                ...data
+            }
         })
     }
 }

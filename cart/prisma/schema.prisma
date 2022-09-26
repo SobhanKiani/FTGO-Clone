@@ -23,17 +23,20 @@ model Cart {
   id        Int      @id @default(autoincrement())
   user      User     @relation(references: [id], fields: [userId])
   userId    String   @unique
-  foods     Food[]
+  // foods     Food[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Food {
-  id        Int      @id @default(autoincrement())
-  name      String
-  count     Int      @default(1)
-  cart      Cart     @relation(references: [id], fields: [cartId])
-  cartId    Int      @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id
+  name        String
+  category    String
+  isAvailable Boolean
+  price       Float
+  // count     Int      @default(1)
+  // cart      Cart     @relation(references: [id], fields: [cartId])
+  // cartId    Int      @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

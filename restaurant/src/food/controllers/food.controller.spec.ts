@@ -13,6 +13,7 @@ import { FoodController } from './food.controller';
 import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
 import { ClientProxy } from '@nestjs/microservices';
 import { ICreateFoodEvent } from '../interfaces/events/create-food.event';
+import { IUpdateFoodEvent } from '../interfaces/events/update-food.event';
 
 describe('FoodController', () => {
   let foodController: FoodController;
@@ -105,18 +106,30 @@ describe('FoodController', () => {
   });
 
   it('should update exisiting food', async () => {
+
     const { data: newRestaurant } = await restaurantController.createRestaurant(createRestaurantData);
     const createFoodDto: CreateFoodDTO = { ...createFoodData, restaurantId: newRestaurant.id };
     const requestorId = createRestaurantData.ownerId;
     const { data: newFood } = await foodController.createFood({ requestorId, createFoodDto });
 
+    const emit = jest.spyOn(natsClient, 'emit');
     const updateFoodDto = { name: 'new name' };
     const { status, data: updateResult } = await foodController.updateFood({ foodId: newFood.id, requestorId, updateFoodDto });
     expect(status).toEqual(HttpStatus.OK);
-    expect(updateResult.affected).toEqual(1);
 
+    expect(updateResult.affected).toEqual(1);
     const { data: updatedFood } = await foodController.getFoodById({ foodId: newFood.id });
+
     expect(updatedFood.name).toEqual(updateFoodDto.name);
+    const eventData: IUpdateFoodEvent = {
+      id: newFood.id,
+      data: {
+        ...updateFoodDto,
+      }
+    }
+
+    expect(emit).toHaveBeenCalled();
+    expect(emit).toHaveBeenCalledWith({ cmd: "update_food" }, eventData);
   });
 
   it('should not update not existing food', async () => {

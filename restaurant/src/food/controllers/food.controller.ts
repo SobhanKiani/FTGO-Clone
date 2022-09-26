@@ -14,6 +14,7 @@ import { IGetFoodList } from '../interfaces/get-food-list-response.interface';
 import { RateDTO } from '../dtos/rate.dto';
 import { IRate } from '../interfaces/rate-response.interface';
 import { ICreateFoodEvent } from '../interfaces/events/create-food.event';
+import { IUpdateFoodEvent } from '../interfaces/events/update-food.event';
 
 @Controller('food')
 export class FoodController {
@@ -100,6 +101,16 @@ export class FoodController {
                 }
             }
             const updateResult = await this.foodService.updateFood(foodId, updateFoodDto);
+
+            const eventData: IUpdateFoodEvent = {
+
+                id: foodId,
+                data: {
+                    ...updateFoodDto
+                }
+            }
+            this.natsClient.emit<any, IUpdateFoodEvent>({ cmd: "update_food" }, eventData)
+
             return {
                 status: HttpStatus.OK,
                 message: "Food Updated",

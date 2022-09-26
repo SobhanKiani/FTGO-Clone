@@ -36,5 +36,27 @@ describe('FoodService', () => {
     expect(food).toBeDefined();
     expect(createFunc).toHaveBeenCalled();
     expect(createFunc).toHaveBeenCalledWith({ data: createData });
+  });
+
+  it('should create user', async () => {
+    const updateFunc = jest.spyOn(prisma.food, 'update');
+    const updateData = {
+      name: "new name"
+    }
+    const food = service.updateFood({ id: 5 }, updateData);
+    expect(food).toBeDefined();
+    expect(updateFunc).toHaveBeenCalled();
+    expect(updateFunc).toHaveBeenCalledWith({ data: updateData, where: { id: 5 } });
+  });
+
+  it('should retur null if food does not exists', async () => {
+    const updateFunc = jest.spyOn(prisma.food, 'update');
+    const updateData = {
+      name: "new name"
+    }
+    const food = service.updateFood({ id: -1 }, updateData);
+    expect(food).toBeDefined();
+    expect(updateFunc).toHaveBeenCalled();
+    expect(updateFunc).toHaveBeenCalledWith({ data: updateData, where: { id: -1 } });
   })
 });

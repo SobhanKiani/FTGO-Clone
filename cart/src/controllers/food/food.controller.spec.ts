@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { create } from 'domain';
 import { async } from 'rxjs';
 import { ICreateFoodEvent } from 'src/interfaces/events/create-food.event';
+import { IUpdateFoodEvent } from 'src/interfaces/events/update-food.event';
 import { FoodService } from '../../services/food/food.service';
 import { PrismaService } from '../../services/prisma-service/prisma-service.service';
 import { prismaServiceMock } from '../../test/mocks/prisma-service.mock';
@@ -45,5 +46,19 @@ describe('FoodController', () => {
     expect(status).toEqual(HttpStatus.CREATED);
     expect(data).not.toBeNull();
   });
-  
+
+  it('should update food', async () => {
+    const updateData: IUpdateFoodEvent = { data: { name: "new name" }, id: 5 };
+    const { status, data } = await controller.updateFood(updateData);
+    expect(status).toEqual(HttpStatus.OK);
+    expect(data.name).toEqual(updateData.data.name);
+  })
+
+  it('should not update food if food does not exists', async () => {
+    const updateData: IUpdateFoodEvent = { data: { name: "new name" }, id: -1 };
+    const { status, data } = await controller.updateFood(updateData);
+    expect(status).toEqual(HttpStatus.NOT_FOUND);
+    expect(data).toBeNull();
+  })
+
 });

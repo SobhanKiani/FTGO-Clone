@@ -1,4 +1,4 @@
-import { Cart, Prisma, User } from "@prisma/client"
+import { Cart, Food, Prisma, User } from "@prisma/client"
 import { CartService } from "src/services/cart/cart.service";
 
 export const fakeUsers: User[] = [
@@ -35,6 +35,36 @@ export const fakeCarts: Cart[] = [
     {
         id: 20,
         userId: '2',
+        createdAt: new Date(),
+        updatedAt: new Date()
+    }
+]
+
+export const fakeFoods: Food[] = [
+    {
+        id: 5,
+        name: "food1",
+        category: "cat1",
+        isAvailable: true,
+        price:10,
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+    {
+        id: 10,
+        name: "food2",
+        category: "cat1",
+        price:20,
+        isAvailable: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+    {
+        id: 15,
+        name: "food3",
+        category: "cat2",
+        price:15,
+        isAvailable: true,
         createdAt: new Date(),
         updatedAt: new Date()
     }
@@ -84,5 +114,16 @@ export const prismaServiceMock = {
         }),
 
         delete: jest.fn().mockResolvedValue(fakeCarts[0]),
+    },
+
+    food: {
+        create: jest.fn().mockResolvedValue({
+            id: 6,
+            name: "food4",
+            category: "cat3",
+            isAvailable: true,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        })
     }
 }

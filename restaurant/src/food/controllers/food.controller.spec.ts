@@ -11,10 +11,13 @@ import { Food } from '../models/food.model';
 import { FoodService } from '../services/food.service';
 import { FoodController } from './food.controller';
 import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
+import { ClientProxy } from '@nestjs/microservices';
+import { ICreateFoodEvent } from '../interfaces/events/create-food.event';
 
 describe('FoodController', () => {
   let foodController: FoodController;
   let restaurantController: RestaurantController;
+  let natsClient: ClientProxy;
   const createRestaurantData: CreateRestaurantDTO = {
     name: "rest1",
     address: "add1",
@@ -54,6 +57,7 @@ describe('FoodController', () => {
 
     foodController = module.get<FoodController>(FoodController);
     restaurantController = module.get<RestaurantController>(RestaurantController)
+    natsClient = module.get<ClientProxy>('NATS_SERVICE');
   });
 
   it('should be defined', () => {
@@ -62,6 +66,8 @@ describe('FoodController', () => {
   });
 
   it('should create food with correct data', async () => {
+    const emit = jest.spyOn(natsClient, 'emit');
+
     const { data: newRestaurant } = await restaurantController.createRestaurant(createRestaurantData);
     const createFoodDto: CreateFoodDTO = { ...createFoodData, restaurantId: newRestaurant.id };
     const requestorId = createRestaurantData.ownerId;
@@ -69,6 +75,16 @@ describe('FoodController', () => {
     expect(status).toEqual(HttpStatus.CREATED);
     expect(newFood.id).toBeDefined();
     expect(newFood.name).toEqual(createFoodDto.name);
+
+    const eventData: ICreateFoodEvent = {
+      id: newFood.id,
+      name: newFood.name,
+      category: newFood.category,
+      price: newFood.price,
+      isAvailable: newFood.isAvailable
+    }
+    expect(emit).toHaveBeenCalled();
+    expect(emit).toHaveBeenCalledWith({ cmd: "create_food" }, eventData);
   });
 
   it('should not create food if restaurant does not exists', async () => {

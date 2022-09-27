@@ -33,7 +33,7 @@ describe('UserService', () => {
     const user = await userService.getUserByUniqueInfo(query);
     expect(user.firstName).toEqual(fakeUsers[0].firstName);
     expect(findUniqueFunc).toHaveBeenCalled()
-    expect(findUniqueFunc).toHaveBeenCalledWith({ where: query });
+    expect(findUniqueFunc).toHaveBeenCalledWith({ where: query, include: { cart: true } });
   });
 
   it('should retur null if user does not exists ', async () => {
@@ -43,7 +43,7 @@ describe('UserService', () => {
     const user = await userService.getUserByUniqueInfo(query);
     expect(user).toBeNull();
     expect(findUniqueFunc).toHaveBeenCalled()
-    expect(findUniqueFunc).toHaveBeenCalledWith({ where: query });
+    expect(findUniqueFunc).toHaveBeenCalledWith({ where: query, include: { cart: true } });
   });
 
   it('should create user with correct data', async () => {

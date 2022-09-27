@@ -136,6 +136,19 @@ export const prismaServiceMock = {
                 ...foundFood,
                 ...data
             }
+        }),
+
+        delete: jest.fn().mockImplementation(async (args: { where: Prisma.FoodWhereUniqueInput }) => {
+            const { where } = args;
+            const foundFoodIndex = fakeFoods.findIndex((food) => food.id === where.id);
+            if (!foundFoodIndex || foundFoodIndex === -1) {
+                return null;
+            }
+            const foundFood = fakeFoods[foundFoodIndex]
+            fakeFoods.splice(foundFoodIndex, 1)
+            return {
+                ...foundFood
+            }
         })
     }
 }

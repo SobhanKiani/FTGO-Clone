@@ -52,13 +52,27 @@ describe('FoodController', () => {
     const { status, data } = await controller.updateFood(updateData);
     expect(status).toEqual(HttpStatus.OK);
     expect(data.name).toEqual(updateData.data.name);
-  })
+  });
 
   it('should not update food if food does not exists', async () => {
     const updateData: IUpdateFoodEvent = { data: { name: "new name" }, id: -1 };
     const { status, data } = await controller.updateFood(updateData);
     expect(status).toEqual(HttpStatus.NOT_FOUND);
     expect(data).toBeNull();
-  })
+  });
+
+  it('should delete food that exists', async () => {
+    const where = { id: 15 };
+    const { status, data } = await controller.deleteFood({ id: where.id });
+    expect(status).toEqual(HttpStatus.OK);
+    expect(data.id).toEqual(where.id);
+  });
+
+  it('should delete food that exists', async () => {
+    const where = { id: -1 };
+    const { status, data } = await controller.deleteFood({ id: where.id });
+    expect(status).toEqual(HttpStatus.NOT_FOUND);
+    expect(data).toBeNull();
+  });
 
 });

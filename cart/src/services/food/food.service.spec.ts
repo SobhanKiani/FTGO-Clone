@@ -58,5 +58,29 @@ describe('FoodService', () => {
     expect(food).toBeDefined();
     expect(updateFunc).toHaveBeenCalled();
     expect(updateFunc).toHaveBeenCalledWith({ data: updateData, where: { id: -1 } });
+  });
+
+  it('should delete existing food', async () => {
+    const deleteFunc = jest.spyOn(prisma.food, 'delete');
+
+    const where = {
+      id: 15
+    };
+    const deletedFood = await service.deleteFood({ where });
+    expect(deletedFood.id).toEqual(where.id);
+    expect(deleteFunc).toHaveBeenCalled();
+    expect(deleteFunc).toHaveBeenCalledWith({ where });
+  });
+
+  it('should not delete not existing food', async () => {
+    const deleteFunc = jest.spyOn(prisma.food, 'delete');
+
+    const where = {
+      id: -1
+    };
+    const deletedFood = await service.deleteFood({ where });
+    expect(deletedFood).toBeNull();
+    expect(deleteFunc).toHaveBeenCalled();
+    expect(deleteFunc).toHaveBeenCalledWith({ where });
   })
 });

@@ -18,4 +18,8 @@ export class FoodService {
             data
         });
     }
+
+    async deleteFood(args: Prisma.FoodDeleteArgs) {
+        return await this.prisma.food.delete({ where: args.where });
+    }
 }

@@ -12,7 +12,7 @@ export class UserService {
     async getUserByUniqueInfo(
         where: Prisma.UserWhereUniqueInput
     ) {
-        return await this.prisma.user.findUnique({ where });
+        return await this.prisma.user.findUnique({ where, include: { cart: true } });
     }
 
     async createUser(
@@ -25,12 +25,12 @@ export class UserService {
         where: Prisma.UserWhereUniqueInput,
         data: Prisma.UserUpdateInput
     ) {
-        try{
+        try {
             return await this.prisma.user.update({
                 where,
                 data
             });
-        }catch(e){
+        } catch (e) {
             console.log(e)
         }
     }

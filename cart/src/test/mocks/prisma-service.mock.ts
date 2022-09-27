@@ -1,27 +1,35 @@
-import { Cart, Food, Prisma, User } from "@prisma/client"
-import { CartService } from "src/services/cart/cart.service";
+import { Cart, CartFood, Food, Prisma, User } from "@prisma/client"
 
-export const fakeUsers: User[] = [
+export const fakeUsers: (User & { cart: { id: number } })[] = [
     {
         id: '1',
         firstName: "Sobhan",
         lastName: "Kiani",
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        cart: {
+            id: 10,
+        }
     },
     {
         id: '2',
         firstName: "Erfan",
         lastName: "Kiani",
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        cart: {
+            id: 20,
+        }
     },
     {
         id: '3',
         firstName: "Ali",
         lastName: "Aliyan",
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        cart: {
+            id: 5,
+        }
     },
 ]
 
@@ -35,6 +43,12 @@ export const fakeCarts: Cart[] = [
     {
         id: 20,
         userId: '2',
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+    {
+        id: 5,
+        userId: '3',
         createdAt: new Date(),
         updatedAt: new Date()
     }
@@ -67,6 +81,21 @@ export const fakeFoods: Food[] = [
         isAvailable: true,
         createdAt: new Date(),
         updatedAt: new Date()
+    }
+]
+
+export const fakeCartFoods: CartFood[] = [
+    {
+        id: 1,
+        cartId: 10,
+        foodId: 5,
+        count: 1,
+    },
+    {
+        id: 2,
+        cartId: 5,
+        foodId: 10,
+        count: 1,
     }
 ]
 
@@ -149,6 +178,33 @@ export const prismaServiceMock = {
             return {
                 ...foundFood
             }
+        })
+    },
+    cartFood: {
+        create: jest.fn().mockResolvedValue({
+            id: 3,
+            cartId: 10,
+            foodId: 10,
+            count: 1,
+        }),
+
+        update: jest.fn().mockResolvedValue({
+            id: 1,
+            cartId: 10,
+            foodId: 5,
+            count: 2,
+        }),
+
+        findUnique: jest.fn().mockImplementation((params: { where: Prisma.CartFoodWhereUniqueInput }) => {
+            const { where } = params
+            const cartFood = fakeCartFoods.find((cartFood) => cartFood.foodId === where.foodInCart.foodId && cartFood.cartId === where.foodInCart.cartId);
+            if (!cartFood) {
+                return null;
+            }
+            return {
+                ...cartFood
+            }
+
         })
     }
 }

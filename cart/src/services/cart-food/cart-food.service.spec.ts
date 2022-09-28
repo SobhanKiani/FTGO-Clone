@@ -127,4 +127,29 @@ describe('CartFoodService', () => {
     });
   });
 
+  it('should delete foodCart', async () => {
+    const deleteFunc = jest.spyOn(prisma.cartFood, 'delete');
+    const where = {
+      id: 1,
+      cartId: 10,
+      foodId: 5,
+    }
+    const deletedFood = await service.deleteCartFood({ where });
+    expect(deletedFood.id).toEqual(where.id);
+    expect(deleteFunc).toHaveBeenCalled();
+    expect(deleteFunc).toHaveBeenCalledWith({ where });
+  });
+
+  it('should not delete if food does not exists', async () => {
+    const deleteFunc = jest.spyOn(prisma.cartFood, 'delete');
+    const where = {
+      id: -1,
+      cartId: -10,
+      foodId: -5,
+    }
+    const deletedFood = await service.deleteCartFood({ where });
+    expect(deletedFood).toBeNull();
+    expect(deleteFunc).toHaveBeenCalledWith({ where });
+  })
+
 });

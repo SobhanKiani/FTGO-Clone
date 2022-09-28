@@ -170,7 +170,7 @@ export const prismaServiceMock = {
         delete: jest.fn().mockImplementation(async (args: { where: Prisma.FoodWhereUniqueInput }) => {
             const { where } = args;
             const foundFoodIndex = fakeFoods.findIndex((food) => food.id === where.id);
-            if (!foundFoodIndex || foundFoodIndex === -1) {
+            if (foundFoodIndex === -1) {
                 return null;
             }
             const foundFood = fakeFoods[foundFoodIndex]
@@ -204,7 +204,20 @@ export const prismaServiceMock = {
             return {
                 ...cartFood
             }
+        }),
 
+        delete: jest.fn().mockImplementation((args: Prisma.CartFoodDeleteArgs) => {
+            const { where } = args;
+            const index = fakeCartFoods.findIndex((cartFood) => cartFood.id === where.id);
+            if (index === -1) {
+                return null;
+            }
+            const found = { ...fakeCartFoods[index] }
+            fakeFoods.splice(index, 1)
+
+            return {
+                ...found
+            }
         })
     }
 }

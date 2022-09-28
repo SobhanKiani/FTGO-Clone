@@ -13,7 +13,8 @@ export class CartService {
         return await this.prisma.cart.upsert({
             where: { userId: userId },
             create: data,
-            update: {}
+            update: {},
+            include: { CartFood: true }
         });
     }
 

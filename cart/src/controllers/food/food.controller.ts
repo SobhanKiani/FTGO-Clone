@@ -1,5 +1,5 @@
 import { Controller, HttpStatus } from '@nestjs/common';
-import { EventPattern, MessagePattern } from '@nestjs/microservices';
+import { MessagePattern } from '@nestjs/microservices';
 import { IUpdateFoodEvent } from 'src/interfaces/events/update-food.event';
 import { IDeleteCartFoodResponse } from 'src/interfaces/food/delete-food-response.interface';
 import { IUpdateCartFoodResponse } from 'src/interfaces/food/update-food-repsonse.interface';
@@ -13,7 +13,7 @@ export class FoodController {
         private foodService: FoodService
     ) { }
 
-    @EventPattern({ cmd: "create_food" })
+    @MessagePattern({ cmd: "create_food" })
     async createFood(data: ICreateFoodEvent): Promise<ICreateCartFoodResponse> {
         try {
             const food = await this.foodService.createFood(data);
@@ -33,7 +33,7 @@ export class FoodController {
         }
     }
 
-    @EventPattern({ cmd: "update_food" })
+    @MessagePattern({ cmd: "update_food" })
     async updateFood(data: IUpdateFoodEvent): Promise<IUpdateCartFoodResponse> {
         try {
             const { id, data: updateData } = data;
@@ -62,7 +62,7 @@ export class FoodController {
         }
     }
 
-    @EventPattern({ cmd: "delete_food" })
+    @MessagePattern({ cmd: "delete_food" })
     async deleteFood(params: { id: number }): Promise<IDeleteCartFoodResponse> {
         const { id } = params;
         const where = { id }

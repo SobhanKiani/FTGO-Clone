@@ -31,18 +31,23 @@ export class CartFoodService {
                     food: data.food
                 }
             })
-        } else {
-            return await this.prisma.cartFood.update({
-                where: {
-                    foodInCart: {
-                        cartId,
-                        foodId
-                    }
-                },
-                data: {
-                    count: data.count
-                }
-            })
         }
+        return await this.prisma.cartFood.update({
+            where: {
+                foodInCart: {
+                    cartId,
+                    foodId
+                }
+            },
+            data: {
+                count: data.count
+            }
+        })
+
+    }
+
+    async deleteCartFood(args: Prisma.CartFoodDeleteArgs) {
+        const { where } = args;
+        return await this.prisma.cartFood.delete({ where });
     }
 }

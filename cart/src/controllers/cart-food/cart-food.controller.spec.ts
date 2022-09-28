@@ -70,8 +70,52 @@ describe('CartFoodController', () => {
     const { status, data } = await controller.addOrUpdateFood(updateData);
     expect(status).toEqual(HttpStatus.FORBIDDEN);
     expect(data).toBeNull();
+  });
+
+  it('should not update if count is lower than 1', async () => {
+    const updateData = {
+      userId: "1",
+      cartId: 10,
+      foodId: 5,
+      count: 0
+    };
+    const { status, data } = await controller.addOrUpdateFood(updateData);
+    expect(status).toEqual(HttpStatus.BAD_REQUEST);
+    expect(data).toBeNull();
   })
 
+  it('should delete food from cart', async () => {
+    const params = {
+      cartFoodId: 1,
+      userId: '1',
+      cartId: 10
+    }
+    const { status, data } = await controller.deleteFoodFromCart(params);
+    expect(status).toEqual(HttpStatus.OK);
+    expect(data.id).toEqual(params.cartFoodId);
+  });
+
+  it('should not delete another ones cart', async () => {
+    const params = {
+      cartFoodId: 1,
+      userId: '2',
+      cartId: 10
+    }
+    const { status, data } = await controller.deleteFoodFromCart(params);
+    expect(status).toEqual(HttpStatus.FORBIDDEN);
+    expect(data).toBeNull();
+  });
+
+  it('should return not found if does not exists', async () => {
+    const params = {
+      cartFoodId: -1,
+      userId: '1',
+      cartId: 10
+    }
+    const { status, data } = await controller.deleteFoodFromCart(params);
+    expect(status).toEqual(HttpStatus.NOT_FOUND);
+    expect(data).toBeNull();
+  })
 
 
 });

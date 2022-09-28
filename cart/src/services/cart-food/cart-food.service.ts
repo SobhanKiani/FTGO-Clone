@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { CartFood, Prisma } from '@prisma/client';
 import e from 'express';
 import { PrismaService } from '../prisma-service/prisma-service.service';
 
@@ -10,7 +10,7 @@ export class CartFoodService {
     ) { }
 
 
-    async addOrUpdateCartByFood(data: Prisma.CartFoodCreateInput) {
+    async addOrUpdateCartByFood(data: Prisma.CartFoodCreateInput): Promise<CartFood> {
         const foodId = data.food.connect.id;
         const cartId = data.cart.connect.id;
 
@@ -46,7 +46,7 @@ export class CartFoodService {
 
     }
 
-    async deleteCartFood(args: Prisma.CartFoodDeleteArgs) {
+    async deleteCartFood(args: Prisma.CartFoodDeleteArgs): Promise<CartFood> {
         const { where } = args;
         return await this.prisma.cartFood.delete({ where });
     }

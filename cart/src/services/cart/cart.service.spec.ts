@@ -49,7 +49,8 @@ describe('CartService', () => {
           }
         }
       },
-      update: {}
+      update: {},
+      include: { CartFood: true }
     });
   });
 
@@ -77,7 +78,8 @@ describe('CartService', () => {
           }
         }
       },
-      update: {}
+      update: {},
+      include: { CartFood: true }
     });
   });
 

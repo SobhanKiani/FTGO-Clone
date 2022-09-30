@@ -31,21 +31,21 @@ describe('CartController', () => {
 
   it('should return cart for a given user id', async () => {
     const userId = '5';
-    const { status, data: cart } = await controller.createCart({ userId });
+    const { status, data: cart } = await controller.userCart({ userId });
     expect(status).toEqual(HttpStatus.OK);
     expect(cart.userId).toEqual(userId);
   });
 
   it('should return cart if the userId already exists', async () => {
     const userId = '1';
-    const { status, data: cart } = await controller.createCart({ userId });
+    const { status, data: cart } = await controller.userCart({ userId });
     expect(status).toEqual(HttpStatus.OK);
     expect(cart.userId).toEqual(userId);
   });
 
   it('should delete cart if exists', async () => {
     const userId = '1';
-    const { status, data: cart } = await controller.createCart({ userId });
+    const { status, data: cart } = await controller.userCart({ userId });
     expect(status).toEqual(HttpStatus.OK);
     expect(cart.userId).toEqual(userId);
   })

@@ -56,12 +56,20 @@ type Restaurant {
   updatedAt: Date!
 }
 
+type Cart {
+  id: Int!
+  userId: String!
+  createdAt: Date!
+  updatedAt: Date!
+}
+
 type Query {
   checkAuthClientStatus: CheckStatus!
   getRestaurantList(name: String, category: String): [Restaurant!]!
   getRestaurantById(id: Int!): Restaurant!
   getFoodById(id: Int!): Food!
   getFoodList(name: String, category: String, isAvailable: Boolean, restaurantId: Int): [Food!]!
+  getUserCart: Cart!
 }
 
 type Mutation {

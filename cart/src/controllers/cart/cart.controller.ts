@@ -12,8 +12,8 @@ export class CartController {
     ) { }
 
 
-    @MessagePattern({ cmd: "create_cart" })
-    async createCart(params: { userId: string }): Promise<IGetOrCreateCartResponse> {
+    @MessagePattern({ cmd: "user_cart" })
+    async userCart(params: { userId: string }): Promise<IGetOrCreateCartResponse> {
         const { userId } = params
         try {
             const data: Prisma.CartCreateInput = {

@@ -127,6 +127,8 @@ services:
       - AUTH_PORT=9991
       - RESTAURANT_HOST=restaurant
       - RESTAURANT_PORT=9993
+      - CART_HOST=cart
+      - CART_PORT=9994
     depends_on:
       - auth
       - restaurant

@@ -4,6 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { RestaurantModule } from './restaurant/restaurant.module';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { RestaurantModule } from './restaurant/restaurant.module';
       autoSchemaFile: join(process.cwd(), 'src/schema/schema.gql'),
     }),
     RestaurantModule,
+    CartModule,
   ],
   controllers: [],
   providers: [],

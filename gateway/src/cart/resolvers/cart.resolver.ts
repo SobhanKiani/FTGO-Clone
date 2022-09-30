@@ -31,4 +31,19 @@ export class CartResolver {
         }
         return result.data
     }
+
+    @Mutation((reutrns) => Cart)
+    @IsPrivate(true)
+    @Roles(Role.User)
+    @UseGuards(RolesGuard)
+    async deleteCart(
+        @GetUser() user: User
+    ) {
+        const pattern = { cmd: "delete_cart" }
+        const result = await firstValueFrom(this.cartClient.send<IGetOrCreateCartResponse>(pattern, { userId: user.id }));
+        if (result.status !== HttpStatus.OK) {
+            throw new HttpException({ message: result.message, errors: result.errors }, result.status);
+        }
+        return result.data
+    }
 }

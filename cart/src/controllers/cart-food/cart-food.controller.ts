@@ -2,6 +2,7 @@ import { Controller, HttpStatus } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { Prisma } from '@prisma/client';
 import { IAddOrUpdateCartFood } from 'src/interfaces/cart-food/cart-food-create-or-update-response.interface';
+import { IDeleteCartFoodResponse } from 'src/interfaces/cart-food/cart-food-delete.interface';
 import { CartFoodService } from '../../services/cart-food/cart-food.service';
 import { UserService } from '../../services/user/user.service';
 
@@ -17,7 +18,7 @@ export class CartFoodController {
         const { cartId, foodId, userId, count } = params;
         try {
             const userData = await this.userService.getUserByUniqueInfo({ id: userId });
-            if (userData.cart.id !== cartId) {
+            if (!userData.cart || userData.cart.id !== cartId) {
                 return {
                     status: HttpStatus.FORBIDDEN,
                     message: "Forbidden",
@@ -39,7 +40,7 @@ export class CartFoodController {
                 count: count
             }
 
-            const cartFood = await this.cartFoodService.addOrUpdateCartByFood({ ...data });
+            const cartFood = await this.cartFoodService.addOrUpdateCartByFood(data);
             return {
                 status: HttpStatus.OK,
                 message: "Cart Updated",
@@ -59,7 +60,7 @@ export class CartFoodController {
     }
 
     @MessagePattern({ cmd: "delete_food_from_cart" })
-    async deleteFoodFromCart(params: { cartFoodId: number, userId: string, cartId: number }) {
+    async deleteFoodFromCart(params: { cartFoodId: number, userId: string, cartId: number }): Promise<IDeleteCartFoodResponse> {
         const { cartFoodId, userId, cartId } = params
         const where = {
             id: cartFoodId,

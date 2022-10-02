@@ -33,19 +33,21 @@ model Food {
   name        String
   category    String
   isAvailable Boolean
-  price       Float
+  price       String
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   CartFood    CartFood[]
 }
 
 model CartFood {
-  id     Int  @id @default(autoincrement())
-  cart   Cart @relation(references: [id], fields: [cartId])
-  cartId Int
-  count  Int
-  food   Food @relation(references: [id], fields: [foodId])
-  foodId Int
+  id        Int      @id @default(autoincrement())
+  cart      Cart     @relation(references: [id], fields: [cartId], onDelete: Cascade)
+  cartId    Int
+  count     Int
+  food      Food     @relation(references: [id], fields: [foodId], onDelete: Cascade)
+  foodId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([foodId, cartId], name: "foodInCart")
 }

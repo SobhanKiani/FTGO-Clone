@@ -4,6 +4,6 @@ export interface IUpdateFoodEvent {
         name?: string,
         category?: string,
         isAvailable?: boolean,
-        price?: number;
+        price?: string;
     }
 }

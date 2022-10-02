@@ -50,7 +50,8 @@ describe('CartFoodService', () => {
           cartId,
           foodId
         }
-      }
+      },
+      include: { food: true }
     });
 
     expect(createFunc).toHaveBeenCalled()
@@ -59,7 +60,8 @@ describe('CartFoodService', () => {
         count: createData.count,
         cart: createData.cart,
         food: createData.food
-      }
+      },
+      include: { food: true }
     })
 
     expect(updateFunc).not.toHaveBeenCalledWith({
@@ -71,7 +73,8 @@ describe('CartFoodService', () => {
       },
       data: {
         count: createData.count,
-      }
+      },
+      include: { food: true }
     });
 
   });
@@ -102,7 +105,8 @@ describe('CartFoodService', () => {
           cartId,
           foodId
         }
-      }
+      },
+      include: { food: true }
     });
 
     expect(updateFunc).toHaveBeenCalled()
@@ -115,7 +119,8 @@ describe('CartFoodService', () => {
       },
       data: {
         count: createData.count,
-      }
+      },
+      include: { food: true }
     })
 
     expect(createFunc).not.toHaveBeenCalledWith({
@@ -123,7 +128,8 @@ describe('CartFoodService', () => {
         count: createData.count,
         cart: createData.cart,
         food: createData.food
-      }
+      },
+      include: { food: true }
     });
   });
 
@@ -137,7 +143,10 @@ describe('CartFoodService', () => {
     const deletedFood = await service.deleteCartFood({ where });
     expect(deletedFood.id).toEqual(where.id);
     expect(deleteFunc).toHaveBeenCalled();
-    expect(deleteFunc).toHaveBeenCalledWith({ where });
+    expect(deleteFunc).toHaveBeenCalledWith({
+      where,
+      include: { food: true }
+    });
   });
 
   it('should not delete if food does not exists', async () => {
@@ -149,7 +158,10 @@ describe('CartFoodService', () => {
     }
     const deletedFood = await service.deleteCartFood({ where });
     expect(deletedFood).toBeNull();
-    expect(deleteFunc).toHaveBeenCalledWith({ where });
+    expect(deleteFunc).toHaveBeenCalledWith({
+      where,
+      include: { food: true }
+    });
   })
 
 });

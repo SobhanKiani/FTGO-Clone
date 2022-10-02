@@ -11,7 +11,7 @@ describe('FoodService', () => {
     name: "food4",
     category: "cat3",
     isAvailable: true,
-    price: 10
+    price: '10'
   }
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateFoodDTO } from '../../food/dtos/create-food.dto';
@@ -8,16 +8,29 @@ import { FilterFoodQuery } from '../../food/filters/filter-food.query';
 import { Food } from '../models/food.model';
 import { Restaurant } from 'src/restaurant/models/restaurant.model';
 import { RateDTO } from '../dtos/rate.dto';
+import { ClientProxy } from '@nestjs/microservices';
+import { ICreateFoodEvent } from '../interfaces/events/create-food.event';
+import { IUpdateFoodEvent } from '../interfaces/events/update-food.event';
+import { IDeleteFoodEvent } from '../interfaces/events/delete-food.event';
 
 @Injectable()
 export class FoodService {
     constructor(
-        @InjectRepository(Food) private foodRepository: Repository<Food>
+        @InjectRepository(Food) private foodRepository: Repository<Food>,
+        @Inject("NATS_SERVICE") private natsClient: ClientProxy,
     ) { }
 
 
     async createFood(createFoodDto: CreateFoodDTO, restaurant: Restaurant): Promise<Food> {
-        const newFood = await this.foodRepository.create({ ...createFoodDto, restaurant });
+        const newFood = await this.foodRepository.create({ ...createFoodDto, restaurant, isAvailable: true }).save();
+        const eventData: ICreateFoodEvent = {
+            id: newFood.id,
+            name: newFood.name,
+            category: newFood.category,
+            price: newFood.price,
+            isAvailable: newFood.isAvailable
+        }
+        this.natsClient.emit<any, ICreateFoodEvent>({ cmd: "create_food" }, eventData)
         return await this.foodRepository.save(newFood);
     }
 
@@ -34,11 +47,24 @@ export class FoodService {
     }
 
     async updateFood(id: number, foodUpdateDto: UpdateFoodDTO) {
-        return await this.foodRepository.update(id, foodUpdateDto);
+        const food = await this.foodRepository.update(id, foodUpdateDto);
+        const eventData: IUpdateFoodEvent = {
+            id: id,
+            data: {
+                ...foodUpdateDto
+            }
+        }
+        this.natsClient.emit<any, IUpdateFoodEvent>({ cmd: "update_food" }, eventData)
+        return food;
     }
 
     async deleteFood(id: number) {
-        return await this.foodRepository.delete({ id });
+        const result = await this.foodRepository.delete({ id });
+        const eventData: IDeleteFoodEvent = {
+            id: id
+        }
+        this.natsClient.emit<any, IDeleteFoodEvent>({ cmd: "delete_food" }, eventData);
+        return result;
     }
 
     async getFoodList(filters: FilterFoodQuery) {

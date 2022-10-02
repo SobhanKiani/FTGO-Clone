@@ -17,7 +17,7 @@ describe('FoodController', () => {
     name: "food4",
     category: "cat3",
     isAvailable: true,
-    price: 10
+    price: '10'
   }
 
   beforeEach(async () => {

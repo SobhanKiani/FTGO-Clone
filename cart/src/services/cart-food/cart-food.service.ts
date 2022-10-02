@@ -20,7 +20,8 @@ export class CartFoodService {
                     cartId,
                     foodId
                 }
-            }
+            },
+            include: { food: true }
         });
 
         if (!cartFood) {
@@ -29,7 +30,8 @@ export class CartFoodService {
                     count: data.count,
                     cart: data.cart,
                     food: data.food
-                }
+                },
+                include: { food: true }
             })
         }
         return await this.prisma.cartFood.update({
@@ -41,13 +43,21 @@ export class CartFoodService {
             },
             data: {
                 count: data.count
-            }
+            },
+            include: { food: true }
         })
 
     }
 
     async deleteCartFood(args: Prisma.CartFoodDeleteArgs): Promise<CartFood> {
-        const { where } = args;
-        return await this.prisma.cartFood.delete({ where });
+        try {
+            const { where } = args;
+            return await this.prisma.cartFood.delete({
+                where,
+                include: { food: true }
+            });
+        } catch (e) {
+            console.log(e)
+        }
     }
 }

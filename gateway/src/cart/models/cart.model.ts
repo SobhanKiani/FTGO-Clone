@@ -1,4 +1,5 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { CartFood } from "./cart-food.model";
 
 @ObjectType()
 export class Cart {
@@ -8,7 +9,8 @@ export class Cart {
     @Field()
     userId: string;
 
-    // CartFood: CartFood[]
+    @Field(type => [CartFood], { nullable: 'items' })
+    CartFood: CartFood[]
 
     @Field()
     createdAt: Date;

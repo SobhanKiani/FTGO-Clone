@@ -50,7 +50,14 @@ describe('CartService', () => {
         }
       },
       update: {},
-      include: { CartFood: true }
+      // include: { CartFood: true }
+      include: {
+        CartFood: {
+          include: {
+            food: true
+          }
+        }
+      }
     });
   });
 
@@ -79,7 +86,14 @@ describe('CartService', () => {
         }
       },
       update: {},
-      include: { CartFood: true }
+      // include: { CartFood: true }
+      include: {
+        CartFood: {
+          include: {
+            food: true
+          }
+        }
+      }
     });
   });
 
@@ -88,7 +102,14 @@ describe('CartService', () => {
 
     const userId = '1'
     const args: Prisma.CartDeleteArgs = {
-      where: { userId }
+      where: { userId },
+      include: {
+        CartFood: {
+          include: {
+            food: true
+          }
+        }
+      }
     };
     const cart = await service.deleteCart(args);
     expect(cart.userId).toEqual(userId);

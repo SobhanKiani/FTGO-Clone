@@ -56,9 +56,19 @@ type Restaurant {
   updatedAt: Date!
 }
 
+type CartFood {
+  id: Int!
+  cartId: Int!
+  count: Int!
+  food: Food!
+  createdAt: Date!
+  updatedAt: Date!
+}
+
 type Cart {
   id: Int!
   userId: String!
+  CartFood: [CartFood]!
   createdAt: Date!
   updatedAt: Date!
 }
@@ -86,6 +96,8 @@ type Mutation {
   deleteFood(id: Int!): UpdateResult!
   rateFood(rateData: RateFoodInput!): UpdateResult!
   deleteCart: Cart!
+  addOrUpdateCartFood(addOrUpdateFoodInCartData: AddOrUpdateFoodInCartInput!): CartFood!
+  deleteFoodFromCart(deleteFoodFromCartData: DeleteFoodFromCartInput!): CartFood!
 }
 
 input CreateUserInput {
@@ -143,4 +155,15 @@ input UpdateFoodInput {
 input RateFoodInput {
   rateNumber: Int!
   foodId: Int!
+}
+
+input AddOrUpdateFoodInCartInput {
+  cartId: Float!
+  foodId: Float!
+  count: Float!
+}
+
+input DeleteFoodFromCartInput {
+  cartId: Float!
+  cartFoodId: Float!
 }

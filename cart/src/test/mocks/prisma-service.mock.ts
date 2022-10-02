@@ -60,7 +60,7 @@ export const fakeFoods: Food[] = [
         name: "food1",
         category: "cat1",
         isAvailable: true,
-        price: 10,
+        price: '10',
         createdAt: new Date(),
         updatedAt: new Date()
     },
@@ -68,7 +68,7 @@ export const fakeFoods: Food[] = [
         id: 10,
         name: "food2",
         category: "cat1",
-        price: 20,
+        price: '20',
         isAvailable: true,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -77,7 +77,7 @@ export const fakeFoods: Food[] = [
         id: 15,
         name: "food3",
         category: "cat2",
-        price: 15,
+        price: '15',
         isAvailable: true,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -90,12 +90,16 @@ export const fakeCartFoods: CartFood[] = [
         cartId: 10,
         foodId: 5,
         count: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
     },
     {
         id: 2,
         cartId: 5,
         foodId: 10,
         count: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
     }
 ]
 

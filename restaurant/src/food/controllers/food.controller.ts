@@ -22,7 +22,7 @@ export class FoodController {
     constructor(
         private foodService: FoodService,
         private restaurantService: RestaurantService,
-        @Inject("NATS_SERVICE") private natsClient: ClientProxy,
+        // @Inject("NATS_SERVICE") private natsClient: ClientProxy,
     ) { }
 
     //create 
@@ -52,14 +52,14 @@ export class FoodController {
 
             const newFood = await this.foodService.createFood(createFoodDto, restaurant);
 
-            const eventData: ICreateFoodEvent = {
-                id: newFood.id,
-                name: newFood.name,
-                category: newFood.category,
-                price: newFood.price,
-                isAvailable: newFood.isAvailable
-            }
-            this.natsClient.emit<any, ICreateFoodEvent>({ cmd: "create_food" }, eventData)
+            // const eventData: ICreateFoodEvent = {
+            //     id: newFood.id,
+            //     name: newFood.name,
+            //     category: newFood.category,
+            //     price: newFood.price,
+            //     isAvailable: newFood.isAvailable
+            // }
+            // this.natsClient.emit<any, ICreateFoodEvent>({ cmd: "create_food" }, eventData)
 
             return {
                 status: HttpStatus.CREATED,
@@ -103,14 +103,13 @@ export class FoodController {
             }
             const updateResult = await this.foodService.updateFood(foodId, updateFoodDto);
 
-            const eventData: IUpdateFoodEvent = {
-
-                id: foodId,
-                data: {
-                    ...updateFoodDto
-                }
-            }
-            this.natsClient.emit<any, IUpdateFoodEvent>({ cmd: "update_food" }, eventData)
+            // const eventData: IUpdateFoodEvent = {
+            //     id: foodId,
+            //     data: {
+            //         ...updateFoodDto
+            //     }
+            // }
+            // this.natsClient.emit<any, IUpdateFoodEvent>({ cmd: "update_food" }, eventData)
 
             return {
                 status: HttpStatus.OK,
@@ -158,10 +157,10 @@ export class FoodController {
 
             const deleteResult = await this.foodService.deleteFood(foodId);
 
-            const eventData: IDeleteFoodEvent = {
-                id: foodId
-            }
-            this.natsClient.emit<any, IDeleteFoodEvent>({ cmd: "delete_food" }, eventData);
+            // const eventData: IDeleteFoodEvent = {
+            //     id: foodId
+            // }
+            // this.natsClient.emit<any, IDeleteFoodEvent>({ cmd: "delete_food" }, eventData);
 
             return {
                 status: HttpStatus.OK,

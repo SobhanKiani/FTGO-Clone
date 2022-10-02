@@ -14,13 +14,16 @@ export class CartService {
             where: { userId: userId },
             create: data,
             update: {},
-            include: { CartFood: true }
+            include: { CartFood: { include: { food: true } } }
         });
     }
 
     async deleteCart(args: Prisma.CartDeleteArgs): Promise<Cart> {
         const { where } = args
-        return await this.prisma.cart.delete({ where });
+        return await this.prisma.cart.delete({
+            where,
+            include: { CartFood: { include: { food: true } } }
+        });
     }
 
 }

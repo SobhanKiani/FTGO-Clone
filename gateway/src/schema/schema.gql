@@ -69,6 +69,7 @@ type Cart {
   id: Int!
   userId: String!
   CartFood: [CartFood]!
+  totalPrice: Float!
   createdAt: Date!
   updatedAt: Date!
 }

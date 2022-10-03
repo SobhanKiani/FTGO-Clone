@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Cart, Prisma } from '@prisma/client';
+import { FoodController } from 'src/controllers/food/food.controller';
 import { PrismaService } from '../prisma-service/prisma-service.service';
 
 @Injectable()
@@ -24,6 +25,15 @@ export class CartService {
             where,
             include: { CartFood: { include: { food: true } } }
         });
+    }
+    
+    async updateTotalPriceByCartId(id: number) {
+        const cart = await this.prisma.cart.findUnique({ where: { id }, include: { CartFood: { include: { food: true } } } });
+        let totalPrice = 0;
+        for (const cartFood of cart.CartFood) {
+            totalPrice += cartFood.count * Number(cartFood.food.price);
+        }
+        return await this.prisma.cart.update({ where: { id }, data: { totalPrice } });
     }
 
 }

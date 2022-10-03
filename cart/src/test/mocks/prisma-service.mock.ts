@@ -38,19 +38,22 @@ export const fakeCarts: Cart[] = [
         id: 10,
         userId: '1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        totalPrice: 0
     },
     {
         id: 20,
         userId: '2',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        totalPrice: 0
     },
     {
         id: 5,
         userId: '3',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        totalPrice: 0
     }
 ]
 
@@ -140,13 +143,15 @@ export const prismaServiceMock = {
                 id: 30,
                 userId: where.userId,
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
+                totalPrice: 0
             }
             fakeCarts.push(newCart);
             return Promise.resolve(newCart);
         }),
-
         delete: jest.fn().mockResolvedValue(fakeCarts[0]),
+        findUnique: jest.fn().mockResolvedValue({ ...fakeCarts[0], CartFood: [{ ...fakeCartFoods[0], food: fakeFoods[0] }] }),
+        update: jest.fn().mockResolvedValue({ ...fakeCarts[0], totalPrice: 10 }),
     },
 
     food: {

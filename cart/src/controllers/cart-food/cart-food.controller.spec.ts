@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Prisma } from '@prisma/client';
+import { CartService } from '../../services/cart/cart.service';
 import { CartFoodService } from '../../services/cart-food/cart-food.service';
 import { PrismaService } from '../../services/prisma-service/prisma-service.service';
 import { UserService } from '../../services/user/user.service';
@@ -10,6 +10,7 @@ import { CartFoodController } from './cart-food.controller';
 describe('CartFoodController', () => {
   let controller: CartFoodController;
   let service: CartFoodService;
+  let cartService: CartService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -17,6 +18,7 @@ describe('CartFoodController', () => {
       providers: [
         CartFoodService,
         UserService,
+        CartService,
         {
           provide: PrismaService,
           useValue: prismaServiceMock
@@ -26,11 +28,13 @@ describe('CartFoodController', () => {
 
     controller = module.get<CartFoodController>(CartFoodController);
     service = module.get<CartFoodService>(CartFoodService);
+    cartService = module.get<CartService>(CartService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
+    expect(cartService).toBeDefined();
   });
 
   it('should add food to cart', async () => {
@@ -47,6 +51,7 @@ describe('CartFoodController', () => {
   });
 
   it('should update existing food in cart', async () => {
+    const cartUpdateTotalPrice = jest.spyOn(cartService, 'updateTotalPriceByCartId');
     const updateData = {
       userId: "1",
       cartId: 10,
@@ -57,6 +62,9 @@ describe('CartFoodController', () => {
     const { status, data } = await controller.addOrUpdateFood(updateData);
     expect(status).toEqual(HttpStatus.OK);
     expect(data.count).toEqual(updateData.count);
+
+    expect(cartUpdateTotalPrice).toHaveBeenCalled();
+    expect(cartUpdateTotalPrice).toHaveBeenCalledWith(updateData.cartId);
   });
 
   it('should not update another ones cart', async () => {
@@ -85,6 +93,8 @@ describe('CartFoodController', () => {
   })
 
   it('should delete food from cart', async () => {
+    const cartUpdateTotalPrice = jest.spyOn(cartService, 'updateTotalPriceByCartId');
+
     const params = {
       cartFoodId: 1,
       userId: '1',
@@ -93,6 +103,10 @@ describe('CartFoodController', () => {
     const { status, data } = await controller.deleteFoodFromCart(params);
     expect(status).toEqual(HttpStatus.OK);
     expect(data.id).toEqual(params.cartFoodId);
+
+    expect(cartUpdateTotalPrice).toHaveBeenCalled();
+    expect(cartUpdateTotalPrice).toHaveBeenCalledWith(params.cartId);
+
   });
 
   it('should not delete another ones cart', async () => {

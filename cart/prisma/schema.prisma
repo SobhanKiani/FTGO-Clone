@@ -20,12 +20,13 @@ model User {
 }
 
 model Cart {
-  id        Int        @id @default(autoincrement())
-  user      User       @relation(references: [id], fields: [userId])
-  userId    String     @unique
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  CartFood  CartFood[]
+  id         Int        @id @default(autoincrement())
+  user       User       @relation(references: [id], fields: [userId])
+  userId     String     @unique
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  CartFood   CartFood[]
+  totalPrice Float      @default(0.0)
 }
 
 model Food {

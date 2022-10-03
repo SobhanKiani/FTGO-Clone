@@ -32,7 +32,6 @@ export class CartResolver {
     ) {
         const pattern = { cmd: "user_cart" }
         const result = await firstValueFrom(this.cartClient.send<IGetOrCreateCartResponse>(pattern, { userId: user.id }));
-        console.log('CART RESULT', result.data.CartFood);
         if (result.status !== HttpStatus.OK) {
             throw new HttpException({ message: result.message, errors: result.errors }, result.status);
         }

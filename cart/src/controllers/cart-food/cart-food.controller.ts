@@ -3,6 +3,8 @@ import { MessagePattern } from '@nestjs/microservices';
 import { Prisma } from '@prisma/client';
 import { IAddOrUpdateCartFood } from 'src/interfaces/cart-food/cart-food-create-or-update-response.interface';
 import { IDeleteCartFoodResponse } from 'src/interfaces/cart-food/cart-food-delete.interface';
+// import { CartService } from 'src/services/cart/cart.service';
+import { CartService } from '../../services/cart/cart.service';
 import { CartFoodService } from '../../services/cart-food/cart-food.service';
 import { UserService } from '../../services/user/user.service';
 
@@ -11,6 +13,7 @@ export class CartFoodController {
     constructor(
         private cartFoodService: CartFoodService,
         private userService: UserService,
+        private cartService: CartService
     ) { }
 
     @MessagePattern({ cmd: "update_cart" })
@@ -41,6 +44,7 @@ export class CartFoodController {
             }
 
             const cartFood = await this.cartFoodService.addOrUpdateCartByFood(data);
+            const cart = await this.cartService.updateTotalPriceByCartId(cartId);
             return {
                 status: HttpStatus.OK,
                 message: "Cart Updated",
@@ -48,7 +52,6 @@ export class CartFoodController {
                 errors: null
             }
         } catch (e) {
-            console.log(e);
             return {
                 status: HttpStatus.BAD_REQUEST,
                 message: "Could Not Update The Cart",
@@ -84,6 +87,7 @@ export class CartFoodController {
                     errors: { cart: { path: "cart", message: "not found" } }
                 }
             }
+            const cart = await this.cartService.updateTotalPriceByCartId(cartId);
             return {
                 status: HttpStatus.OK,
                 message: "Food Deleted From Cart",

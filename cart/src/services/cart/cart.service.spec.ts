@@ -50,7 +50,6 @@ describe('CartService', () => {
         }
       },
       update: {},
-      // include: { CartFood: true }
       include: {
         CartFood: {
           include: {
@@ -116,4 +115,22 @@ describe('CartService', () => {
     expect(deleteFunc).toHaveBeenCalled();
     expect(deleteFunc).toHaveBeenCalledWith(args);
   });
+
+  it('should update carts total price', async () => {
+    const updateFunc = jest.spyOn(prismaService.cart, 'update');
+    const findUniqueFunc = jest.spyOn(prismaService.cart, 'findUnique');
+
+    const userId = '1';
+    const cartId = 10;
+    const cart = await service.updateTotalPriceByCartId(cartId);
+    expect(cart.totalPrice).toEqual(10);
+
+    expect(findUniqueFunc).toHaveBeenCalled();
+    expect(findUniqueFunc).toHaveBeenCalledWith({ where: { id: cartId }, include: { CartFood: { include: { food: true } } } });
+
+    expect(updateFunc).toHaveBeenCalled();
+    expect(updateFunc).toHaveBeenCalledWith({ where: { id: cartId }, data: { totalPrice: 10 } });
+
+
+  })
 });

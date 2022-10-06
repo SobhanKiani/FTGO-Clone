@@ -1,6 +1,6 @@
 import { User } from '../models/user.model';
-import { IBaseResponseInterface } from './base-response.interface';
+import { IBaseResponse } from '../utils/base-response.interface';
 
-export interface ILoginResponse extends IBaseResponseInterface {
+export interface ILoginResponse extends IBaseResponse {
   data: { user: User; token: string } | null;
 }

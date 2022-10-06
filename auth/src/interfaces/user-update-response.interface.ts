@@ -1,6 +1,7 @@
+import { IBaseResponse } from 'src/utils/base-response.interface';
 import { User } from '../models/user.model';
 
-export interface IUpdateUserResponse {
+export interface IUpdateUserResponse extends IBaseResponse {
   status: number;
   message: string;
   data: User | null;

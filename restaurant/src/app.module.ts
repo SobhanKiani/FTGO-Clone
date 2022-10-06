@@ -1,16 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { RestaurantController } from './restaurant/controllers/restaurant.controller';
-import { RestaurantModule } from './restaurant/restaurant.module';
-import { FoodModule } from './food/food.module';
-import { FoodController } from './food/controllers/food.controller';
 import { join } from 'path';
+import { FoodController } from './controllers/food/food.controller';
+import { RestaurantController } from './controllers/restaurant/restaurant.controller';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: "postgres",
+      type: 'postgres',
       host: process.env.POSTGRES_HOST,
       port: Number(process.env.POSTGRES_PORT),
       username: process.env.POSTGRES_USER,
@@ -20,12 +17,8 @@ import { join } from 'path';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    RestaurantModule,
-    FoodModule,
   ],
   controllers: [RestaurantController, FoodController],
   providers: [],
 })
-export class AppModule {
-  constructor(dataSource: DataSource) { }
-}
+export class AppModule {}

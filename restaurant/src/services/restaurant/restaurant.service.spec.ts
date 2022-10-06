@@ -9,7 +9,6 @@ import { RestaurantService } from './restaurant.service';
 
 describe('RestaurantService', () => {
   let restaurantService: RestaurantService;
-  // let restaurantRepo: Repository<Restaurant>
   const createRestaurantData: CreateRestaurantDTO = {
     name: 'rest1',
     address: 'add1',

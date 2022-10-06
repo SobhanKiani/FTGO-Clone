@@ -1,4 +1,3 @@
-import { forwardRef } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreateRestaurantDTO } from 'src/dto/restaurant/createRestaurant.dto';

@@ -8,7 +8,6 @@ import { Restaurant } from '../../models/restaurant.model';
 import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
 import { RestaurantController } from './restaurant.controller';
 import { RestaurantService } from '../../services/restaurant/restaurant.service';
-import { FoodController } from '../food/food.controller';
 
 describe('RestaurantController', () => {
   let restaurantController: RestaurantController;

@@ -7,21 +7,21 @@ import { Food } from './models/food.model';
 import { FoodService } from './services/food.service';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([Food]),
-        forwardRef(() => RestaurantModule),
-        ClientsModule.register([
-            {
-                name: 'NATS_SERVICE',
-                transport: Transport.NATS,
-                options: {
-                    servers: [process.env.NATS_URL]
-                }
-            },
-        ]),
-    ],
-    controllers: [FoodController],
-    providers: [FoodService],
-    exports: [TypeOrmModule, FoodService]
+  imports: [
+    TypeOrmModule.forFeature([Food]),
+    forwardRef(() => RestaurantModule),
+    ClientsModule.register([
+      {
+        name: 'NATS_SERVICE',
+        transport: Transport.NATS,
+        options: {
+          servers: [process.env.NATS_URL],
+        },
+      },
+    ]),
+  ],
+  controllers: [FoodController],
+  providers: [FoodService],
+  exports: [TypeOrmModule, FoodService],
 })
-export class FoodModule { }
+export class FoodModule {}

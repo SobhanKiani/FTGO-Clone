@@ -14,14 +14,14 @@ import { RestaurantService } from './services/restaurant.service';
         name: 'NATS_SERVICE',
         transport: Transport.NATS,
         options: {
-          servers: [process.env.NATS_URL]
-        }
+          servers: [process.env.NATS_URL],
+        },
       },
     ]),
-    forwardRef(() => FoodModule)
+    forwardRef(() => FoodModule),
   ],
   controllers: [RestaurantController],
-  providers: [RestaurantService,],
-  exports: [TypeOrmModule, RestaurantService,]
+  providers: [RestaurantService],
+  exports: [TypeOrmModule, RestaurantService],
 })
-export class RestaurantModule { }
+export class RestaurantModule {}

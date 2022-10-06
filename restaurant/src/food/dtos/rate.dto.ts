@@ -1,13 +1,19 @@
-import { IsNotEmpty, IsNumber, IsNumberString, Max, Min } from "class-validator";
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsNumberString,
+  Max,
+  Min,
+} from 'class-validator';
 
 export class RateDTO {
-    @Max(5)
-    @Min(0)
-    @IsNumberString()
-    @IsNotEmpty()
-    rateNumber: number;
+  @Max(5)
+  @Min(0)
+  @IsNumberString()
+  @IsNotEmpty()
+  rateNumber: number;
 
-    @IsNumber()
-    @IsNotEmpty()
-    foodId: number;
+  @IsNumber()
+  @IsNotEmpty()
+  foodId: number;
 }

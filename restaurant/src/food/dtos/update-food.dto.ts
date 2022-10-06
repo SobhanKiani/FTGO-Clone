@@ -1,15 +1,15 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
 export class UpdateFoodDTO {
-    @IsString()
-    name?: string;
+  @IsString()
+  name?: string;
 
-    @IsString()
-    category?: string;
+  @IsString()
+  category?: string;
 
-    @IsNumber()
-    price?: number;
+  @IsNumber()
+  price?: number;
 
-    @IsBoolean()
-    isAvailable?: boolean
+  @IsBoolean()
+  isAvailable?: boolean;
 }

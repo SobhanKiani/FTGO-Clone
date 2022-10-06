@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Prisma } from '@prisma/client';
-import { fakeUsers, prismaServiceMock } from '../../test/mocks/prisma-service.mock';
+import { fakeUsers, prismaServiceMock } from '../../../test/mocks/prisma-service.mock';
 import { PrismaService } from '../prisma-service/prisma-service.service';
 import { UserService } from './user.service';
 

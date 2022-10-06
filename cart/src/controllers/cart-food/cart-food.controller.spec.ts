@@ -4,7 +4,7 @@ import { CartService } from '../../services/cart/cart.service';
 import { CartFoodService } from '../../services/cart-food/cart-food.service';
 import { PrismaService } from '../../services/prisma-service/prisma-service.service';
 import { UserService } from '../../services/user/user.service';
-import { prismaServiceMock } from '../../test/mocks/prisma-service.mock';
+import { prismaServiceMock } from '../../../test/mocks/prisma-service.mock';
 import { CartFoodController } from './cart-food.controller';
 
 describe('CartFoodController', () => {

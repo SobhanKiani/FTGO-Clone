@@ -1,4 +1,3 @@
-
 export interface ICreateRestaurantEvent {
-    ownerId: string;
+  ownerId: string;
 }

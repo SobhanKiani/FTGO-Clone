@@ -31,7 +31,7 @@ export class AuthResolver {
   // @UseGuards(RolesGuard)
   async checkAuthClientStatus() {
     const pattern = { cmd: 'auth_check' };
-    const result = await this.authClient.send(pattern, {});
+    const result = await this.authClient.send(pattern,);
 
     return result;
   }

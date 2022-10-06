@@ -6,7 +6,7 @@ import { ICreateFoodEvent } from 'src/interfaces/events/create-food.event';
 import { IUpdateFoodEvent } from 'src/interfaces/events/update-food.event';
 import { FoodService } from '../../services/food/food.service';
 import { PrismaService } from '../../services/prisma-service/prisma-service.service';
-import { prismaServiceMock } from '../../test/mocks/prisma-service.mock';
+import { prismaServiceMock } from '../../../test/mocks/prisma-service.mock';
 import { FoodController } from './food.controller';
 
 describe('FoodController', () => {

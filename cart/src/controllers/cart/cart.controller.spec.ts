@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CartService } from '../../services/cart/cart.service';
 import { PrismaService } from '../../services/prisma-service/prisma-service.service';
-import { prismaServiceMock } from '../../test/mocks/prisma-service.mock';
+import { prismaServiceMock } from '../../../test/mocks/prisma-service.mock';
 import { CartController } from './cart.controller';
 
 describe('CartController', () => {

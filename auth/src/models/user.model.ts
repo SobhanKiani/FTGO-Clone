@@ -2,11 +2,7 @@ import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
 import { Document } from 'mongoose';
 import { Role } from '../enums/roles.enum';
-import {
-  EMAIL_REGEX,
-  PASSWORD_REGEX,
-  PHONE_NUMBER_REGEX,
-} from '../utils/regex';
+import { EMAIL_REGEX, PHONE_NUMBER_REGEX } from '../utils/regex';
 
 export type UserDocument = User & Document;
 
@@ -84,7 +80,6 @@ export class User extends Document {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.methods.isPasswordValid = async function (password: string) {
-  const user = this;
-  const isValid = await bcrypt.compare(password, user.password);
+  const isValid = await bcrypt.compare(password, this.password);
   return isValid;
 };

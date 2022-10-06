@@ -1,23 +1,19 @@
-import {
-  HttpStatus,
-  INestApplication,
-} from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { ClientProxy, } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose, { Model } from 'mongoose';
 import { AuthController } from './auth.controller';
 import { AuthService } from '../services/auth.service';
-import { UserSchemaObject } from '../DbSchemaObjects/user.schema-object';
+import { UserSchemaObject } from '../db-schema-objects/user.schema-object';
 import { jwtConstants } from '../jwt/constants';
 import { JwtStrategy } from '../jwt/jwt-startegt.class';
 import { RolesGuard } from '../jwt/roles.guard';
 import { User } from '../models/user.model';
 import { Role } from '../enums/roles.enum';
-import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
-
+import { clientProxyMock } from '../../test/mocks/client-proxy.mock';
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -61,7 +57,7 @@ describe('AuthController', () => {
         JwtStrategy,
         RolesGuard,
         { provide: getModelToken(User.name), useValue: userModel },
-        { provide: "NATS_SERVICE", useValue: clientProxyMock }
+        { provide: 'NATS_SERVICE', useValue: clientProxyMock },
       ],
       controllers: [AuthController],
     }).compile();
@@ -71,10 +67,6 @@ describe('AuthController', () => {
     app = testModule.createNestApplication();
     natsClient = app.get('NATS_SERVICE');
 
-    // app.connectMicroservice({
-    //   transport: Transport.NATS,
-    // });
-    // await app.startAllMicroservices();
     await app.init();
   });
 
@@ -104,17 +96,16 @@ describe('AuthController', () => {
   });
 
   it('should return check data', async () => {
-    const result = await authController.check({});
+    const result = await authController.check();
     expect(result.Check_Status).toBeDefined();
   });
 
   it('should create user with correct data', async () => {
     const orderClientEmitSpy = jest.spyOn(natsClient, 'emit');
 
-
     const result = await authController.signUp(userCreateData);
     expect(result.status).toEqual(HttpStatus.CREATED);
-    expect(result.data.token).toBeDefined()
+    expect(result.data.token).toBeDefined();
     expect(result.data.user.email).toBe(userCreateData.email);
     expect(orderClientEmitSpy).toHaveBeenCalled();
   });
@@ -150,12 +141,10 @@ describe('AuthController', () => {
       firstName: 'NewFirstName',
     };
 
-    const { data: resultData, status } = await authController.updateUser(
-      {
-        userUpdateDTO: userUpdateData,
-        userId: newUser.user.id,
-      }
-    );
+    const { data: resultData, status } = await authController.updateUser({
+      userUpdateDTO: userUpdateData,
+      userId: newUser.user.id,
+    });
     expect(status).toEqual(HttpStatus.OK);
     expect(resultData.address).toBe(userUpdateData.address);
     expect(resultData.firstName).toBe(userUpdateData.firstName);
@@ -164,7 +153,9 @@ describe('AuthController', () => {
 
   it('should verify existing user', async () => {
     const { data: authData } = await authController.signUp(userCreateData);
-    const { data: resultData, status } = await authController.verifyUser({ token: authData.token });
+    const { data: resultData, status } = await authController.verifyUser({
+      token: authData.token,
+    });
 
     expect(resultData.id).toEqual(authData.user.id);
     expect(status).toEqual(HttpStatus.OK);
@@ -172,7 +163,9 @@ describe('AuthController', () => {
 
   it('should make user admin', async () => {
     const { data: authData } = await authController.signUp(userCreateData);
-    const { data: resultData, status } = await authController.makeUserAdmin(authData.user.id);
+    const { data: resultData, status } = await authController.makeUserAdmin(
+      authData.user.id,
+    );
     expect(resultData.roles).toContain('Admin');
     expect(status).toEqual(HttpStatus.OK);
   });
@@ -202,7 +195,10 @@ describe('AuthController', () => {
 
   it('should not verify admin that does not have the admin role', async () => {
     const { data: authData } = await authController.signUp(userCreateData);
-    const { data: resultData, status } = await authController.verifyRoles({ token: authData.token, roles: ['Admin'] });
+    const { data: resultData, status } = await authController.verifyRoles({
+      token: authData.token,
+      roles: ['Admin'],
+    });
     expect(status).toEqual(HttpStatus.FORBIDDEN);
     expect(resultData).toBeNull();
   });
@@ -212,15 +208,20 @@ describe('AuthController', () => {
       secretOrPrivateKey: jwtConstants.secret,
     }).sign({ email: 'testemail2', id: new mongoose.Types.ObjectId() });
 
-    const { data: resultData, status } = await authController.verifyRoles({ token: fakeToken, roles: ['Admin'] });
+    const { data: resultData, status } = await authController.verifyRoles({
+      token: fakeToken,
+      roles: ['Admin'],
+    });
     expect(status).toEqual(HttpStatus.UNAUTHORIZED);
     expect(resultData).toBeNull();
   });
 
   it('should return user with restaurant role when restaurant is created', async () => {
     const { data: authData } = await authController.signUp(userCreateData);
-    const { status, data } = await authController.restaurantCreatedHandler({ ownerId: authData.user.id });
+    const { status, data } = await authController.restaurantCreatedHandler({
+      ownerId: authData.user.id,
+    });
     expect(status).toEqual(HttpStatus.OK);
-    expect(data.roles).toContain(Role.RestaurantOwner)
-  })
+    expect(data.roles).toContain(Role.RestaurantOwner);
+  });
 });

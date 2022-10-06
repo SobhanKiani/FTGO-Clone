@@ -1,12 +1,7 @@
-import {
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import { LoginDTO } from '../dto/login.dto';
 import { SignUpDTO } from '../dto/signUp.dto';
 import { UserUpdateDTO } from '../dto/user-update.dto';
 import { Role } from '../enums/roles.enum';
@@ -18,7 +13,7 @@ export class AuthService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
   async getUserByEmail(email: string): Promise<User> {
     return await this.userModel.findOne({ email });
@@ -37,9 +32,13 @@ export class AuthService {
     return user.isPasswordValid(password);
   }
 
-
-  async updateUser(id: mongoose.Types.ObjectId, userUpdateDTO: UserUpdateDTO): Promise<User> {
-    return await this.userModel.findByIdAndUpdate(id, userUpdateDTO, { new: true });
+  async updateUser(
+    id: mongoose.Types.ObjectId,
+    userUpdateDTO: UserUpdateDTO,
+  ): Promise<User> {
+    return await this.userModel.findByIdAndUpdate(id, userUpdateDTO, {
+      new: true,
+    });
   }
 
   async createToken(user: User): Promise<string> {
@@ -47,18 +46,26 @@ export class AuthService {
   }
 
   async makeUserAdmin(id: mongoose.Types.ObjectId): Promise<User> {
-    return await this.userModel.findByIdAndUpdate(id, { $addToSet: { roles: 'Admin' }, }, { new: true });
+    return await this.userModel.findByIdAndUpdate(
+      id,
+      { $addToSet: { roles: 'Admin' } },
+      { new: true },
+    );
   }
 
   async giveRoleToUser(id: mongoose.Types.ObjectId, role: Role) {
-    return await this.userModel.findByIdAndUpdate(id, { $addToSet: { roles: role } }, { new: true });
+    return await this.userModel.findByIdAndUpdate(
+      id,
+      { $addToSet: { roles: role } },
+      { new: true },
+    );
   }
 
   async decodeToken(token: string): Promise<User> {
     const decodedToken = this.jwtService.decode(token) as JWTPayload;
 
     if (!decodedToken || !decodedToken.id) {
-      return null
+      return null;
     }
 
     const user = await this.userModel.findById(decodedToken.id);

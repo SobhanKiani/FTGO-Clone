@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
-import { EMAIL_REGEX, PASSWORD_REGEX } from '../utils/regex';
+import { IsOptional, IsString, Matches } from 'class-validator';
+import { EMAIL_REGEX } from '../utils/regex';
 
 export class UserUpdateDTO {
   @Matches(EMAIL_REGEX)

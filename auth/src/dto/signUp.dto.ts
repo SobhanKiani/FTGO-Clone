@@ -1,10 +1,4 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  MATCHES,
-  Matches,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
 import { PASSWORD_REGEX, PHONE_NUMBER_REGEX } from '../utils/regex';
 
 export class SignUpDTO {

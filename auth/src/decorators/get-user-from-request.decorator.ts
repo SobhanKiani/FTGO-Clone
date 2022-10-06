@@ -1,6 +1,6 @@
-import { createParamDecorator, ExecutionContext, Logger } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { NotAuthenticatedException } from 'src/utils/NotAuthenticatedException';
 import { User } from '../models/user.model';
-import { NotAuthenticatedException } from '../utils/NotAuthenticatedException';
 
 export const GetUser = createParamDecorator(
   (data, req: ExecutionContext): User => {

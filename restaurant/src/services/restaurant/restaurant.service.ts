@@ -2,12 +2,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateRestaurantDTO } from '../dtos/createRestaurant.dto';
-import { RateDTO } from '../dtos/rate.dto';
-import { UpdateRestaurantDTO } from '../dtos/updateRestaurant.dto';
-import { ICreateRestaurantEvent } from '../interfaces/events/restaurant-created.event';
-import { Restaurant } from '../models/restaurant.model';
-import { FilterRestaurantQuery } from '../queries/filter-restaurant.query';
+import { CreateRestaurantDTO } from '../../dto/restaurant/createRestaurant.dto';
+import { RateDTO } from '../../dto/restaurant/rate.dto';
+import { UpdateRestaurantDTO } from '../../dto/restaurant/updateRestaurant.dto';
+import { ICreateRestaurantEvent } from '../../interfaces/restaurant/events/restaurant-created.event';
+import { Restaurant } from '../../models/restaurant.model';
+import { FilterRestaurantQuery } from '../../filters/restaruant/filter-restaurant.query';
 
 @Injectable()
 export class RestaurantService {
@@ -15,7 +15,7 @@ export class RestaurantService {
     @InjectRepository(Restaurant)
     private restaurantRepository: Repository<Restaurant>,
     @Inject('NATS_SERVICE') private natsClient: ClientProxy,
-  ) {}
+  ) { }
 
   async createRestaurant(createRestaurantDTO: CreateRestaurantDTO) {
     const restaurant = this.restaurantRepository.create(createRestaurantDTO);

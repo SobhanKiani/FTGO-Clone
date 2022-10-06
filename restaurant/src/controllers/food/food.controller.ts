@@ -1,25 +1,24 @@
 import { Controller, HttpStatus } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 
-import { RestaurantService } from '../../restaurant/services/restaurant.service';
-import { CreateFoodDTO } from '../../food/dtos/create-food.dto';
-import { UpdateFoodDTO } from '../dtos/update-food.dto';
-import { ICreateFoodResponse } from '../interfaces/create-food.interface';
-import { IDeleteFoodResponse } from '../interfaces/delete-food-response.interface';
-import { IUpdateFoodResponse } from '../../food/interfaces/update-food-response.interface';
-import { FilterFoodQuery } from '../../food/filters/filter-food.query';
-
-import { FoodService } from '../services/food.service';
-import { IGetFoodList } from '../interfaces/get-food-list-response.interface';
-import { RateDTO } from '../dtos/rate.dto';
-import { IRate } from '../interfaces/rate-response.interface';
+import { RestaurantService } from '../../services/restaurant/restaurant.service';
+import { CreateFoodDTO } from '../../dto/food/create-food.dto';
+import { UpdateFoodDTO } from '../../dto/food/update-food.dto';
+import { ICreateFoodResponse } from '../../interfaces/food/create-food-response.interface';
+import { IDeleteFoodResponse } from '../../interfaces/food/delete-food-response.interface';
+import { IUpdateFoodResponse } from '../../interfaces/food/update-food-response.interface';
+import { FilterFoodQuery } from '../../filters/food/filter-food.query';
+import { FoodService } from '../../services/food/food.service';
+import { IGetFoodList } from '../../interfaces/food/get-food-list-response.interface';
+import { RateDTO } from '../../dto/food/rate.dto';
+import { IRate } from '../../interfaces/food/rate-response.interface';
 
 @Controller('food')
 export class FoodController {
   constructor(
     private foodService: FoodService,
     private restaurantService: RestaurantService,
-  ) {}
+  ) { }
 
   //create
   @MessagePattern({ cmd: 'create_food' })

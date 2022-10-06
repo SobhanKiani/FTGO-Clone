@@ -1,15 +1,15 @@
 import { Controller, HttpStatus } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { CreateRestaurantDTO } from '../dtos/createRestaurant.dto';
-import { RateDTO } from '../dtos/rate.dto';
-import { UpdateRestaurantDTO } from '../dtos/updateRestaurant.dto';
-import { ICreateRestaurantResponse } from '../interfaces/create-restaurant-response.interface';
-import { IGetRestaurantByIdResult } from '../interfaces/get-restaurant-by-id.interface';
-import { IRate } from '../interfaces/rate-response.interface';
-import { IRestaurantListResponse } from '../interfaces/restaurant-list-response.interface';
-import { IUpdateRestaurantResponse } from '../interfaces/update-restaurant-response.interface';
-import { FilterRestaurantQuery } from '../queries/filter-restaurant.query';
-import { RestaurantService } from '../services/restaurant.service';
+import { RateDTO } from '../../dto/restaurant/rate.dto';
+import { CreateRestaurantDTO } from '../../dto/restaurant/createRestaurant.dto';
+import { UpdateRestaurantDTO } from '../../dto/restaurant/updateRestaurant.dto';
+import { FilterRestaurantQuery } from '../../filters/restaruant/filter-restaurant.query';
+import { IRate } from '../../interfaces/food/rate-response.interface';
+import { ICreateRestaurantResponse } from '../../interfaces/restaurant/create-restaurant-response.interface';
+import { IGetRestaurantByIdResult } from '../../interfaces/restaurant/get-restaurant-by-id.interface';
+import { IRestaurantListResponse } from '../../interfaces/restaurant/restaurant-list-response.interface';
+import { IUpdateRestaurantResponse } from '../../interfaces/restaurant/update-restaurant-response.interface';
+import { RestaurantService } from '../../services/restaurant/restaurant.service';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -209,28 +209,6 @@ export class RestaurantController {
     };
   }
 
-  //get restaurant foods;
-  // @MessagePattern({ cmd: "get_restaurant_foods" })
-  // async getRestaurantFoods(params: { restaurantId: number }): Promise<IGetFoodList> {
-  //     const { restaurantId } = params;
-  //     const restaurantWithFoods = await this.restaurantService.getRestaurantFoods(restaurantId,);
-  //     if (!restaurantWithFoods) {
-  //         return {
-  //             status: HttpStatus.NOT_FOUND,
-  //             message: "Restaurant Not Found",
-  //             data: null,
-  //             errors: { restaurant: { path: "restaurant", message: "not found" } }
-  //         }
-  //     }
-  //     return {
-  //         status: HttpStatus.OK,
-  //         message: "Foods Retrieved",
-  //         data: restaurantWithFoods.foods,
-  //         errors: null
-  //     }
-  // }
-
-  //rate restaurant
   @MessagePattern({ cmd: 'rate_restaurant' })
   async rateRestauarant(params: {
     requestorId: string;

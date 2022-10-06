@@ -1,24 +1,23 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateFoodDTO } from '../../food/dtos/create-food.dto';
-import { UpdateFoodDTO } from '../dtos/update-food.dto';
-
-import { FilterFoodQuery } from '../../food/filters/filter-food.query';
-import { Food } from '../models/food.model';
-import { Restaurant } from 'src/restaurant/models/restaurant.model';
-import { RateDTO } from '../dtos/rate.dto';
+import { CreateFoodDTO } from '../../dto/food/create-food.dto';
+import { UpdateFoodDTO } from '../../dto/food/update-food.dto';
+import { FilterFoodQuery } from '../../filters/food/filter-food.query';
+import { Food } from '../../models/food.model';
+import { Restaurant } from '../../models/restaurant.model';
+import { RateDTO } from '../../dto/food/rate.dto';
 import { ClientProxy } from '@nestjs/microservices';
-import { ICreateFoodEvent } from '../interfaces/events/create-food.event';
-import { IUpdateFoodEvent } from '../interfaces/events/update-food.event';
-import { IDeleteFoodEvent } from '../interfaces/events/delete-food.event';
+import { ICreateFoodEvent } from '../../interfaces/food/events/create-food.event';
+import { IUpdateFoodEvent } from '../../interfaces/food/events/update-food.event';
+import { IDeleteFoodEvent } from '../../interfaces/food/events/delete-food.event';
 
 @Injectable()
 export class FoodService {
   constructor(
     @InjectRepository(Food) private foodRepository: Repository<Food>,
     @Inject('NATS_SERVICE') private natsClient: ClientProxy,
-  ) {}
+  ) { }
 
   async createFood(
     createFoodDto: CreateFoodDTO,

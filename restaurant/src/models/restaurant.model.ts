@@ -1,16 +1,16 @@
-import { Restaurant } from '../../restaurant/models/restaurant.model';
+import { Food } from './food.model';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('food')
-export class Food extends BaseEntity {
+@Entity('restaurant')
+export class Restaurant extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -18,21 +18,16 @@ export class Food extends BaseEntity {
   name: string;
 
   @Column()
+  address: string;
+
+  @Column()
   category: string;
 
-  @Column({
-    type: 'decimal',
-    default: 3.0,
-  })
-  price: number;
+  @Column()
+  ownerId: string;
 
-  @ManyToOne(() => Restaurant, (restaurant) => restaurant.foods, {
-    onDelete: 'CASCADE',
-  })
-  restaurant: Restaurant;
-
-  @Column({ default: true })
-  isAvailable: boolean;
+  @OneToMany(() => Food, (food) => food.restaurant)
+  foods: Food[];
 
   @Column({
     type: 'decimal',

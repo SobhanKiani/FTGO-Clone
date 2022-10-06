@@ -1,14 +1,14 @@
-import { forwardRef, HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FoodModule } from '../../food/food.module';
-import { Food } from '../../food/models/food.model';
-import { CreateRestaurantDTO } from '../dtos/createRestaurant.dto';
-import { Restaurant } from '../models/restaurant.model';
-import { RestaurantService } from '../services/restaurant.service';
+import { Food } from '../../models/food.model';
+import { CreateRestaurantDTO } from '../../dto/restaurant/createRestaurant.dto';
+import { Restaurant } from '../../models/restaurant.model';
 import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
 import { RestaurantController } from './restaurant.controller';
+import { RestaurantService } from '../../services/restaurant/restaurant.service';
+import { FoodController } from '../food/food.controller';
 
 describe('RestaurantController', () => {
   let restaurantController: RestaurantController;
@@ -33,7 +33,6 @@ describe('RestaurantController', () => {
           autoLoadEntities: true,
         }),
         TypeOrmModule.forFeature([Restaurant, Food]),
-        forwardRef(() => FoodModule),
       ],
       controllers: [RestaurantController],
       providers: [

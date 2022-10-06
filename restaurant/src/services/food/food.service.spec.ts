@@ -1,13 +1,12 @@
 import { forwardRef } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CreateRestaurantDTO } from 'src/restaurant/dtos/createRestaurant.dto';
-import { Restaurant } from '../../restaurant/models/restaurant.model';
-import { RestaurantModule } from '../../restaurant/restaurant.module';
-import { RestaurantService } from '../../restaurant/services/restaurant.service';
-import { CreateFoodDTO } from '../dtos/create-food.dto';
-import { RateDTO } from '../dtos/rate.dto';
-import { Food } from '../models/food.model';
+import { CreateRestaurantDTO } from 'src/dto/restaurant/createRestaurant.dto';
+import { Restaurant } from '../../models/restaurant.model';
+import { RestaurantService } from '../../services/restaurant/restaurant.service';
+import { CreateFoodDTO } from '../../dto/food/create-food.dto';
+import { RateDTO } from '../../dto/food/rate.dto';
+import { Food } from '../../models/food.model';
 import { FoodService } from './food.service';
 import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
 
@@ -38,7 +37,6 @@ describe('FoodService', () => {
           autoLoadEntities: true,
         }),
         TypeOrmModule.forFeature([Food, Restaurant]),
-        forwardRef(() => RestaurantModule),
       ],
       providers: [
         FoodService,

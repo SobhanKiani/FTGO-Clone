@@ -1,19 +1,18 @@
-import { forwardRef, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RestaurantController } from '../../restaurant/controllers/restaurant.controller';
-import { CreateRestaurantDTO } from 'src/restaurant/dtos/createRestaurant.dto';
-import { Restaurant } from '../../restaurant/models/restaurant.model';
-import { RestaurantModule } from '../../restaurant/restaurant.module';
-import { RestaurantService } from '../../restaurant/services/restaurant.service';
-import { CreateFoodDTO } from '../dtos/create-food.dto';
-import { Food } from '../models/food.model';
-import { FoodService } from '../services/food.service';
+import { CreateRestaurantDTO } from '../../dto/restaurant/createRestaurant.dto';
+import { Restaurant } from '../../models/restaurant.model';
+import { CreateFoodDTO } from '../../dto/food/create-food.dto';
+import { Food } from '../../models/food.model';
 import { FoodController } from './food.controller';
 import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
 import { ClientProxy } from '@nestjs/microservices';
-import { ICreateFoodEvent } from '../interfaces/events/create-food.event';
-import { IUpdateFoodEvent } from '../interfaces/events/update-food.event';
+import { ICreateFoodEvent } from '../../interfaces/food/events/create-food.event';
+import { IUpdateFoodEvent } from '../../interfaces/food/events/update-food.event';
+import { RestaurantController } from '../restaurant/restaurant.controller';
+import { FoodService } from '../../services/food/food.service';
+import { RestaurantService } from '../../services/restaurant/restaurant.service';
 
 describe('FoodController', () => {
   let foodController: FoodController;
@@ -43,8 +42,8 @@ describe('FoodController', () => {
           autoLoadEntities: true,
         }),
         TypeOrmModule.forFeature([Food, Restaurant]),
-        forwardRef(() => RestaurantModule),
       ],
+      controllers: [FoodController, RestaurantController],
       providers: [
         FoodService,
         RestaurantService,

@@ -1,4 +1,4 @@
-import { IBaseResponse } from 'src/utils/base-response.interface';
+import { IBaseResponse } from 'src/interfaces/base-response.interface';
 import { UpdateResult } from 'typeorm';
 
 export interface IRate extends IBaseResponse {

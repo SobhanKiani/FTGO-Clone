@@ -12,7 +12,6 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.NATS,
     options: {
-      // servers: ['nats://nats-server:4222'],
       servers: [process.env.NATS_URL],
       queue: QUEUE_GROUP_NAME,
     },

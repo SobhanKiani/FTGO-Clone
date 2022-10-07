@@ -1,6 +1,6 @@
-import { Cart } from "@prisma/client";
-import { IBaseResponse } from "../base-response.interface";
+import { Cart } from '@prisma/client';
+import { IBaseResponse } from '../base-response.interface';
 
 export interface IGetOrCreateCartResponse extends IBaseResponse {
-    data: Cart | null
+  data: Cart | null;
 }

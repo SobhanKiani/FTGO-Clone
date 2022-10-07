@@ -8,16 +8,16 @@ describe('FoodService', () => {
   let prisma: PrismaService;
   const createData = {
     id: 6,
-    name: "food4",
-    category: "cat3",
+    name: 'food4',
+    category: 'cat3',
     isAvailable: true,
-    price: '10'
-  }
+    price: '10',
+  };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         FoodService,
-        { provide: PrismaService, useValue: prismaServiceMock }
+        { provide: PrismaService, useValue: prismaServiceMock },
       ],
     }).compile();
 
@@ -41,30 +41,36 @@ describe('FoodService', () => {
   it('should create user', async () => {
     const updateFunc = jest.spyOn(prisma.food, 'update');
     const updateData = {
-      name: "new name"
-    }
+      name: 'new name',
+    };
     const food = service.updateFood({ id: 5 }, updateData);
     expect(food).toBeDefined();
     expect(updateFunc).toHaveBeenCalled();
-    expect(updateFunc).toHaveBeenCalledWith({ data: updateData, where: { id: 5 } });
+    expect(updateFunc).toHaveBeenCalledWith({
+      data: updateData,
+      where: { id: 5 },
+    });
   });
 
   it('should retur null if food does not exists', async () => {
     const updateFunc = jest.spyOn(prisma.food, 'update');
     const updateData = {
-      name: "new name"
-    }
+      name: 'new name',
+    };
     const food = service.updateFood({ id: -1 }, updateData);
     expect(food).toBeDefined();
     expect(updateFunc).toHaveBeenCalled();
-    expect(updateFunc).toHaveBeenCalledWith({ data: updateData, where: { id: -1 } });
+    expect(updateFunc).toHaveBeenCalledWith({
+      data: updateData,
+      where: { id: -1 },
+    });
   });
 
   it('should delete existing food', async () => {
     const deleteFunc = jest.spyOn(prisma.food, 'delete');
 
     const where = {
-      id: 15
+      id: 15,
     };
     const deletedFood = await service.deleteFood({ where });
     expect(deletedFood.id).toEqual(where.id);
@@ -76,11 +82,11 @@ describe('FoodService', () => {
     const deleteFunc = jest.spyOn(prisma.food, 'delete');
 
     const where = {
-      id: -1
+      id: -1,
     };
     const deletedFood = await service.deleteFood({ where });
     expect(deletedFood).toBeNull();
     expect(deleteFunc).toHaveBeenCalled();
     expect(deleteFunc).toHaveBeenCalledWith({ where });
-  })
+  });
 });

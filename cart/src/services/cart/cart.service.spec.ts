@@ -1,18 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Prisma, prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { prismaServiceMock } from '../../../test/mocks/prisma-service.mock';
 import { PrismaService } from '../prisma-service/prisma-service.service';
 import { CartService } from './cart.service';
 
 describe('CartService', () => {
   let service: CartService;
-  let prismaService: PrismaService
+  let prismaService: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CartService,
-        { provide: PrismaService, useValue: prismaServiceMock }
+        { provide: PrismaService, useValue: prismaServiceMock },
       ],
     }).compile();
 
@@ -26,16 +26,16 @@ describe('CartService', () => {
   });
 
   it('should return cart for a giver user id', async () => {
-    const upsertFunc = jest.spyOn(prismaService.cart, 'upsert')
+    const upsertFunc = jest.spyOn(prismaService.cart, 'upsert');
 
     const userId = '5';
     const data = {
       user: {
         connect: {
-          id: userId
-        }
-      }
-    }
+          id: userId,
+        },
+      },
+    };
     const cart = await service.getCartOrCreate(data);
     expect(cart).toBeDefined();
     expect(cart.userId).toEqual(userId);
@@ -45,33 +45,32 @@ describe('CartService', () => {
       create: {
         user: {
           connect: {
-            id: userId
-          }
-        }
+            id: userId,
+          },
+        },
       },
       update: {},
       include: {
         CartFood: {
           include: {
-            food: true
-          }
-        }
-      }
+            food: true,
+          },
+        },
+      },
     });
   });
 
   it('should return cart if the cart already exists', async () => {
-    const upsertFunc = jest.spyOn(prismaService.cart, 'upsert')
-
+    const upsertFunc = jest.spyOn(prismaService.cart, 'upsert');
 
     const userId = '1';
     const data = {
       user: {
         connect: {
-          id: userId
-        }
-      }
-    }
+          id: userId,
+        },
+      },
+    };
     const cart = await service.getCartOrCreate(data);
     expect(cart).toBeDefined();
     expect(cart.userId).toEqual(userId);
@@ -80,35 +79,35 @@ describe('CartService', () => {
       create: {
         user: {
           connect: {
-            id: userId
-          }
-        }
+            id: userId,
+          },
+        },
       },
       update: {},
       // include: { CartFood: true }
       include: {
         CartFood: {
           include: {
-            food: true
-          }
-        }
-      }
+            food: true,
+          },
+        },
+      },
     });
   });
 
   it('should delete cart if it exists', async () => {
     const deleteFunc = jest.spyOn(prismaService.cart, 'delete');
 
-    const userId = '1'
+    const userId = '1';
     const args: Prisma.CartDeleteArgs = {
       where: { userId },
       include: {
         CartFood: {
           include: {
-            food: true
-          }
-        }
-      }
+            food: true,
+          },
+        },
+      },
     };
     const cart = await service.deleteCart(args);
     expect(cart.userId).toEqual(userId);
@@ -120,17 +119,20 @@ describe('CartService', () => {
     const updateFunc = jest.spyOn(prismaService.cart, 'update');
     const findUniqueFunc = jest.spyOn(prismaService.cart, 'findUnique');
 
-    const userId = '1';
     const cartId = 10;
     const cart = await service.updateTotalPriceByCartId(cartId);
     expect(cart.totalPrice).toEqual(10);
 
     expect(findUniqueFunc).toHaveBeenCalled();
-    expect(findUniqueFunc).toHaveBeenCalledWith({ where: { id: cartId }, include: { CartFood: { include: { food: true } } } });
+    expect(findUniqueFunc).toHaveBeenCalledWith({
+      where: { id: cartId },
+      include: { CartFood: { include: { food: true } } },
+    });
 
     expect(updateFunc).toHaveBeenCalled();
-    expect(updateFunc).toHaveBeenCalledWith({ where: { id: cartId }, data: { totalPrice: 10 } });
-
-
-  })
+    expect(updateFunc).toHaveBeenCalledWith({
+      where: { id: cartId },
+      data: { totalPrice: 10 },
+    });
+  });
 });

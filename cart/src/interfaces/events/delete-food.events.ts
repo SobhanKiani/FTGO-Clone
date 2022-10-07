@@ -1,3 +1,3 @@
 export interface IDeleteFoodEvent {
-    id: number;
+  id: number;
 }

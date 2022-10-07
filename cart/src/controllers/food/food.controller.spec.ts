@@ -1,7 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { create } from 'domain';
-import { async } from 'rxjs';
 import { ICreateFoodEvent } from 'src/interfaces/events/create-food.event';
 import { IUpdateFoodEvent } from 'src/interfaces/events/update-food.event';
 import { FoodService } from '../../services/food/food.service';
@@ -14,11 +12,11 @@ describe('FoodController', () => {
   let service: FoodService;
   const createData: ICreateFoodEvent = {
     id: 6,
-    name: "food4",
-    category: "cat3",
+    name: 'food4',
+    category: 'cat3',
     isAvailable: true,
-    price: '10'
-  }
+    price: '10',
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,9 +25,9 @@ describe('FoodController', () => {
         FoodService,
         {
           provide: PrismaService,
-          useValue: prismaServiceMock
-        }
-      ]
+          useValue: prismaServiceMock,
+        },
+      ],
     }).compile();
 
     controller = module.get<FoodController>(FoodController);
@@ -48,14 +46,14 @@ describe('FoodController', () => {
   });
 
   it('should update food', async () => {
-    const updateData: IUpdateFoodEvent = { data: { name: "new name" }, id: 5 };
+    const updateData: IUpdateFoodEvent = { data: { name: 'new name' }, id: 5 };
     const { status, data } = await controller.updateFood(updateData);
     expect(status).toEqual(HttpStatus.OK);
     expect(data.name).toEqual(updateData.data.name);
   });
 
   it('should not update food if food does not exists', async () => {
-    const updateData: IUpdateFoodEvent = { data: { name: "new name" }, id: -1 };
+    const updateData: IUpdateFoodEvent = { data: { name: 'new name' }, id: -1 };
     const { status, data } = await controller.updateFood(updateData);
     expect(status).toEqual(HttpStatus.NOT_FOUND);
     expect(data).toBeNull();
@@ -74,5 +72,4 @@ describe('FoodController', () => {
     expect(status).toEqual(HttpStatus.NOT_FOUND);
     expect(data).toBeNull();
   });
-
 });

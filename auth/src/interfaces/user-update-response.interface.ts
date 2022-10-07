@@ -1,4 +1,4 @@
-import { IBaseResponse } from 'src/utils/base-response.interface';
+import { IBaseResponse } from 'src/interfaces/base-response.interface';
 import { User } from '../models/user.model';
 
 export interface IUpdateUserResponse extends IBaseResponse {

@@ -21,9 +21,9 @@ describe('CartFoodController', () => {
         CartService,
         {
           provide: PrismaService,
-          useValue: prismaServiceMock
-        }
-      ]
+          useValue: prismaServiceMock,
+        },
+      ],
     }).compile();
 
     controller = module.get<CartFoodController>(CartFoodController);
@@ -39,11 +39,11 @@ describe('CartFoodController', () => {
 
   it('should add food to cart', async () => {
     const createData = {
-      userId: "1",
+      userId: '1',
       cartId: 10,
       foodId: 10,
-      count: 1
-    }
+      count: 1,
+    };
 
     const { status, data } = await controller.addOrUpdateFood(createData);
     expect(status).toEqual(HttpStatus.OK);
@@ -51,12 +51,15 @@ describe('CartFoodController', () => {
   });
 
   it('should update existing food in cart', async () => {
-    const cartUpdateTotalPrice = jest.spyOn(cartService, 'updateTotalPriceByCartId');
+    const cartUpdateTotalPrice = jest.spyOn(
+      cartService,
+      'updateTotalPriceByCartId',
+    );
     const updateData = {
-      userId: "1",
+      userId: '1',
       cartId: 10,
       foodId: 5,
-      count: 2
+      count: 2,
     };
 
     const { status, data } = await controller.addOrUpdateFood(updateData);
@@ -69,10 +72,10 @@ describe('CartFoodController', () => {
 
   it('should not update another ones cart', async () => {
     const updateData = {
-      userId: "2",
+      userId: '2',
       cartId: 10,
       foodId: 5,
-      count: 2
+      count: 2,
     };
 
     const { status, data } = await controller.addOrUpdateFood(updateData);
@@ -82,39 +85,41 @@ describe('CartFoodController', () => {
 
   it('should not update if count is lower than 1', async () => {
     const updateData = {
-      userId: "1",
+      userId: '1',
       cartId: 10,
       foodId: 5,
-      count: 0
+      count: 0,
     };
     const { status, data } = await controller.addOrUpdateFood(updateData);
     expect(status).toEqual(HttpStatus.BAD_REQUEST);
     expect(data).toBeNull();
-  })
+  });
 
   it('should delete food from cart', async () => {
-    const cartUpdateTotalPrice = jest.spyOn(cartService, 'updateTotalPriceByCartId');
+    const cartUpdateTotalPrice = jest.spyOn(
+      cartService,
+      'updateTotalPriceByCartId',
+    );
 
     const params = {
       cartFoodId: 1,
       userId: '1',
-      cartId: 10
-    }
+      cartId: 10,
+    };
     const { status, data } = await controller.deleteFoodFromCart(params);
     expect(status).toEqual(HttpStatus.OK);
     expect(data.id).toEqual(params.cartFoodId);
 
     expect(cartUpdateTotalPrice).toHaveBeenCalled();
     expect(cartUpdateTotalPrice).toHaveBeenCalledWith(params.cartId);
-
   });
 
   it('should not delete another ones cart', async () => {
     const params = {
       cartFoodId: 1,
       userId: '2',
-      cartId: 10
-    }
+      cartId: 10,
+    };
     const { status, data } = await controller.deleteFoodFromCart(params);
     expect(status).toEqual(HttpStatus.FORBIDDEN);
     expect(data).toBeNull();
@@ -124,12 +129,10 @@ describe('CartFoodController', () => {
     const params = {
       cartFoodId: -1,
       userId: '1',
-      cartId: 10
-    }
+      cartId: 10,
+    };
     const { status, data } = await controller.deleteFoodFromCart(params);
     expect(status).toEqual(HttpStatus.NOT_FOUND);
     expect(data).toBeNull();
-  })
-
-
+  });
 });

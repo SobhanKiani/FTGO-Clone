@@ -12,7 +12,7 @@ describe('CartFoodService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CartFoodService,
-        { provide: PrismaService, useValue: prismaServiceMock }
+        { provide: PrismaService, useValue: prismaServiceMock },
       ],
     }).compile();
 
@@ -34,11 +34,11 @@ describe('CartFoodService', () => {
       cart: { connect: { id: 10 } },
       food: { connect: { id: 10 } },
       count: 1,
-    }
+    };
     const cartId = createData.cart.connect.id;
     const foodId = createData.food.connect.id;
     const cartFood = await service.addOrUpdateCartByFood({
-      ...createData
+      ...createData,
     });
     expect(cartFood.foodId).toEqual(foodId);
     expect(cartFood.cartId).toEqual(cartId);
@@ -48,35 +48,34 @@ describe('CartFoodService', () => {
       where: {
         foodInCart: {
           cartId,
-          foodId
-        }
+          foodId,
+        },
       },
-      include: { food: true }
+      include: { food: true },
     });
 
-    expect(createFunc).toHaveBeenCalled()
+    expect(createFunc).toHaveBeenCalled();
     expect(createFunc).toHaveBeenCalledWith({
       data: {
         count: createData.count,
         cart: createData.cart,
-        food: createData.food
+        food: createData.food,
       },
-      include: { food: true }
-    })
+      include: { food: true },
+    });
 
     expect(updateFunc).not.toHaveBeenCalledWith({
       where: {
         foodInCart: {
           cartId,
-          foodId
-        }
+          foodId,
+        },
       },
       data: {
         count: createData.count,
       },
-      include: { food: true }
+      include: { food: true },
     });
-
   });
 
   it('should update cartFood if exists', async () => {
@@ -88,12 +87,12 @@ describe('CartFoodService', () => {
       cart: { connect: { id: 10 } },
       food: { connect: { id: 5 } },
       count: 2,
-    }
+    };
 
     const cartId = createData.cart.connect.id;
     const foodId = createData.food.connect.id;
     const cartFood = await service.addOrUpdateCartByFood({
-      ...createData
+      ...createData,
     });
     expect(cartFood.foodId).toEqual(foodId);
     expect(cartFood.cartId).toEqual(cartId);
@@ -103,33 +102,33 @@ describe('CartFoodService', () => {
       where: {
         foodInCart: {
           cartId,
-          foodId
-        }
+          foodId,
+        },
       },
-      include: { food: true }
+      include: { food: true },
     });
 
-    expect(updateFunc).toHaveBeenCalled()
+    expect(updateFunc).toHaveBeenCalled();
     expect(updateFunc).toHaveBeenCalledWith({
       where: {
         foodInCart: {
           cartId,
-          foodId
-        }
+          foodId,
+        },
       },
       data: {
         count: createData.count,
       },
-      include: { food: true }
-    })
+      include: { food: true },
+    });
 
     expect(createFunc).not.toHaveBeenCalledWith({
       data: {
         count: createData.count,
         cart: createData.cart,
-        food: createData.food
+        food: createData.food,
       },
-      include: { food: true }
+      include: { food: true },
     });
   });
 
@@ -139,13 +138,13 @@ describe('CartFoodService', () => {
       id: 1,
       cartId: 10,
       foodId: 5,
-    }
+    };
     const deletedFood = await service.deleteCartFood({ where });
     expect(deletedFood.id).toEqual(where.id);
     expect(deleteFunc).toHaveBeenCalled();
     expect(deleteFunc).toHaveBeenCalledWith({
       where,
-      include: { food: true }
+      include: { food: true },
     });
   });
 
@@ -155,13 +154,12 @@ describe('CartFoodService', () => {
       id: -1,
       cartId: -10,
       foodId: -5,
-    }
+    };
     const deletedFood = await service.deleteCartFood({ where });
     expect(deletedFood).toBeNull();
     expect(deleteFunc).toHaveBeenCalledWith({
       where,
-      include: { food: true }
+      include: { food: true },
     });
-  })
-
+  });
 });

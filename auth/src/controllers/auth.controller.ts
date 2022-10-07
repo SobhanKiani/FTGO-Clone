@@ -20,7 +20,7 @@ import { Role } from '../enums/roles.enum';
 import { IUserCreatedEvent } from '../interfaces/events/user-created.event';
 import { IUpdateUserEvent } from '../interfaces/events/user-updated.event';
 import { ICreateRestaurantEvent } from '../interfaces/events/restaurant-created.event';
-
+ 
 @Controller('auth')
 export class AuthController {
   constructor(

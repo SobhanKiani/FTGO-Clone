@@ -15,9 +15,9 @@ describe('CartController', () => {
         CartService,
         {
           provide: PrismaService,
-          useValue: prismaServiceMock
-        }
-      ]
+          useValue: prismaServiceMock,
+        },
+      ],
     }).compile();
 
     controller = module.get<CartController>(CartController);
@@ -48,7 +48,5 @@ describe('CartController', () => {
     const { status, data: cart } = await controller.userCart({ userId });
     expect(status).toEqual(HttpStatus.OK);
     expect(cart.userId).toEqual(userId);
-  })
-
-
+  });
 });

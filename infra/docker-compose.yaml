@@ -1,6 +1,7 @@
 version: "3.9"
 
 services:
+
   auth:
     build:
       dockerfile: Dockerfile
@@ -25,9 +26,6 @@ services:
 
   auth-mongodb:
     image: mongo:latest
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: root
-    #   MONGO_INITDB_ROOT_PASSWORD: rootpassword
     ports:
       - 27017:27017
     volumes:
@@ -45,7 +43,7 @@ services:
       - 9993
     command: npm run start:dev
     environment:
-      - POSTGRES_DB=ftgo-restaurant-db
+      - POSTGRES_DB=restaurant-db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=restaurant-pg
@@ -84,7 +82,7 @@ services:
     command: >
       sh -c "npx prisma migrate dev --skip-generate --name init && npm run start:dev"
     environment:
-      - POSTGRES_DB=ftgo-cart-db
+      - POSTGRES_DB=cart-db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=cart-pg
@@ -102,49 +100,12 @@ services:
     expose:
       - 5433
     environment:
-      - POSTGRES_DB=ftgo-cart-db
+      - POSTGRES_DB=cart-db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
       - cart-data:/var/lib/postgresql/data/
-  order:
-    build:
-      context: ./../order
-      dockerfile: Dockerfile
-      target: development
-    image: skn1942/ftgo-order
-    ports:
-      - 9995:9995
-    expose:
-      - 9995
-    command: >
-      sh -c "npx prisma migrate dev --skip-generate --name init && npm run start:dev"
-    environment:
-      - POSTGRES_DB=ftgo-order-db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST=order-pg
-      - POSTGRES_PORT=5432
-      - NATS_URL=nats://nats-server:4222
-    volumes:
-      - ./../order:/usr/src/app
-    depends_on:
-      - order-pg
-      - nats-server
-  order-pg:
-    image: postgres
-    ports:
-      - 5434:5432
-    expose:
-      - 5434
-    environment:
-      - POSTGRES_DB=ftgo-order-db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST_AUTH_METHOD=trust
-    volumes:
-      - order-data:/var/lib/postgresql/data/
 
   gateway:
     build:
@@ -172,7 +133,6 @@ services:
       - auth
       - restaurant
       - cart
-      - order
 
   nats-server:
     image: nats:latest
@@ -184,10 +144,6 @@ services:
     expose:
       - 4222
     command: -c nats-server.conf -DV
-  # another:
-  #   image: python:3.5.2
-  #   container_name: another
-  #   entrypoint: /usr/bin/yes
 
 volumes:
   auth-data:

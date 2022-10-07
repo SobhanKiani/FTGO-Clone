@@ -11,7 +11,18 @@ import { CartFoodService } from './services/cart-food/cart-food.service';
 
 @Module({
   imports: [],
-  controllers: [UserController, CartController, FoodController, CartFoodController],
-  providers: [PrismaService, UserService, CartService, FoodService, CartFoodService],
+  controllers: [
+    UserController,
+    CartController,
+    FoodController,
+    CartFoodController,
+  ],
+  providers: [
+    PrismaService,
+    UserService,
+    CartService,
+    FoodService,
+    CartFoodService,
+  ],
 })
-export class AppModule { }
+export class AppModule {}

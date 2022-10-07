@@ -1,5 +1,5 @@
 import { User } from '../models/user.model';
-import { IBaseResponse } from '../utils/base-response.interface';
+import { IBaseResponse } from './base-response.interface';
 
 export interface ISignUpResponse extends IBaseResponse {
   data: { user: User; token: string } | null;

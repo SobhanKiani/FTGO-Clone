@@ -38,24 +38,6 @@ type Food {
   updatedAt: Date!
 }
 
-type UpdateResult {
-  affected: Int!
-  raw: String!
-}
-
-type Restaurant {
-  id: Float!
-  name: String!
-  address: String!
-  category: String!
-  ownerId: String!
-  foods: [Food]!
-  rate: Float!
-  rateCount: Float!
-  createdAt: Date!
-  updatedAt: Date!
-}
-
 type CartFood {
   id: Int!
   cartId: Int!
@@ -74,16 +56,38 @@ type Cart {
   updatedAt: Date!
 }
 
+type UpdateResult {
+  affected: Int!
+  raw: String!
+}
+
+type Restaurant {
+  id: Float!
+  name: String!
+  address: String!
+  category: String!
+  ownerId: String!
+  foods: [Food]!
+  rate: Float!
+  rateCount: Float!
+  createdAt: Date!
+  updatedAt: Date!
+}
+
 type Query {
+  getFoodById(id: Int!): Food!
+  getFoodList(name: String, category: String, isAvailable: Boolean, restaurantId: Int): [Food!]!
   checkAuthClientStatus: CheckStatus!
   getRestaurantList(name: String, category: String): [Restaurant!]!
   getRestaurantById(id: Int!): Restaurant!
-  getFoodById(id: Int!): Food!
-  getFoodList(name: String, category: String, isAvailable: Boolean, restaurantId: Int): [Food!]!
   getUserCart: Cart!
 }
 
 type Mutation {
+  createFood(createFoodData: CreateFoodInput!): Food!
+  updateFood(updateFoodData: UpdateFoodInput!, id: Int!): UpdateResult!
+  deleteFood(id: Int!): UpdateResult!
+  rateFood(rateData: RateFoodInput!): UpdateResult!
   signUp(createUserData: CreateUserInput!): AuthData!
   login(loginData: LoginInput!): AuthData!
   makeUserAdmin(id: String!): User!
@@ -92,13 +96,28 @@ type Mutation {
   updateResaurant(updateRestaurantData: UpdateRestaurantInput!, id: Int!): UpdateResult!
   deleteRestaurant(id: Int!): Restaurant!
   rateRestaurant(rateData: RateRestaurantInput!): UpdateResult!
-  createFood(createFoodData: CreateFoodInput!): Food!
-  updateFood(updateFoodData: UpdateFoodInput!, id: Int!): UpdateResult!
-  deleteFood(id: Int!): UpdateResult!
-  rateFood(rateData: RateFoodInput!): UpdateResult!
   deleteCart: Cart!
   addOrUpdateCartFood(addOrUpdateFoodInCartData: AddOrUpdateFoodInCartInput!): CartFood!
   deleteFoodFromCart(deleteFoodFromCartData: DeleteFoodFromCartInput!): CartFood!
+}
+
+input CreateFoodInput {
+  name: String!
+  category: String!
+  price: Int!
+  restaurantId: Int!
+}
+
+input UpdateFoodInput {
+  name: String
+  category: String
+  price: Int
+  isAvailable: Boolean
+}
+
+input RateFoodInput {
+  rateNumber: Int!
+  foodId: Int!
 }
 
 input CreateUserInput {
@@ -137,25 +156,6 @@ input UpdateRestaurantInput {
 input RateRestaurantInput {
   rateNumber: Int!
   restaurantId: Int!
-}
-
-input CreateFoodInput {
-  name: String!
-  category: String!
-  price: Int!
-  restaurantId: Int!
-}
-
-input UpdateFoodInput {
-  name: String
-  category: String
-  price: Int
-  isAvailable: Boolean
-}
-
-input RateFoodInput {
-  rateNumber: Int!
-  foodId: Int!
 }
 
 input AddOrUpdateFoodInCartInput {

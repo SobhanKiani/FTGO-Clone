@@ -1,4 +1,5 @@
 import { Controller, HttpStatus } from '@nestjs/common';
+
 import { EventPattern } from '@nestjs/microservices';
 import { IUpdateFoodEvent } from 'src/interfaces/events/update-food.event';
 import { IDeleteCartFoodResponse } from 'src/interfaces/food/delete-food-response.interface';
@@ -10,6 +11,7 @@ import { FoodService } from '../../services/food/food.service';
 @Controller('food')
 export class FoodController {
   constructor(private foodService: FoodService) {}
+
 
   @EventPattern({ cmd: 'create_food' })
   async createFood(data: ICreateFoodEvent): Promise<ICreateCartFoodResponse> {
@@ -30,6 +32,7 @@ export class FoodController {
       };
     }
   }
+
 
   @EventPattern({ cmd: 'update_food' })
   async updateFood(data: IUpdateFoodEvent): Promise<IUpdateCartFoodResponse> {
@@ -60,6 +63,7 @@ export class FoodController {
     }
   }
 
+
   @EventPattern({ cmd: 'delete_food' })
   async deleteFood(params: { id: number }): Promise<IDeleteCartFoodResponse> {
     const { id } = params;
@@ -74,7 +78,6 @@ export class FoodController {
           errors: { food: { path: 'food', message: 'food not found' } },
         };
       }
-
       return {
         status: HttpStatus.OK,
         message: 'Food Deleted In Cart Microservice',

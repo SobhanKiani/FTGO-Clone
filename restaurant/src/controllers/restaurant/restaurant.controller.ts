@@ -189,7 +189,10 @@ export class RestaurantController {
   }
 
   @MessagePattern({ cmd: 'get_restaurant_by_id' })
-  async getRestaurantById(id: number): Promise<IGetRestaurantByIdResult> {
+  async getRestaurantById(params: {
+    id: number;
+  }): Promise<IGetRestaurantByIdResult> {
+    const { id } = params;
     const restaurant = await this.restaurantService.getRestaurantById(id);
     if (!restaurant) {
       return {

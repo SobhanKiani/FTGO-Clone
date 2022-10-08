@@ -23,150 +23,153 @@ import { Food } from '../models/restaurant/food.model';
 
 @Resolver((oƒ) => Food)
 export class FoodResovler {
-    constructor(
-        @Inject('RESTAURANT_SERVICE')
-        private readonly restaurantClient: ClientProxy,
-    ) { }
+  constructor(
+    @Inject('RESTAURANT_SERVICE')
+    private readonly restaurantClient: ClientProxy,
+  ) {}
 
-    @Mutation((returns) => Food)
-    @IsPrivate(true)
-    @Roles(Role.RestaurantOwner)
-    @UseGuards(RolesGuard)
-    async createFood(
-        @Args('createFoodData') createFoodData: CreateFoodInput,
-        @GetUser() user: User,
-    ) {
-        const data = {
-            requestorId: user.id,
-            createFoodDto: createFoodData,
-        };
-        const result = await firstValueFrom(
-            this.restaurantClient.send<ICreateFoodResponse>(
-                { cmd: 'create_food' },
-                data,
-            ),
-        );
-        if (result.status !== HttpStatus.CREATED) {
-            throw new HttpException(
-                { message: result.message, errors: result.errors },
-                result.status,
-            );
-        }
-        return result.data;
+  @Mutation((returns) => Food)
+  @IsPrivate(true)
+  @Roles(Role.RestaurantOwner)
+  @UseGuards(RolesGuard)
+  async createFood(
+    @Args('createFoodData') createFoodData: CreateFoodInput,
+    @GetUser() user: User,
+  ) {
+    const data = {
+      requestorId: user.id,
+      createFoodDto: createFoodData,
+    };
+    const result = await firstValueFrom(
+      this.restaurantClient.send<
+        ICreateFoodResponse,
+        { createFoodDto: CreateFoodInput; requestorId: string }
+      >({ cmd: 'create_food' }, data),
+    );
+    if (result.status !== HttpStatus.CREATED) {
+      throw new HttpException(
+        { message: result.message, errors: result.errors },
+        result.status,
+      );
     }
+    return result.data;
+  }
 
-    @Mutation((returns) => UpdateResult)
-    @IsPrivate(true)
-    @Roles(Role.RestaurantOwner)
-    @UseGuards(RolesGuard)
-    async updateFood(
-        @Args('updateFoodData') updateFoodData: UpdateFoodInput,
-        @Args('id', { type: () => Int }) id: number,
-        @GetUser() user: User,
-    ) {
-        const data = {
-            foodId: id,
-            requestorId: user.id,
-            updateFoodDto: updateFoodData,
-        };
-        const result = await firstValueFrom(
-            this.restaurantClient.send<IUpdateFoodResponse>(
-                { cmd: 'update_food' },
-                data,
-            ),
-        );
-        if (result.status !== HttpStatus.OK) {
-            throw new HttpException(
-                { message: result.message, errors: result.errors },
-                result.status,
-            );
-        }
-        return result.data;
+  @Mutation((returns) => UpdateResult)
+  @IsPrivate(true)
+  @Roles(Role.RestaurantOwner)
+  @UseGuards(RolesGuard)
+  async updateFood(
+    @Args('updateFoodData') updateFoodData: UpdateFoodInput,
+    @Args('id', { type: () => Int }) id: number,
+    @GetUser() user: User,
+  ) {
+    const data = {
+      foodId: id,
+      requestorId: user.id,
+      updateFoodDto: updateFoodData,
+    };
+    const result = await firstValueFrom(
+      this.restaurantClient.send<IUpdateFoodResponse, {}>(
+        { cmd: 'update_food' },
+        data,
+      ),
+    );
+    if (result.status !== HttpStatus.OK) {
+      throw new HttpException(
+        { message: result.message, errors: result.errors },
+        result.status,
+      );
     }
+    return result.data;
+  }
 
-    @Mutation((returns) => UpdateResult)
-    @IsPrivate(true)
-    @Roles(Role.RestaurantOwner)
-    @UseGuards(RolesGuard)
-    async deleteFood(
-        @Args('id', { type: () => Int }) id: number,
-        @GetUser() user: User,
-    ) {
-        const data = {
-            foodId: id,
-            requestorId: user.id,
-        };
-        const result = await firstValueFrom(
-            this.restaurantClient.send<IDeleteFoodResponse>(
-                { cmd: 'delete_food' },
-                data,
-            ),
-        );
-        if (result.status !== HttpStatus.OK) {
-            throw new HttpException(
-                { message: result.message, errors: result.errors },
-                result.status,
-            );
-        }
-        return result.data;
+  @Mutation((returns) => UpdateResult)
+  @IsPrivate(true)
+  @Roles(Role.RestaurantOwner)
+  @UseGuards(RolesGuard)
+  async deleteFood(
+    @Args('id', { type: () => Int }) id: number,
+    @GetUser() user: User,
+  ) {
+    const data = {
+      foodId: id,
+      requestorId: user.id,
+    };
+    const result = await firstValueFrom(
+      this.restaurantClient.send<
+        IDeleteFoodResponse,
+        { foodId: number; requestorId: string }
+      >({ cmd: 'delete_food' }, data),
+    );
+    if (result.status !== HttpStatus.OK) {
+      throw new HttpException(
+        { message: result.message, errors: result.errors },
+        result.status,
+      );
     }
+    return result.data;
+  }
 
-    @Mutation((returns) => UpdateResult)
-    @IsPrivate(true)
-    async rateFood(
-        @Args('rateData') rateData: RateFoodInput,
-        @GetUser() user: User,
-    ) {
-        const data = {
-            rateDto: rateData,
-            requestorId: user.id,
-        };
-        const result = await firstValueFrom(
-            this.restaurantClient.send<IRate>({ cmd: 'rate_food' }, data),
-        );
-        if (result.status !== HttpStatus.OK) {
-            throw new HttpException(
-                { message: result.message, errors: result.errors },
-                result.status,
-            );
-        }
-        return result.data;
+  @Mutation((returns) => UpdateResult)
+  @IsPrivate(true)
+  async rateFood(
+    @Args('rateData') rateData: RateFoodInput,
+    @GetUser() user: User,
+  ) {
+    const data = {
+      rateDto: rateData,
+      requestorId: user.id,
+    };
+    const result = await firstValueFrom(
+      this.restaurantClient.send<
+        IRate,
+        { rateDto: RateFoodInput; requestorId: string }
+      >({ cmd: 'rate_food' }, data),
+    );
+    if (result.status !== HttpStatus.OK) {
+      throw new HttpException(
+        { message: result.message, errors: result.errors },
+        result.status,
+      );
     }
+    return result.data;
+  }
 
-    @Query((returns) => Food)
-    async getFoodById(@Args('id', { type: () => Int }) id: number) {
-        const params = { foodId: id };
-        const result = await firstValueFrom(
-            this.restaurantClient.send<IGetFoodByIdResponse>(
-                { cmd: 'get_food_by_id' },
-                params,
-            ),
-        );
-        if (result.status !== HttpStatus.OK) {
-            throw new HttpException(
-                { message: result.message, errors: result.errors },
-                result.status,
-            );
-        }
-        return result.data;
+  @Query((returns) => Food)
+  async getFoodById(@Args('id', { type: () => Int }) id: number) {
+    const args = { foodId: id };
+    const result = await firstValueFrom(
+      this.restaurantClient.send<IGetFoodByIdResponse, { foodId: number }>(
+        { cmd: 'get_food_by_id' },
+        args,
+      ),
+    );
+    if (result.status !== HttpStatus.OK) {
+      throw new HttpException(
+        { message: result.message, errors: result.errors },
+        result.status,
+      );
     }
+    return result.data;
+  }
 
-    @Query((returns) => [Food])
-    async getFoodList(
-        @Args({ type: () => FilterFoodQuery }) filter: FilterFoodQuery,
-    ) {
-        const result = await firstValueFrom(
-            this.restaurantClient.send<IGetFoodList>(
-                { cmd: 'get_food_list' },
-                filter,
-            ),
-        );
-        if (result.status !== HttpStatus.OK) {
-            throw new HttpException(
-                { message: result.message, errors: result.errors },
-                result.status,
-            );
-        }
-        return result.data;
+  @Query((returns) => [Food])
+  async getFoodList(
+    @Args({ type: () => FilterFoodQuery }) filter: FilterFoodQuery,
+  ) {
+    const result = await firstValueFrom(
+      this.restaurantClient.send<IGetFoodList, FilterFoodQuery>(
+        { cmd: 'get_food_list' },
+        filter,
+      ),
+    );
+    if (result.status !== HttpStatus.OK) {
+      throw new HttpException(
+        { message: result.message, errors: result.errors },
+        result.status,
+      );
     }
+    return result.data;
+  }
 }

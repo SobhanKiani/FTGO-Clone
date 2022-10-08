@@ -20,13 +20,13 @@ import { Role } from '../enums/roles.enum';
 import { IUserCreatedEvent } from '../interfaces/events/user-created.event';
 import { IUpdateUserEvent } from '../interfaces/events/user-updated.event';
 import { ICreateRestaurantEvent } from '../interfaces/events/restaurant-created.event';
- 
+
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
     @Inject('NATS_SERVICE') private natsClient: ClientProxy,
-  ) {}
+  ) { }
 
   @MessagePattern({ cmd: 'auth_check' })
   async check(): Promise<{ Check_Status: string }> {
@@ -231,8 +231,9 @@ export class AuthController {
 
   @MessagePattern({ cmd: 'auth_make_user_admin' })
   async makeUserAdmin(
-    userId: mongoose.Types.ObjectId,
+    params: { userId: mongoose.Types.ObjectId, }
   ): Promise<IMakeUserAdmin> {
+    const { userId } = params;
     const updatedUser = await this.authService.makeUserAdmin(userId);
 
     if (!updatedUser) {

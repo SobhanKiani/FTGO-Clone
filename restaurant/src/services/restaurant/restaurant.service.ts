@@ -15,7 +15,7 @@ export class RestaurantService {
     @InjectRepository(Restaurant)
     private restaurantRepository: Repository<Restaurant>,
     @Inject('NATS_SERVICE') private natsClient: ClientProxy,
-  ) { }
+  ) {}
 
   async createRestaurant(createRestaurantDTO: CreateRestaurantDTO) {
     const restaurant = this.restaurantRepository.create(createRestaurantDTO);

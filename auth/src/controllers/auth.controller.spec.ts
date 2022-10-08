@@ -164,7 +164,7 @@ describe('AuthController', () => {
   it('should make user admin', async () => {
     const { data: authData } = await authController.signUp(userCreateData);
     const { data: resultData, status } = await authController.makeUserAdmin(
-      authData.user.id,
+      { userId: authData.user.id, }
     );
     expect(resultData.roles).toContain('Admin');
     expect(status).toEqual(HttpStatus.OK);
@@ -183,7 +183,7 @@ describe('AuthController', () => {
 
   it('should verify admin', async () => {
     const { data: authData } = await authController.signUp(userCreateData);
-    await authController.makeUserAdmin(authData.user.id);
+    await authController.makeUserAdmin({ userId: authData.user.id });
 
     const { data: updatedUser, status } = await authController.verifyRoles({
       token: authData.token,

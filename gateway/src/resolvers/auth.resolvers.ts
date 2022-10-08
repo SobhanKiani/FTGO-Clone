@@ -7,6 +7,7 @@ import { UpdateUserInput } from 'src/inputs/auth/updateUser.input';
 import { ILoginResponse } from 'src/interfaces/auth/login-response.interface';
 import { IMakeUserAdmin } from 'src/interfaces/auth/make-user-admin-response.interface';
 import { ISignUpResponse } from 'src/interfaces/auth/sign-up-response.interface';
+import { IUpdateUserResponse } from 'src/interfaces/auth/user-update-response.interface';
 import { AuthData } from 'src/models/auth/AuthData.model';
 import { CheckStatus } from 'src/models/auth/checkStatus.model';
 import { User } from 'src/models/auth/user.model';
@@ -22,7 +23,7 @@ Resolver((of) => User);
 export class AuthResolver {
   constructor(
     @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy,
-  ) { }
+  ) {}
 
   @Query((returns) => CheckStatus)
   async checkAuthClientStatus() {
@@ -35,7 +36,7 @@ export class AuthResolver {
   @Mutation((returns) => AuthData)
   async signUp(@Args('createUserData') createUserData: CreateUserInput) {
     const result = await firstValueFrom(
-      this.authClient.send<ISignUpResponse>(
+      this.authClient.send<ISignUpResponse, CreateUserInput>(
         { cmd: 'auth_sign_up' },
         createUserData,
       ),
@@ -54,7 +55,10 @@ export class AuthResolver {
   @Mutation((returns) => AuthData)
   async login(@Args('loginData') loginData: LoginInput) {
     const result = await firstValueFrom(
-      this.authClient.send<ILoginResponse>({ cmd: 'auth_login' }, loginData),
+      this.authClient.send<ILoginResponse, LoginInput>(
+        { cmd: 'auth_login' },
+        loginData,
+      ),
     );
     if (result.status !== HttpStatus.OK) {
       throw new HttpException(
@@ -69,11 +73,11 @@ export class AuthResolver {
   @IsPrivate(true)
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
-  async makeUserAdmin(@Args() userId: UserIdArg) {
+  async makeUserAdmin(@Args() args: UserIdArg) {
     const result = await firstValueFrom(
-      this.authClient.send<IMakeUserAdmin>(
+      this.authClient.send<IMakeUserAdmin, UserIdArg>(
         { cmd: 'auth_make_user_admin' },
-        userId.id,
+        { userId: args.userId },
       ),
     );
     if (result.status !== HttpStatus.OK) {
@@ -93,7 +97,10 @@ export class AuthResolver {
     @GetUser() user: User,
   ) {
     const result = await firstValueFrom(
-      await this.authClient.send(
+      await this.authClient.send<
+        IUpdateUserResponse,
+        { userUpdateDTO: UpdateUserInput; userId: string }
+      >(
         { cmd: 'auth_update_user' },
         {
           userUpdateDTO: updateUserData,

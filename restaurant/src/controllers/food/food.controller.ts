@@ -18,7 +18,7 @@ export class FoodController {
   constructor(
     private foodService: FoodService,
     private restaurantService: RestaurantService,
-  ) { }
+  ) {}
 
   //create
   @MessagePattern({ cmd: 'create_food' })

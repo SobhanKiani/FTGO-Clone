@@ -93,7 +93,7 @@ describe('RestaurantController', () => {
     expect(status).toEqual(HttpStatus.OK);
     expect(updateResult.affected).toBeGreaterThan(0);
     const { data: updatedRestaurant } =
-      await restaurantController.getRestaurantById(newRestaurant.id);
+      await restaurantController.getRestaurantById({ id: newRestaurant.id });
     expect(updatedRestaurant.name).toEqual(updateObj.name);
   });
 

@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Inject, UseGuards } from '@nestjs/common';
 import { Mutation, Resolver, Query, Args } from '@nestjs/graphql';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { UserIdArg } from 'src/args/auth/userId.args';
 import { GetUser } from 'src/decorators/get-user-from-request.decorator';
 import { IsPrivate } from 'src/decorators/is-private.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -19,97 +20,108 @@ import { CartFood } from '../models/cart/cart-food.model';
 
 @Resolver((of) => Cart)
 export class CartResolver {
-    constructor(
-        @Inject('CART_SERVICE') private readonly cartClient: ClientProxy,
-    ) { }
+  constructor(
+    @Inject('CART_SERVICE') private readonly cartClient: ClientProxy,
+  ) {}
 
-    @Query((returns) => Cart)
-    @IsPrivate(true)
-    @Roles(Role.User)
-    @UseGuards(RolesGuard)
-    async getUserCart(@GetUser() user: User) {
-        const pattern = { cmd: 'user_cart' };
-        const result = await firstValueFrom(
-            this.cartClient.send<IGetOrCreateCartResponse>(pattern, {
-                userId: user.id,
-            }),
-        );
-        if (result.status !== HttpStatus.OK) {
-            throw new HttpException(
-                { message: result.message, errors: result.errors },
-                result.status,
-            );
-        }
-        return result.data;
+  @Query((returns) => Cart)
+  @IsPrivate(true)
+  @Roles(Role.User)
+  @UseGuards(RolesGuard)
+  async getUserCart(@GetUser() user: User) {
+    const pattern = { cmd: 'user_cart' };
+    const result = await firstValueFrom(
+      this.cartClient.send<IGetOrCreateCartResponse, { userId: string }>(
+        pattern,
+        {
+          userId: user.id,
+        },
+      ),
+    );
+    if (result.status !== HttpStatus.OK) {
+      throw new HttpException(
+        { message: result.message, errors: result.errors },
+        result.status,
+      );
     }
+    return result.data;
+  }
 
-    @Mutation((reutrns) => Cart)
-    @IsPrivate(true)
-    @Roles(Role.User)
-    @UseGuards(RolesGuard)
-    async deleteCart(@GetUser() user: User) {
-        const pattern = { cmd: 'delete_cart' };
-        const result = await firstValueFrom(
-            this.cartClient.send<IDeleteCartResponse>(pattern, { userId: user.id }),
-        );
-        if (result.status !== HttpStatus.OK) {
-            throw new HttpException(
-                { message: result.message, errors: result.errors },
-                result.status,
-            );
-        }
-        return result.data;
+  @Mutation((reutrns) => Cart)
+  @IsPrivate(true)
+  @Roles(Role.User)
+  @UseGuards(RolesGuard)
+  async deleteCart(@GetUser() user: User) {
+    const pattern = { cmd: 'delete_cart' };
+    const result = await firstValueFrom(
+      this.cartClient.send<IDeleteCartResponse, UserIdArg>(pattern, {
+        userId: user.id,
+      }),
+    );
+    if (result.status !== HttpStatus.OK) {
+      throw new HttpException(
+        { message: result.message, errors: result.errors },
+        result.status,
+      );
     }
+    return result.data;
+  }
 
-    @Mutation((reutrns) => CartFood)
-    @IsPrivate(true)
-    @Roles(Role.User)
-    @UseGuards(RolesGuard)
-    async addOrUpdateCartFood(
-        @Args('addOrUpdateFoodInCartData')
-        addOrUpdateFoodInCartData: AddOrUpdateFoodInCartInput,
-        @GetUser() user: User,
-    ) {
-        const pattern = { cmd: 'update_cart' };
-        const data = {
-            ...addOrUpdateFoodInCartData,
-            userId: user.id,
-        };
-        const result = await firstValueFrom(
-            this.cartClient.send<IAddOrUpdateCartFood>(pattern, data),
-        );
-        if (result.status !== HttpStatus.OK) {
-            throw new HttpException(
-                { message: result.message, errors: result.errors },
-                result.status,
-            );
-        }
-        return result.data;
+  @Mutation((reutrns) => CartFood)
+  @IsPrivate(true)
+  @Roles(Role.User)
+  @UseGuards(RolesGuard)
+  async addOrUpdateCartFood(
+    @Args('addOrUpdateFoodInCartData')
+    addOrUpdateFoodInCartData: AddOrUpdateFoodInCartInput,
+    @GetUser() user: User,
+  ) {
+    const pattern = { cmd: 'update_cart' };
+    const data = {
+      ...addOrUpdateFoodInCartData,
+      userId: user.id,
+    };
+    const result = await firstValueFrom(
+      this.cartClient.send<
+        IAddOrUpdateCartFood,
+        AddOrUpdateFoodInCartInput & UserIdArg
+      >(pattern, data),
+    );
+    if (result.status !== HttpStatus.OK) {
+      throw new HttpException(
+        { message: result.message, errors: result.errors },
+        result.status,
+      );
     }
+    return result.data;
+  }
 
-    @Mutation((reutrns) => CartFood)
-    @IsPrivate(true)
-    @Roles(Role.User)
-    @UseGuards(RolesGuard)
-    async deleteFoodFromCart(
-        @Args('deleteFoodFromCartData')
-        deleteFoodFromCartData: DeleteFoodFromCartInput,
-        @GetUser() user: User,
-    ) {
-        const pattern = { cmd: 'delete_food_from_cart' };
-        const data = {
-            ...deleteFoodFromCartData,
-            userId: user.id,
-        };
-        const result = await firstValueFrom(
-            this.cartClient.send<IDeleteCartFoodResponse>(pattern, data),
-        );
-        if (result.status !== HttpStatus.OK) {
-            throw new HttpException(
-                { message: result.message, errors: result.errors },
-                result.status,
-            );
-        }
-        return result.data;
+  @Mutation((reutrns) => CartFood)
+  @IsPrivate(true)
+  @Roles(Role.User)
+  @UseGuards(RolesGuard)
+  async deleteFoodFromCart(
+    @Args('deleteFoodFromCartData')
+    deleteFoodFromCartData: DeleteFoodFromCartInput,
+    @GetUser() user: User,
+  ) {
+    const pattern = { cmd: 'delete_food_from_cart' };
+    const data = {
+      ...deleteFoodFromCartData,
+      userId: user.id,
+    };
+    const result = await firstValueFrom(
+      this.cartClient.send<
+        IDeleteCartFoodResponse,
+        DeleteFoodFromCartInput & UserIdArg
+      >(pattern, data),
+    );
+    if (result.status !== HttpStatus.OK) {
+      throw new HttpException(
+        { message: result.message, errors: result.errors },
+        result.status,
+      );
     }
+    return result.data;
+  }
 }

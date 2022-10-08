@@ -17,7 +17,7 @@ export class FoodService {
   constructor(
     @InjectRepository(Food) private foodRepository: Repository<Food>,
     @Inject('NATS_SERVICE') private natsClient: ClientProxy,
-  ) { }
+  ) {}
 
   async createFood(
     createFoodDto: CreateFoodDTO,

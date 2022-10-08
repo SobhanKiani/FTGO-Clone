@@ -7,5 +7,5 @@ export class UserIdArg {
   @IsMongoId()
   @IsString()
   @IsNotEmpty()
-  id: string;
+  userId: string;
 }

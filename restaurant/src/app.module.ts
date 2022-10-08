@@ -29,13 +29,13 @@ import { RestaurantService } from './services/restaurant/restaurant.service';
         name: 'NATS_SERVICE',
         transport: Transport.NATS,
         options: {
-          servers: [process.env.NATS_URL]
-        }
+          servers: [process.env.NATS_URL],
+        },
       },
     ]),
   ],
   controllers: [RestaurantController, FoodController],
   providers: [RestaurantService, FoodService],
-  exports: [TypeOrmModule]
+  exports: [TypeOrmModule],
 })
-export class AppModule { }
+export class AppModule {}

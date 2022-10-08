@@ -13,7 +13,7 @@ import { IUpdateFoodEvent } from '../../interfaces/food/events/update-food.event
 import { RestaurantController } from '../restaurant/restaurant.controller';
 import { FoodService } from '../../services/food/food.service';
 import { RestaurantService } from '../../services/restaurant/restaurant.service';
- 
+
 describe('FoodController', () => {
   let foodController: FoodController;
   let restaurantController: RestaurantController;

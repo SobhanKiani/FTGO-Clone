@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurant-pg-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restaurant-pg
+  template:
+    metadata:
+      labels:
+        app: restaurant-pg
+    spec:
+      containers:
+        - name: restaurant-pg
+          image: postgres:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: restaurant-pg-srv
+spec:
+  selector:
+    app: restaurant-pg
+  ports:
+    - name: db
+      protocol: TCP
+      port: 5432
+      targetPort: 5432

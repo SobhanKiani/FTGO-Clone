@@ -90,7 +90,7 @@ type Mutation {
   rateFood(rateData: RateFoodInput!): UpdateResult!
   signUp(createUserData: CreateUserInput!): AuthData!
   login(loginData: LoginInput!): AuthData!
-  makeUserAdmin(id: String!): User!
+  makeUserAdmin(userId: String!): User!
   updateUser(updateUserData: UpdateUserInput!): User!
   createRestaurant(createRestaurantData: CreateRestaurantInput!): Restaurant!
   updateResaurant(updateRestaurantData: UpdateRestaurantInput!, id: Int!): UpdateResult!

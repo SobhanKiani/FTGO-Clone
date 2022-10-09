@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-depl
+  name: restaurant-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: restaurant
   template:
     metadata:
       labels:
-        app: auth
+        app: restaurant
     spec:
       containers:
-        - name: auth
-          image: skn1942/ftgo-auth:latest
+        - name: restaurant
+          image: skn1942/ftgo-restaurant:latest
           resources:
             limits:
               memory: "128Mi"
@@ -22,21 +22,23 @@ spec:
           ports:
             - containerPort: 9991
           env:
-            - MONGO_HOST=auth-mongo-srv
-            - MONGO_PORT=27017
-            - MONGO_DB_NAME=auth
+            - POSTGRES_DB=restaurant-db
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_HOST=restaurant-pg
+            - POSTGRES_PORT=5432
             - NATS_URL=nats://nats-srv:4222
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-srv
+  name: restaurant-srv
 spec:
   selector:
-    app: auth
+    app: restaurant
   ports:
-    - name: auth
+    - name: restaurant
       protocol: TCP
-      port: 9991
-      targetPort: 9991
+      port: 9993
+      targetPort: 9993

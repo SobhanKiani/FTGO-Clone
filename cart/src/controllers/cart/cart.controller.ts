@@ -1,13 +1,14 @@
 import { Controller, HttpStatus } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { Prisma } from '@prisma/client';
+import { ICreateOrdereEvent } from 'src/interfaces/events/create-order-event.event';
 import { IDeleteCartResponse } from '../../interfaces/cart/delete-cart-response.interface';
 import { IGetOrCreateCartResponse } from '../../interfaces/cart/get-or-create-cart-response.interface';
 import { CartService } from '../../services/cart/cart.service';
 
 @Controller('cart')
 export class CartController {
-  constructor(private cartService: CartService) {}
+  constructor(private cartService: CartService) { }
 
   @MessagePattern({ cmd: 'user_cart' })
   async userCart(params: {
@@ -47,6 +48,30 @@ export class CartController {
     try {
       const args: Prisma.CartDeleteArgs = {
         where: { userId },
+      };
+      const cart = await this.cartService.deleteCart(args);
+      return {
+        status: HttpStatus.OK,
+        message: 'User Cart Deleted',
+        data: cart,
+        errors: null,
+      };
+    } catch (e) {
+      return {
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Could Not Get The Cart',
+        data: null,
+        errors: e,
+      };
+    }
+  }
+
+  @MessagePattern({ cmd: 'order_created' })
+  async handleNewOrder(params: ICreateOrdereEvent): Promise<IDeleteCartResponse> {
+    const { cartId, userId } = params;
+    try {
+      const args: Prisma.CartDeleteArgs = {
+        where: { userId, id: cartId },
       };
       const cart = await this.cartService.deleteCart(args);
       return {

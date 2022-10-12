@@ -49,4 +49,17 @@ describe('CartController', () => {
     expect(status).toEqual(HttpStatus.OK);
     expect(cart.userId).toEqual(userId);
   });
+
+  it('should delete cart if new order comes', async () => {
+    const order = {
+      userId: '1',
+      cartId: 10,
+      price: 20.0,
+      id: 12
+    }
+    const { status, data: cart } = await controller.handleNewOrder(order);
+    expect(status).toEqual(HttpStatus.OK);
+    expect(cart.userId).toEqual(order.userId);
+    expect(cart.id).toEqual(order.cartId);
+  });
 });

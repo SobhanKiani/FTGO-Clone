@@ -13,7 +13,7 @@ export class OrderController {
         @Inject('NATS_SERVICE') private natsClient: ClientProxy,
     ) { }
 
-    @MessagePattern({ cmd: "create_order" })
+    @MessagePattern({ cmd: "order_created" })
     async createOrder(data: Prisma.OrderCreateInput): Promise<ICreateOrderResponse> {
         try {
             const order = await this.orderService.createOrder(data);

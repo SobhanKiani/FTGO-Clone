@@ -43,6 +43,14 @@ import { AuthGuard } from './guards/auth.guard';
           port: Number(process.env.CART_PORT),
         },
       },
+      {
+        name: 'ORDER_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          host: process.env.ORDER_HOST,
+          port: Number(process.env.ORDER_PORT),
+        },
+      },
     ]),
   ],
   controllers: [],

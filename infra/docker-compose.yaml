@@ -164,10 +164,13 @@ services:
       - RESTAURANT_PORT=9993
       - CART_HOST=cart
       - CART_PORT=9994
+      - ORDER_HOST=order
+      - ORDER_PORT=9995
     depends_on:
       - auth
       - restaurant
       - cart
+      - order
 
   nats-server:
     image: nats:latest

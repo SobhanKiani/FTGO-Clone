@@ -1,8 +1,8 @@
 import { Controller, HttpStatus, Inject } from '@nestjs/common';
 import { ClientProxy, MessagePattern } from '@nestjs/microservices';
 import { Prisma } from '@prisma/client';
+import { ICreateOrderResponse } from 'src/interfaces/order/create-order-response.interface';
 import { ICreateOrdereEvent } from '../../interfaces/events/create-order-event.event';
-import { ICreateOrderResponse } from '../../interfaces/order/create-order-response.interface';
 import { OrderService } from '../../services/order/order.service';
 
 @Controller('order')
@@ -13,7 +13,7 @@ export class OrderController {
         @Inject('NATS_SERVICE') private natsClient: ClientProxy,
     ) { }
 
-    @MessagePattern({ cmd: "order_created" })
+    @MessagePattern({ cmd: "create_order" })
     async createOrder(data: Prisma.OrderCreateInput): Promise<ICreateOrderResponse> {
         try {
             const order = await this.orderService.createOrder(data);
@@ -29,7 +29,7 @@ export class OrderController {
             const eventData: ICreateOrdereEvent = {
                 ...order
             }
-            this.natsClient.emit<any, ICreateOrdereEvent>({ cmd: "create_order" }, eventData);
+            this.natsClient.emit<any, ICreateOrdereEvent>({ cmd: "order_created" }, eventData);
 
             return {
                 status: HttpStatus.CREATED,

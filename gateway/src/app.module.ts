@@ -11,6 +11,7 @@ import { FoodResovler } from './resolvers/food.resovler';
 import { RestaurantResolver } from './resolvers/restaurant.resolver';
 import { DateScalar } from './utils/custome-date-scalar';
 import { AuthGuard } from './guards/auth.guard';
+import { OrderResolver } from './resolvers/order.resolver';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { AuthGuard } from './guards/auth.guard';
     AuthResolver,
     RestaurantResolver,
     CartResolver,
+    OrderResolver,
     RolesGuard,
     {
       provide: APP_GUARD,
@@ -67,4 +69,4 @@ import { AuthGuard } from './guards/auth.guard';
     DateScalar,
   ],
 })
-export class AppModule {}
+export class AppModule { }

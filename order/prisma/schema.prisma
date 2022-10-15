@@ -11,12 +11,14 @@ datasource db {
 }
 
 model Order {
-  id        Int      @id @default(autoincrement())
-  cartId    Int
-  price     Float
-  userId    String
-  address   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+  id           Int      @id @default(autoincrement())
+  cartId       Int
+  price        Float
+  userId       String
+  userFullName String
+  foods        Json[]
+  address      String?
+  phoneNumber  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

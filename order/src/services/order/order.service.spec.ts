@@ -2,7 +2,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Prisma } from '@prisma/client';
 import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
-import { prismaServiceMock } from '../../../test/mocks/prisma-service-mock';
+import { orderData, prismaServiceMock } from '../../../test/mocks/prisma-service-mock';
 import { PrismaService } from '../prisma-service/prisma-service.service';
 import { OrderService } from './order.service';
 
@@ -32,15 +32,11 @@ describe('OrderService', () => {
   });
 
   it('should create order with correct data', async () => {
-    const data: Prisma.OrderCreateInput = {
-      price: 20.0,
-      cartId: 1,
-      address: "Test Addr",
-      userId: '1'
-    };
+    const data: Prisma.OrderCreateInput = orderData
 
     const newOrder = await service.createOrder(data);
     expect(newOrder.price).toEqual(data.price);
+    expect(newOrder.foods.length).toBeGreaterThan(0)
   })
 
 });

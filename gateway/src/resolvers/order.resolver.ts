@@ -24,7 +24,6 @@ export class OrderResolver {
 
     @Mutation((returns) => Order)
     @IsPrivate(true)
-    @Roles(Role.Admin)
     @UseGuards(RolesGuard)
     async createOrder(
         @GetUser() user: User,
@@ -38,10 +37,17 @@ export class OrderResolver {
                 },
             ),
         );
-        if (cartResult.status !== HttpStatus.OK) {
+        if (cartResult.status !== HttpStatus.OK && cartResult.status !== HttpStatus.CREATED) {
             throw new HttpException(
                 { message: cartResult.message, errors: cartResult.errors },
                 cartResult.status,
+            );
+        }
+
+        if (cartResult.data.userId !== user.id) {
+            throw new HttpException(
+                { message: "FORBIDDEN", errors: { cart: { path: "cart", message: "forbidden" } } },
+                HttpStatus.FORBIDDEN,
             );
         }
 
@@ -49,13 +55,21 @@ export class OrderResolver {
             cartId: cartResult.data.id,
             userId: user.id,
             price: cartResult.data.totalPrice,
-            foods: cartResult.data.CartFood.map((cartFood) => cartFood.food)
+            foods: cartResult.data.CartFood.map((cartFood) => ({
+                name: cartFood.food.name,
+                count: cartFood.count,
+                singlePrice: cartFood.food.price,
+            })),
+            userFullName: `${user.firstName} ${user.lastName}`,
+            address: user.address,
+            phoneNumber: user.phoneNumber
         }
+
         const result = await firstValueFrom(
             this.orderClient.send<ICreateOrderResponse, { cartId: number, userId: string, price: number }>({ cmd: "create_order" }, data)
-        )
+        );
 
-        if (result.status !== HttpStatus.OK) {
+        if (result.status !== HttpStatus.OK && result.status !== HttpStatus.CREATED) {
             throw new HttpException(
                 { message: result.message, errors: cartResult.errors },
                 result.status,

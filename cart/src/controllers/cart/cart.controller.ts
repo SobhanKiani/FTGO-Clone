@@ -32,7 +32,6 @@ export class CartController {
         errors: null,
       };
     } catch (e) {
-      console.log(e);
       return {
         status: HttpStatus.BAD_REQUEST,
         message: 'Could Not Get The Cart',

@@ -80,7 +80,7 @@ services:
     expose:
       - 9994
     command: >
-      sh -c "npx prisma migrate dev --skip-generate --name init && npm run start:dev"
+      sh -c "npx prisma migrate dev --name init && npm run start:dev"
     environment:
       - POSTGRES_DB=cart-db
       - POSTGRES_USER=postgres
@@ -117,7 +117,7 @@ services:
     expose:
       - 9995
     command: >
-      sh -c "npx prisma migrate dev --skip-generate --name init && npm run start:dev"
+      sh -c "npx prisma migrate dev --name init && npm run start:dev"
     environment:
       - POSTGRES_DB=order-db
       - POSTGRES_USER=postgres

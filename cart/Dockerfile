@@ -18,7 +18,7 @@ RUN npm install --legacy-peer-deps
 # Bundle app source
 COPY --chown=node:node . .
 
-RUN npx prisma generate
+# RUN npx prisma generate
 # Use the node user from the image (instead of the root user)
 USER node
 

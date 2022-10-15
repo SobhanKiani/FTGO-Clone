@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
 import { OrderService } from '../../services/order/order.service';
 import { PrismaService } from '../../services/prisma-service/prisma-service.service';
 import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
-import { prismaServiceMock } from '../../../test/mocks/prisma-service-mock';
+import { orderData, prismaServiceMock } from '../../../test/mocks/prisma-service-mock';
 import { OrderController } from './order.controller';
 
 describe('OrderController', () => {
@@ -39,19 +39,19 @@ describe('OrderController', () => {
 
   it('should create order', async () => {
     const emitFunc = jest.spyOn(natsClient, 'emit');
-    const createData: Prisma.OrderCreateInput = {
-      price: 20.0,
-      cartId: 1,
-      address: "Test Addr",
-      userId: '1'
-    };
+    const createData: Prisma.OrderCreateInput = orderData
 
     const { data, status } = await controller.createOrder(createData);
     expect(status).toEqual(HttpStatus.CREATED);
     expect(data.price).toEqual(createData.price);
 
     expect(emitFunc).toHaveBeenCalled();
-    expect(emitFunc).toHaveBeenCalledWith({ cmd: "create_order" }, { ...data });
+    expect(emitFunc).toHaveBeenCalledWith({ cmd: "order_created" }, {
+      id: data.id,
+      userId: data.userId,
+      cartId: data.cartId,
+      price: data.price,
+    });
 
   })
 });

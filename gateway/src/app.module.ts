@@ -11,6 +11,7 @@ import { FoodResovler } from './resolvers/food.resovler';
 import { RestaurantResolver } from './resolvers/restaurant.resolver';
 import { DateScalar } from './utils/custome-date-scalar';
 import { AuthGuard } from './guards/auth.guard';
+import { OrderResolver } from './resolvers/order.resolver';
 
 @Module({
   imports: [
@@ -43,6 +44,14 @@ import { AuthGuard } from './guards/auth.guard';
           port: Number(process.env.CART_PORT),
         },
       },
+      {
+        name: 'ORDER_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          host: process.env.ORDER_HOST,
+          port: Number(process.env.ORDER_PORT),
+        },
+      },
     ]),
   ],
   controllers: [],
@@ -51,6 +60,7 @@ import { AuthGuard } from './guards/auth.guard';
     AuthResolver,
     RestaurantResolver,
     CartResolver,
+    OrderResolver,
     RolesGuard,
     {
       provide: APP_GUARD,
@@ -59,4 +69,4 @@ import { AuthGuard } from './guards/auth.guard';
     DateScalar,
   ],
 })
-export class AppModule {}
+export class AppModule { }
